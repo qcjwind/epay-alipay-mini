@@ -1,0 +1,7 @@
+{
+  "pullRefresh": true,
+  "titleBarColor": "#c4227b",
+  "usingComponents": {
+    "drawer": "/components/Drawer/Drawer"
+  }
+}

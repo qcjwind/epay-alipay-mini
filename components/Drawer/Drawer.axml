@@ -1,0 +1,15 @@
+<view class="overlay" hidden="{{!open}}">
+  <view class="drawer flex drawer-animation">
+    <view class="drawer-head flex justify-end">
+      <image
+        mode="scaleToFill"
+        src="/assets/icons/x_140F26.svg"
+        class="icon-size-24"
+        onTap="close"
+      />
+    </view>
+    <scroll-view class="drawer-content" scroll-y="{{true}}">
+      <view style="height: 1900px; width: 100%">Hello world!</view>
+    </scroll-view>
+  </view>
+</view>

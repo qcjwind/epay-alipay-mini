@@ -1,0 +1,8 @@
+@import "./styles/preset.acss";
+@import "./styles/theme.acss";
+@import "./styles/animation.acss";
+@import "./styles/flex.acss";
+
+page {
+  background-color: #f4f6f9;
+}
