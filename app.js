@@ -1,5 +1,5 @@
 import envStorageAPI from './common/envStorageAPI';
-import { getEnv } from './api/envConfig';
+// import { getEnv } from './api/envConfig';
 // import useI18n from './i18n';
 import EN_US from './i18n/EN_US';
 

@@ -1,4 +1,4 @@
-import { envConfig } from '/api/envConfig';
+// import { envConfig } from '/api/envConfig';
 
 export default {
   envConfig,
