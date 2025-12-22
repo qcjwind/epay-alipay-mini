@@ -1,0 +1,42 @@
+<view class="container">
+  <!-- 导航栏占位 -->
+  <nav-bar></nav-bar>
+  <!-- 页面标题 -->
+  <view class="page-title">Choose the amount</view>
+  <!-- 主内容区 -->
+  <view class="content">
+    <!-- 金额显示 -->
+    <view class="amount-display">
+      <text class="amount-value">{{selectedAmount}}</text>
+      <text class="amount-currency">€</text>
+    </view>
+    <!-- 背景图区域 -->
+    <view class="background-area {{backgroundClass}}"></view>
+  </view>
+
+  <!-- 金额选择按钮 -->
+  <scroll-view 
+    class="amount-buttons-scroll"
+    scroll-x="{{true}}"
+    scroll-with-animation="{{true}}"
+    show-scrollbar="{{false}}"
+  >
+    <view class="amount-buttons">
+      <view 
+        a:for="{{amountOptions}}"
+        a:key="*this"
+        class="amount-btn {{selectedAmount === item ? 'active' : ''}}"
+        data-amount="{{item}}"
+        onTap="selectAmount"
+      >
+        <text class="amount-btn-text">{{item}}€</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 继续按钮 -->
+  <view class="continue-section">
+    <button class="continue-btn" onTap="handleContinue">CONTINUE</button>
+  </view>
+</view>
+

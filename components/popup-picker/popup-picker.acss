@@ -1,0 +1,137 @@
+/* Picker 弹窗 */
+.picker-popup {
+  background-image: url('/assets/images/back.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 40rpx 40rpx 0 0;
+  height: 900rpx;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40rpx 40rpx 30rpx;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.picker-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+.picker-close {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.close-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.picker-list {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  padding: 0 40rpx;
+  min-height: 0;
+  height: 400rpx;
+}
+
+.picker-item {
+  min-height: 80rpx;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.picker-item.item-center {
+  min-height: 94rpx;
+}
+
+.picker-item.item-near {
+  min-height: 80rpx;
+}
+
+.picker-item.item-far {
+  min-height: 76rpx;
+}
+
+.picker-item:last-child {
+  border-bottom: none;
+}
+
+.picker-item-text {
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s;
+  text-align: center;
+  width: 100%;
+  line-height: 1.2;
+}
+
+/* 根据位置设置字体大小，中间最大，向两边逐渐变小 */
+.picker-item.item-outside .picker-item-text {
+  font-size: 24rpx;
+  opacity: 0.6;
+}
+
+.picker-item.item-far .picker-item-text {
+  font-size: 24rpx;
+  opacity: 0.6;
+}
+
+.picker-item.item-near .picker-item-text {
+  font-size: 28rpx;
+  opacity: 0.8;
+}
+
+.picker-item.item-center .picker-item-text {
+  font-size: 36rpx;
+  color: #fff;
+  font-weight: 700;
+  opacity: 1;
+}
+
+.picker-item.selected .picker-item-text {
+  color: #fff;
+  font-weight: 700;
+}
+
+.picker-footer {
+  padding: 30rpx 40rpx 40rpx;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.picker-done-btn {
+  width: 100%;
+  height: 100rpx;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #a855f7 100%);
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  box-shadow: 0 4rpx 20rpx rgba(255, 107, 157, 0.4);
+}
+

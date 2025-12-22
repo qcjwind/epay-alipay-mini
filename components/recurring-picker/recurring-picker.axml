@@ -1,0 +1,43 @@
+<view class="recurring-picker">
+  <!-- 充值频率选择 -->
+  <view class="frequency-section">
+    <view 
+      a:for="{{frequencyOptions}}"
+      a:key="value"
+      class="frequency-btn {{selectedFrequency === item.value ? 'active' : ''}}"
+      data-frequency="{{item.value}}"
+      onTap="handleFrequencySelect"
+    >
+      <view class="frequency-icon">
+        <image class="icon-img" src="{{item.icon}}" mode="aspectFit"></image>
+      </view>
+      <text class="frequency-text">{{item.label}}</text>
+    </view>
+  </view>
+
+  <!-- 选择日期 -->
+  <view class="day-section">
+    <text class="section-label">{{dayLabel}}</text>
+    <view class="day-picker" onTap="toggleDayPicker">
+      <text class="day-value">{{selectedDay}}</text>
+      <view class="day-arrow">▼</view>
+    </view>
+  </view>
+
+  <!-- 日期选择弹窗 -->
+  <popup-picker
+    visible="{{showDayPicker}}"
+    title="{{dayLabel}}"
+    options="{{currentDayOptions}}"
+    selectedIndex="{{selectedDayIndex}}"
+    onClose="toggleDayPicker"
+    onSelect="onDaySelect"
+    onConfirm="confirmDaySelect"
+  />
+
+  <!-- 继续按钮 -->
+  <view class="continue-section">
+    <button class="continue-btn" onTap="handleContinue">{{continueButtonText}}</button>
+  </view>
+</view>
+

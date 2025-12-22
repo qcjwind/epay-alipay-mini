@@ -1,0 +1,35 @@
+<popup
+  visible="{{visible}}"
+  position="bottom"
+  onClose="handleClose"
+  maskClosable="{{true}}"
+  zIndex="{{9999}}"
+>
+  <view class="picker-popup">
+    <view class="picker-header">
+      <text class="picker-title">{{title}}</text>
+      <view class="picker-close" onTap="handleClose">
+        <image class="close-icon" src="/assets/icons/close.png" mode="aspectFit"></image>
+      </view>
+    </view>
+    <scroll-view
+      class="picker-list"
+      scroll-y="{{true}}"
+      scroll-with-animation="{{true}}"
+    >
+      <view
+        a:for="{{options}}"
+        a:key="*this"
+        class="picker-item {{index === currentIndex ? 'item-center' : (Math.abs(index - currentIndex) === 1 ? 'item-near' : (Math.abs(index - currentIndex) === 2 ? 'item-far' : 'item-outside'))}} {{currentIndex === index ? 'selected' : ''}}"
+        data-index="{{index}}"
+        onTap="handleSelect"
+      >
+        <text class="picker-item-text">{{item}}</text>
+      </view>
+    </scroll-view>
+    <view class="picker-footer">
+      <view class="picker-done-btn" onTap="handleConfirm">DONE</view>
+    </view>
+  </view>
+</popup>
+
