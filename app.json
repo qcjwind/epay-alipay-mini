@@ -3,7 +3,8 @@
   "pages": [
     "pages/index/index",
     "pages/webView/webView",
-    "pages/set-recurring/set-recurring"
+    "pages/set-recurring/set-recurring",
+    "pages/choose-amount/choose-amount"
   ],
   "window": {
     "defaultTitle": "",

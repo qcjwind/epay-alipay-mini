@@ -5,79 +5,17 @@
   <view class="page-title">Set up recurring</view>
   <!-- 主内容区 -->
   <view class="content">
-    <!-- 充值频率选择 -->
-    <view class="frequency-section">
-      <view 
-        class="frequency-btn {{selectedFrequency === 'weekly' ? 'active' : ''}}"
-        data-frequency="weekly"
-        onTap="selectFrequency"
-      >
-        <view class="frequency-icon">
-          <image class="icon-img" src="/assets/icons/weekly.png" mode="aspectFit"></image>
-        </view>
-        <text class="frequency-text">Weekly Top-up</text>
-      </view>
-      <view 
-        class="frequency-btn {{selectedFrequency === 'monthly' ? 'active' : ''}}"
-        data-frequency="monthly"
-        onTap="selectFrequency"
-      >
-        <view class="frequency-icon">
-          <image class="icon-img" src="/assets/icons/monthly.png" mode="aspectFit"></image>
-        </view>
-        <text class="frequency-text">Monthly Top-up</text>
-      </view>
-    </view>
-
-    <!-- 选择日期 -->
-    <view class="day-section">
-      <text class="section-label">Select day</text>
-      <view class="day-picker" onTap="toggleDayPicker">
-        <text class="day-value">{{selectedDay}}</text>
-        <view class="day-arrow">▼</view>
-      </view>
-    </view>
-
-    <!-- 日期选择弹窗 -->
-    <popup
-      visible="{{showDayPicker}}"
-      position="bottom"
-      onClose="toggleDayPicker"
-      maskClosable="{{true}}"
-      zIndex="{{9999}}"
-    >
-      <view class="picker-popup">
-        <view class="picker-header">
-          <text class="picker-title">Select day</text>
-          <view class="picker-close" onTap="toggleDayPicker">
-            <image class="close-icon" src="/assets/icons/close.png" mode="aspectFit"></image>
-          </view>
-        </view>
-        <scroll-view
-          class="picker-list"
-          scroll-y="{{true}}"
-          scroll-with-animation="{{true}}"
-        >
-          <view
-            a:for="{{days}}"
-            a:key="*this"
-            class="picker-item {{index === selectedDayIndex ? 'item-center' : (Math.abs(index - selectedDayIndex) === 1 ? 'item-near' : (Math.abs(index - selectedDayIndex) === 2 ? 'item-far' : 'item-outside'))}} {{selectedDayIndex === index ? 'selected' : ''}}"
-            data-index="{{index}}"
-            onTap="selectDayItem"
-          >
-            <text class="picker-item-text">{{item}}</text>
-          </view>
-        </scroll-view>
-        <view class="picker-footer">
-          <view class="picker-done-btn" onTap="confirmDaySelect">DONE</view>
-        </view>
-      </view>
-    </popup>
-
-    <!-- 继续按钮 -->
-    <view class="continue-section">
-      <button class="continue-btn" onTap="handleContinue">CONTINUE</button>
-    </view>
+    <recurring-picker
+      frequencyOptions="{{frequencyOptions}}"
+      selectedFrequency="{{selectedFrequency}}"
+      dayLabel="Select day"
+      dayOptions="{{days}}"
+      selectedDay="{{selectedDay}}"
+      continueButtonText="CONTINUE"
+      onFrequencyChange="onFrequencyChange"
+      onDayChange="onDayChange"
+      onContinue="handleContinue"
+    />
   </view>
 </view>
 

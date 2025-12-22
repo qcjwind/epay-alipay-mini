@@ -14,4 +14,8 @@ export default {
     networkError: "Network Error, please try again later",
     userAuthorizationHasExpired: "user authorization has expired",
   },
+  chooseAmount: {
+    selectAmountTitle: 'Select Amount',
+    selectAmountContent: 'Please select a top-up amount.',
+  },
 };
