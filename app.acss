@@ -11,3 +11,6 @@ page {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+* {
+  box-sizing: border-box;
+}

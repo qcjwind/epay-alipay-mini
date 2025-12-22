@@ -1,40 +1,5 @@
-<view class="btns">
-  <navigator class="navigator" url="/pages/webView/webView">
-    Switch to H5 page
-  </navigator>
-  <view>
-    JSAPIs:
-  </view>
-  <button size="default" type="primary" onTap="callGetAuthCode">
-    my.getAuthCode
-  </button>
-  <view a:if="{{userInfo}}">
-    userInfo: {{userInfo}}
-  </view>
-  <button size="default" type="primary" onTap="callTradePay">my.tradePay</button>
-  <button size="default" type="primary" onTap="callChooseImage">
-    my.chooseImage
-  </button>
-  <image
-    a:if="{{ imageSrc }}"
-    onTap="callPreviewImage"
-    mode="scaleToFill"
-    src="{{imageSrc}}"
-    style="width: 200rpx; height: 200rpx;"
-  />
+<view class="home-container">
+    <view class="home-header">
+      <view class="home-title">{{lang.home.title}}</view>
+    </view>
 </view>
-<view class="result">
-  <view>
-    Response:
-  </view>
-  <view>
-    {{apiResponse}}
-  </view>
-  <view>
-    Error:
-  </view>
-  <view>
-    {{apiError}}
-  </view>
-</view>
-<drawer open="{{drawerOpen}}" onClose="closeDrawer" />

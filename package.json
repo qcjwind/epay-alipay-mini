@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@miniu/data": "2.1.0-alpha.0",
     "antd-mini": "^3.3.2"
   }
 }

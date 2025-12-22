@@ -1,5 +1,8 @@
 export default {
   lang: 'EN_US',
+  home: {
+    title: 'Phone Recharge'
+  },
   message: {
     confirm: 'Confirm',
     cancel: 'Cancel',

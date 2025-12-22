@@ -1,5 +1,5 @@
-import http from "../http";
+import { get, post } from "../http/index";
 
-export const getUserInfo = () => {
-  return http.get("/user/info");
+export const getUserInfo = (params) => {
+  return get("/user/info", params);
 };
