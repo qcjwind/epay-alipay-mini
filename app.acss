@@ -5,4 +5,9 @@
 
 page {
   background-color: #f4f6f9;
+  background-image: url('/assets/images/back.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }

@@ -2,9 +2,11 @@
   "subPackageBuildType": "shared",
   "pages": [
     "pages/index/index",
-    "pages/webView/webView"
+    "pages/webView/webView",
+    "pages/set-recurring/set-recurring"
   ],
   "window": {
-    "defaultTitle": ""
+    "defaultTitle": "",
+    "transparentTitle": "always"
   }
 }

@@ -1,0 +1,9 @@
+{
+  "defaultTitle": "",
+  "titleBarColor": "#4a148c",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "popup": "antd-mini/es/Popup/index"
+  }
+}
+
