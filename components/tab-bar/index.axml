@@ -1,0 +1,14 @@
+<view class="tab-bar-box">
+  <view class="tab-bar">
+    <view 
+      a:for="{{ tabList }}"
+      key="{{item.key}}" 
+      onTap="clickHandle" 
+      data-key="{{item.key}}" 
+      class="tab-bar-item {{item.key === currentKey ? 'tab-bar-item-active' : ''}}"
+    >
+      <image class="icon" src="{{item.icon}}" />
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+</view>

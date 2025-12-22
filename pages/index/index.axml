@@ -1,5 +1,83 @@
-<view class="home-container">
+<view class="container">
+  <view class="home-container">
     <view class="home-header">
-      <view class="home-title">{{lang.home.title}}</view>
+      <view class="header-title">{{lang.home.title}}</view>
+      <view class="header-box">
+        <block a:if="{{ !user }}">
+          <text class="form-title">{{lang.home.phoneLabel}}</text>
+          <view class="header-inp-box">
+            <view class="header-inp-left">
+              <image class="icon" src="../../assets/icons/Italy.png" />
+              <image class="arrow" mode="widthFix" src="../../assets/icons/chevron-down.png" />
+            </view>
+            <view class="header-inp-right">
+              <view class="header-inp-right-phone">
+                <text class="prefix">+39</text>
+                <input
+                  maxlength="10"
+                  type="number"
+                  value="{{phone}}"
+                  class="inp-box"
+                  onInput="inpNumber"
+                  placeholder="(000) 000-0000"
+                />
+              </view>
+              <view a:if="{{ phone }}" class="add-phone-btn">{{lang.home.addPhone}}</view>
+            </view>
+          </view>
+        </block>
+
+        <view a:else class="contact-user">
+          <view class="user-box">
+            <!-- <image class="user-icon" src="../../assets/images/young.png" /> -->
+            <!-- <image class="user-icon-one" src="../../assets/icons/user-one.png" /> -->
+            <text class="first-name">{{firstName}}</text>
+            <image class="ab-icon" src="../../assets/icons/rebell_icon.png" />
+          </view>
+          <view class="user-info">
+            <text>{{user.name}}</text>
+            <text class="phone-num">{{user.mobile}}</text>
+          </view>
+          <view onTap="selectContact" class="change-btn">{{lang.home.changeBtn}}</view>
+        </view>
+
+        <view class="header-btns">
+          <view a:if="{{ !user }}" onTap="selectContact" class="btn-item">
+            <image class="icon" src="../../assets/icons/user-add.png" />
+            <text>{{lang.home.selectContact}}</text>
+          </view>
+          <view a:else onTap="enterNumber" class="btn-item">
+            <image class="icon" src="../../assets/icons/mobile.png" />
+            <text>{{lang.home.enterNumber}}</text>
+          </view>
+          <view onTap="getMyNumber" class="btn-item">
+            <image class="icon" src="../../assets/icons/user-circle.png" />
+            <text>{{lang.home.myNumber}}</text>
+          </view>
+        </view>
+      </view>
     </view>
+
+    <view class="choose-operator">{{lang.home.chooseOperaroe}}</view>
+    <view onTap="chooseOperator" class="choose-operator-box">
+      <text>Vodafone</text>
+      <image class="arrow" src="../../assets/icons/chevron-down.png" />
+    </view>
+
+    <view class="operator-box">
+      <view
+        a:for="{{ operator }}"
+        key="{{item.key}}"
+        data-key="{{item.key}}"
+        class="operator-item {{item.key === payMethod ? 'operator-item-active': ''}}"
+        onTap="switchOperator"
+      >
+        <image class="icon" src="{{item.icon}}" />
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+
+    <button onTap="submit" class="submit-btn">{{lang.home.continue}}</button>
+  </view>
+  <tab-bar/>
 </view>

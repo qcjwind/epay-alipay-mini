@@ -3,6 +3,7 @@
   "titleBarColor": "#c4227b",
   "usingComponents": {
     "drawer": "/components/Drawer/Drawer",
-    "nav-bar": "/components/nav-bar//nav-bar"
+    "nav-bar": "/components/nav-bar//nav-bar",
+    "tab-bar": "/components/tab-bar/index"
   }
 }

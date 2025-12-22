@@ -3,10 +3,26 @@
   "pages": [
     "pages/index/index",
     "pages/webView/webView",
-    "pages/set-recurring/set-recurring"
+    "pages/set-recurring/set-recurring",
+    "pages/history/index"
   ],
   "window": {
     "defaultTitle": "",
     "transparentTitle": "always"
+  },
+  "tabBar": {
+    "textColor": "rgba(0,0,0,0)",
+    "selectedColor": "rgba(0,0,0,0)",
+    "backgroundColor": "rgba(0,0,0,0)",
+    "items": [
+      {
+        "pagePath": "pages/index/index",
+        "name": ""
+      },
+      {
+        "pagePath": "pages/history/index",
+        "name": ""
+      }
+    ]
   }
 }

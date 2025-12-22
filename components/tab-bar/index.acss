@@ -1,0 +1,41 @@
+.tab-bar-box {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 44rpx;
+}
+
+.tab-bar-box .tab-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 370rpx;
+  height: 120rpx;
+  border: 1.5rpx solid rgba(255, 255, 255, 0.16);
+  border-radius: 248rpx;
+  padding: 8rpx;
+}
+
+
+.tab-bar-box .tab-bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 170rpx;
+  height: 100%;
+  border-radius: 66rpx;
+  color: #fff;
+  font-size: 20rpx;
+}
+
+.tab-bar-box .tab-bar-item-active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tab-bar-box .tab-bar-item .icon {
+  width: 54rpx;
+  height: 54rpx;
+  margin-bottom: 4rpx;
+}
