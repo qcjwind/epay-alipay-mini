@@ -1,8 +1,8 @@
 {
   "subPackageBuildType": "shared",
   "pages": [
-    "pages/history/index",
     "pages/index/index",
+    "pages/history/index",
     "pages/webView/webView",
     "pages/set-recurring/set-recurring",
     "pages/choose-amount/choose-amount"

@@ -3,8 +3,7 @@
     "tab-bar": "/components/tab-bar/index",
     "nav-bar": "/components/nav-bar/nav-bar",
     "top-up-item": "./components/top-up-item/index",
-    "recurring-item": "./components/recurring-item/index",
-    "swipe-action": "./components/swipe-action/index"
+    "recurring-item": "./components/recurring-item/index"
   },
   "styleIsolation": "apply-shared"
 }
