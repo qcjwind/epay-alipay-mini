@@ -1,0 +1,11 @@
+{
+  "defaultTitle": "",
+  "titleBarColor": "#4a148c",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar",
+    "popup-picker": "/components/popup-picker/popup-picker",
+    "popup": "antd-mini/es/Popup/index",
+    "recurring-picker": "/components/recurring-picker/recurring-picker"
+  }
+}
+

@@ -5,7 +5,8 @@
     "pages/history/index",
     "pages/webView/webView",
     "pages/set-recurring/set-recurring",
-    "pages/choose-amount/choose-amount"
+    "pages/choose-amount/choose-amount",
+    "pages/confirm-top-up/confirm-top-up"
   ],
   "window": {
     "defaultTitle": "",

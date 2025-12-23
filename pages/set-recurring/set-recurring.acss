@@ -24,7 +24,7 @@
   font-size: 40rpx;
   font-weight: 600;
   text-align: center;
-  padding: 10rpx 30rpx;
+  padding: 20rpx 30rpx;
 }
 
 /* 主内容区 */
