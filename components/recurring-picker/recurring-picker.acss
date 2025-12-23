@@ -2,8 +2,13 @@
   display: flex;
   flex-direction: column;
   gap: 60rpx;
-  min-height: 100%;
+  width: 100%;
   position: relative;
+  padding: 0 40rpx 60rpx;
+  padding-bottom: calc(60rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
+  flex: 1;
+  z-index: 1;
 }
 
 /* 充值频率选择 */
@@ -15,7 +20,7 @@
 
 .frequency-btn {
   flex: 1;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #FFFFFF05;
   border-radius: 24rpx;
   padding: 40rpx 20rpx;
   display: flex;
@@ -23,11 +28,12 @@
   align-items: center;
   gap: 20rpx;
   transition: all 0.3s;
-  border: 2rpx solid transparent;
+  border: 2rpx solid rgba(255, 255, 255, 0.1);;
+  box-shadow: 0 0 20rpx rgba(255, 255, 255, 0.1);
 }
 
 .frequency-btn.active {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #0909094D;
   border-color: rgba(255, 255, 255, 0.4);
   box-shadow: 0 0 20rpx rgba(255, 255, 255, 0.3);
 }
@@ -84,16 +90,11 @@
 
 /* 继续按钮 */
 .continue-section {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 30rpx 40rpx;
-  padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
-  padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
-  z-index: 10;
-  pointer-events: none;
+  position: relative;
+  padding: 0;
+  margin-top: 0;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .continue-btn {

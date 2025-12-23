@@ -1,0 +1,103 @@
+<view class="container">
+  <!-- 导航栏占位 -->
+  <nav-bar></nav-bar>
+  <!-- 页面标题 -->
+  <view class="page-title">Confirm Top Up</view>
+  <!-- 主内容区 -->
+  <view class="content">
+    <!-- 用户信息卡片 -->
+    <view class="info-card avatar-card">
+      <view class="card-left">
+        <view class="avatar-wrapper">
+          <view class="avatar">
+            <text class="avatar-text">{{avatarInitials}}</text>
+          </view>
+          <view class="avatar-badge">
+            <image class="badge-icon" src="/assets/icons/rebell_icon.png" mode="aspectFit"></image>
+          </view>
+        </view>
+        <view class="user-details">
+          <text class="user-name">{{userInfo.name}}</text>
+          <text class="user-phone">{{userInfo.phone}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 运营商卡片 -->
+    <view class="info-card">
+      <view class="card-left">
+        <view class="card-content">
+          <text class="card-label">Operator</text>
+          <text class="card-value">{{operator}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 充值金额卡片 -->
+    <view class="info-card">
+      <view class="card-left">
+        <view class="card-content">
+          <text class="card-label">Amount Top up</text>
+          <text class="card-value">{{amount}}€</text>
+        </view>
+      </view>
+      <button class="change-btn" onTap="handleChangeAmount">CHANGE</button>
+    </view>
+
+    <!-- 定期充值卡片 -->
+    <view class="info-card">
+      <view class="card-left">
+        <view class="card-content">
+          <text class="card-label">Recurring Top up</text>
+          <text class="card-value">{{recurringText}}</text>
+        </view>
+      </view>
+      <button class="change-btn" onTap="handleChangeRecurring">CHANGE</button>
+    </view>
+  </view>
+
+  <!-- 继续按钮 -->
+  <view class="continue-section">
+    <button class="continue-btn" onTap="handleContinue">CONFIRM</button>
+  </view>
+
+  <!-- 金额选择弹窗 -->
+  <popup-picker
+    visible="{{amountPickerVisible}}"
+    title="Change amount"
+    options="{{amountOptions}}"
+    selectedIndex="{{selectedAmountIndex}}"
+    onClose="handleAmountPickerClose"
+    onConfirm="handleAmountPickerConfirm"
+  ></popup-picker>
+
+  <!-- 定期充值选择弹窗 -->
+  <popup
+    visible="{{recurringPickerVisible}}"
+    position="bottom"
+    onClose="handleRecurringPickerClose"
+    maskClosable="{{true}}"
+    zIndex="{{9999}}"
+  >
+    <view class="recurring-popup-content">
+      <view class="picker-header">
+        <text class="picker-title">Setting Recurring</text>
+        <view class="picker-close" onTap="handleRecurringPickerClose">
+          <image class="close-icon" src="/assets/icons/close.png" mode="aspectFit"></image>
+        </view>
+      </view>
+      <recurring-picker
+        frequencyOptions="{{frequencyOptions}}"
+        selectedFrequency="{{selectedFrequency}}"
+        dayLabel="Select day"
+        dayOptions="{{dayOptions}}"
+        selectedDay="{{selectedDay}}"
+        continueButtonText="DONE"
+        onFrequencyChange="handleFrequencyChange"
+        onDayChange="handleDayChange"
+        onContinue="handleRecurringContinue"
+      ></recurring-picker>
+    </view>
+  </popup>
+</view>
+

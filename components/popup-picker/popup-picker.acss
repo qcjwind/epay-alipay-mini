@@ -1,9 +1,11 @@
 /* Picker 弹窗 */
 .picker-popup {
-  background-image: url('/assets/images/back.jpg');
+  background-color: #f4f6f9;
+  background-image: url('/assets/images/back.jpeg');
   background-size: cover;
-  background-position: center;
+  background-position: left;
   background-repeat: no-repeat;
+  background-attachment: fixed;
   border-radius: 40rpx 40rpx 0 0;
   height: 900rpx;
   display: flex;
