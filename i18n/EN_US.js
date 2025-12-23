@@ -27,7 +27,14 @@ export default {
     topUp: 'Top ups',
     recurring: 'Recurring',
     topUpTitle: 'Top Up History',
-    recurringTitle: 'Recurring Phone Top ups'
+    recurringTitle: 'Recurring Phone Top ups',
+    deleteTxt: 'Delete',
+    delete: {
+      title: 'Delete Recurring',
+      text: 'Confirm to delete this recurring plan?',
+      cancel: 'Cancel',
+      confirm: 'Confirm'
+    }
   },
   message: {
     confirm: 'Confirm',

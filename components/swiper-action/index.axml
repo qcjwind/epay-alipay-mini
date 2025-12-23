@@ -1,0 +1,20 @@
+<view class="swiper-action-container">
+  <view
+    class="swiper-action-box {{hasTransition ? 'transition' : ''}}"
+    style="transform: translateX({{translateX}}px);"
+    onTouchStart="onTouchStart"
+    onTouchMove="onTouchMove"
+    onTouchEnd="onTouchEnd"
+  >
+    <view class="swiper-content" onTap="onContentTap">
+      <slot />
+    </view>
+    <view class="swiper-action">
+      <slot name="action">
+        <view class="action-btn delete-btn" data-action="delete" onTap="onActionTap">
+          <text class="action-text">删除</text>
+        </view>
+      </slot>
+    </view>
+  </view>
+</view>

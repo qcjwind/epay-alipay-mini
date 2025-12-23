@@ -1,4 +1,4 @@
-<swipe-action right="{{rightAction}}">
+<swiper-action>
   <view class="recurring-item">
     <view class="user-box">
       <image class="img" src="../../../../assets/images/young.png" />
@@ -24,4 +24,8 @@
       />
     </view>
   </view>
-</swipe-action>
+  <view onTap="delRecurring" class="del-btn-box" slot="action">
+    <image class="del-icon" src="../../../../assets/icons/icon_swipe_left.png" />
+    <text>{{lang.history.deleteTxt}}</text>
+  </view>
+</swiper-action>

@@ -1,4 +1,11 @@
-Component({
+import {
+  createComponent
+} from '@miniu/data'
+
+Component(createComponent({
+  mapGlobalDataToData: {
+    lang: (g) => g.lang
+  },
   data: {
     switchBtn: false,
     rightAction: [{
@@ -11,6 +18,18 @@ Component({
       this.setData({
         switchBtn: !this.data.switchBtn
       })
+    },
+    delRecurring() {
+      my.confirm({
+        title: this.data.lang.history.delete.title,
+        content: this.data.lang.history.delete.text,
+        cancelButtonText: this.data.lang.history.delete.cancel,
+        confirmButtonTextL: this.data.lang.history.delete.confirm,
+        success: (res) => {
+          if (res.confirm) {}
+        }
+      })
     }
+
   },
-});
+}));

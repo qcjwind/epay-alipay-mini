@@ -139,17 +139,4 @@ Page(createPage({
       return
     }
   },
-
-  onPullDownRefresh() {
-    // The page was scrolled down.
-    setTimeout(() => {
-      this.setData({
-        apiResponse: "",
-        apiError: "",
-        userInfo: "",
-        imageSrc: "",
-      });
-      my.stopPullDownRefresh();
-    }, 2000);
-  },
 }));
