@@ -36,7 +36,7 @@
   />
 
   <!-- 继续按钮 -->
-  <view class="continue-section">
+  <view class="continue-section" a:if="{{showContinueButton}}">
     <button class="continue-btn" onTap="handleContinue">{{continueButtonText}}</button>
   </view>
 </view>

@@ -5,6 +5,14 @@ Page(createPage({
     lang: (g) => g.lang
   },
   data: {
+    // 页面接收的参数（可能来自设置定期页面或首页）
+    phoneNumber: '', // string 是 充值号码
+    operator: '', // string 是 运营商
+    userName: '', // string 是 用户姓名
+    recurringType: '', // string 否 周期类型 周：WEEK 月：MONTH（仅从设置定期页面跳转时有值）
+    recurringDay: '', // string 否 周期日期（仅从设置定期页面跳转时有值）
+    
+    // 页面自身数据
     selectedAmount: '0',
     amountOptions: ['5', '10', '20', '30', '50', '100', '200', '500'],
     backgroundClass: ''
@@ -12,6 +20,33 @@ Page(createPage({
 
   onLoad(query) {
     console.info('Choose amount page onLoad with query:', JSON.stringify(query));
+    
+    // 接收页面参数（可能来自设置定期页面或首页）
+    // phoneNumber: string 是 充值号码
+    // operator: string 是 运营商
+    // userName: string 是 用户姓名
+    // recurringType: string 否 周期类型 周：WEEK 月：MONTH（仅从设置定期页面跳转时有值）
+    // recurringDay: string 否 周期日期（仅从设置定期页面跳转时有值）
+    const { phoneNumber, operator, userName, recurringType, recurringDay } = query;
+    
+    this.setData({
+      phoneNumber: phoneNumber || '',
+      operator: operator || '',
+      userName: userName || '',
+      // 这两个参数可能为空（从首页直接跳转时）
+      recurringType: recurringType || '',
+      recurringDay: recurringDay || ''
+    });
+    
+    console.info('Received params:', {
+      phoneNumber: this.data.phoneNumber,
+      operator: this.data.operator,
+      userName: this.data.userName,
+      recurringType: this.data.recurringType,
+      recurringDay: this.data.recurringDay,
+      isFromSetRecurring: !!(this.data.recurringType && this.data.recurringDay)
+    });
+    
     // 初始化背景
     this.updateBackground('0');
   },

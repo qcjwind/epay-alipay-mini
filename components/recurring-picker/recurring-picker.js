@@ -23,6 +23,8 @@ Component({
     selectedDay: '',
     // 继续按钮文本
     continueButtonText: 'CONTINUE',
+    // 是否显示继续按钮
+    showContinueButton: true,
     // 频率变化回调
     onFrequencyChange() {},
     // 日期变化回调

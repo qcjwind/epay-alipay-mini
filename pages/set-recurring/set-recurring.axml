@@ -7,15 +7,18 @@
   <view class="content">
     <recurring-picker
       frequencyOptions="{{frequencyOptions}}"
-      selectedFrequency="{{selectedFrequency}}"
+      selectedFrequency="{{recurringType}}"
       dayLabel="Select day"
       dayOptions="{{days}}"
-      selectedDay="{{selectedDay}}"
-      continueButtonText="CONTINUE"
+      selectedDay="{{recurringDay}}"
+      showContinueButton="{{false}}"
       onFrequencyChange="onFrequencyChange"
       onDayChange="onDayChange"
-      onContinue="handleContinue"
     />
+  </view>
+  <!-- 继续按钮 -->
+  <view class="continue-section">
+    <button class="continue-btn" onTap="handleContinue">CONTINUE</button>
   </view>
 </view>
 
