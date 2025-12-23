@@ -1,6 +1,28 @@
 <view class="container">
+  <nav-bar />
   <view class="history-container">
-    
+    <view class="history-tabs">
+      <view
+        a:for="{{ tabs }}"
+        onTap="switchClick"
+        data-key="{{item.key}}"
+        class="tab-item {{item.key === currentKey ? 'active-item' : ''}}"
+      >
+        {{item.label}}
+      </view>
+    </view>
+    <view class="history-title">
+      {{ currentKey === 'topUp' ? lang.history.topUpTitle : lang.history.recurringTitle}}
+    </view>
+
+    <view class="history-content">
+      <block a:if="{{ currentKey === 'topUp' }}">
+        <top-up-item a:for="{{ 10 }}" />
+      </block>
+      <block a:else>
+        <recurring-item />
+      </block>
+    </view>
   </view>
   <tab-bar/>
 </view>

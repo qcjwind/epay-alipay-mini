@@ -1,9 +1,11 @@
 .tab-bar-box {
-  flex-shrink: 0;
+  position: absolute;
+  bottom: 44rpx;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 44rpx;
 }
 
 .tab-bar-box .tab-bar {
@@ -15,6 +17,7 @@
   border: 1.5rpx solid rgba(255, 255, 255, 0.16);
   border-radius: 248rpx;
   padding: 8rpx;
+  background: rgba(255, 255, 255, 0.01);
 }
 
 

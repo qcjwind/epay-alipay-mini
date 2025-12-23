@@ -23,6 +23,12 @@ export default {
       btn: 'OK'
     }
   },
+  history: {
+    topUp: 'Top ups',
+    recurring: 'Recurring',
+    topUpTitle: 'Top Up History',
+    recurringTitle: 'Recurring Phone Top ups'
+  },
   message: {
     confirm: 'Confirm',
     cancel: 'Cancel',

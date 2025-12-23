@@ -1,0 +1,82 @@
+.recurring-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 144rpx;
+  border-bottom: 1rpx solid rgba(223, 229, 238, 0.3);
+  background: rgba(9, 9, 9, 0.3);
+}
+
+.recurring-item:last-child {
+  border-bottom: none;
+}
+
+.recurring-item .user-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 142rpx;
+  height: 82rpx;
+}
+
+.recurring-item .user-box .img {
+  width: 82rpx;
+  height: 82rpx;
+  border-radius: 50%;
+}
+
+.recurring-item .user-box .icon {
+  position: absolute;
+  width: 40rpx;
+  height: 40rpx;
+  bottom: -6rpx;
+  right: 18rpx;
+}
+
+.recurring-item .top-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+}
+
+.recurring-item .top-info .label {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.recurring-item .top-info .arrow {
+  width: 32rpx;
+  height: 32rpx;
+  margin: 0 14rpx;
+}
+
+.recurring-item .top-info .info-box {
+  margin-top: 4rpx;
+  display: flex;
+  align-items: center;
+  color: rgba(179, 179, 179, 1);
+  font-size: 22rpx;
+}
+
+.recurring-item .top-info .info-box .line {
+  width: 1rpx;
+  height: 20rpx;
+  background: rgba(223, 229, 238, 1);
+  margin-right: 8rpx;
+}
+
+.recurring-item .top-info .info-box .icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 8rpx;
+}
+
+.recurring-item .price-box {
+  padding-right: 30rpx;
+}

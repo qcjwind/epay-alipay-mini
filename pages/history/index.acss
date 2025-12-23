@@ -5,5 +5,51 @@
 }
 
 .history-container {
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  overflow: hidden;
+}
+
+.history-container .history-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  width: 368rpx;
+  height: 80rpx;
+  padding: 6rpx 8rpx;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
+  border-radius: 248rpx;
+}
+
+.history-container .history-tabs .tab-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 68rpx;
+  font-size: 20rpx;
+  color: #fff;
+  border-radius: 66rpx;
+}
+
+.history-container .history-tabs .active-item {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.history-container .history-title {
+  color: #fff;
+  text-align: center;
+  font-size: 30rpx;
+  margin: 36rpx 0;
+
+}
+
+.history-container .history-content {
+  flex: 1;
+  height: 100%;
+  overflow-y: scroll;
+  padding-bottom: 200rpx;
 }

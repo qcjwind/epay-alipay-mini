@@ -1,10 +1,10 @@
 {
   "subPackageBuildType": "shared",
   "pages": [
+    "pages/history/index",
     "pages/index/index",
     "pages/webView/webView",
     "pages/set-recurring/set-recurring",
-    "pages/history/index",
     "pages/choose-amount/choose-amount"
   ],
   "window": {

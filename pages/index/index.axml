@@ -29,8 +29,8 @@
 
         <view a:else class="contact-user">
           <view class="user-box">
-            <!-- <image class="user-icon" src="../../assets/images/young.png" /> -->
-            <!-- <image class="user-icon-one" src="../../assets/icons/user-one.png" /> -->
+            <!--<image class="user-icon" src="../../assets/images/young.png" /> -->
+            <!--<image class="user-icon-one" src="../../assets/icons/user-one.png" /> -->
             <text class="first-name">{{firstName}}</text>
             <image class="ab-icon" src="../../assets/icons/rebell_icon.png" />
           </view>
@@ -64,6 +64,14 @@
       <image class="arrow" src="../../assets/icons/chevron-down.png" />
     </view>
 
+    <view class="home-banner">
+      <swiper>
+        <swiper-item>
+          <image class="banner-img" src="../../assets/images/ads_trending.png" />
+        </swiper-item>
+      </swiper>
+    </view>
+
     <view class="operator-box">
       <view
         a:for="{{ operator }}"
@@ -77,7 +85,7 @@
       </view>
     </view>
 
-    <button onTap="submit" class="submit-btn">{{lang.home.continue}}</button>
   </view>
+  <button onTap="submit" class="submit-btn">{{lang.home.continue}}</button>
   <tab-bar/>
 </view>

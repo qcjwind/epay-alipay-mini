@@ -1,0 +1,18 @@
+<view class="top-up-item">
+  <view class="user-box">
+    <image class="img" src="../../../../assets/images/young.png" />
+    <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
+  </view>
+  <view class="top-info">
+    <text class="label">Amelia Rossi</text>
+    <view class="info-box">
+      <image class="icon" src="../../../../assets/icons/calendar-02.png" />
+      <view class="line"></view>
+      <text>05.11.25, 15.23</text>
+    </view>
+  </view>
+  <view class="price-box">
+    <text>50 €</text>
+    <text class="type">Vodafone</text>
+  </view>
+</view>

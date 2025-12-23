@@ -1,0 +1,27 @@
+<swipe-action right="{{rightAction}}">
+  <view class="recurring-item">
+    <view class="user-box">
+      <image class="img" src="../../../../assets/images/young.png" />
+      <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
+    </view>
+    <view class="top-info">
+      <view class="label">
+        <text>Amelia Rossi</text>
+        <image class="arrow" src="../../../../assets/icons/arrow-right.png" />
+        <text>Vodafone</text>
+      </view>
+      <view class="info-box">
+        <image class="icon" src="../../../../assets/icons/calendar-02.png" />
+        <text>5€ monthly, 5th day</text>
+      </view>
+    </view>
+    <view class="price-box">
+      <switch
+        style="border-color: {{switchBtn ? '#B63F81' : '#7F8FAB'}};background: {{switchBtn ? '#B63F81' : '#7F8FAB'}}"
+        color="#B63F81"
+        onChange="switchHandle"
+        checked="{{switchBtn}}"
+      />
+    </view>
+  </view>
+</swipe-action>
