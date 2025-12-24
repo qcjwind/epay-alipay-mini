@@ -1,16 +1,22 @@
-Page({
+import { createPage } from '@miniu/data'
+
+Page(createPage({
+  mapGlobalDataToData: {
+    lang: (g) => g.lang
+  },
   data: {
     // 页面接收的参数
     phoneNumber: '', // string 是 充值号码
     operator: '', // string 是 运营商
     userName: '', // string 是 用户姓名
     isFromHistoryPanel: false, // boolean 是否来自历史详情面板
+    payMethod: '', // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
     
     // 定期充值相关
     // recurringType: string 是 周期类型 周：WEEK 月：MONTH
-    recurringType: 'WEEK', // 'WEEK' | 'MONTH'
+    recurringType: '', // 'WEEK' | 'MONTH' | ''
     // recurringDay: string 是 周期日期
-    recurringDay: 'Monday',
+    recurringDay: '',
     days: [
       'Monday',
       'Tuesday',
@@ -64,21 +70,24 @@ Page({
     // operator: string 是 运营商
     // userName: string 是 用户姓名
     // isFromHistoryPanel: boolean 是否来自历史详情面板
-    const { phoneNumber, operator, userName, isFromHistoryPanel } = query;
+    // payMethod: string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
+    const { phoneNumber, operator, userName, isFromHistoryPanel, payMethod } = query;
     
     this.setData({
       phoneNumber: phoneNumber || '',
       operator: operator || '',
       userName: userName || '',
       // 默认为 false，有值就为 true
-      isFromHistoryPanel: !!isFromHistoryPanel
+      isFromHistoryPanel: !!isFromHistoryPanel,
+      payMethod: payMethod || ''
     });
     
     console.info('Received params:', {
       phoneNumber: this.data.phoneNumber,
       operator: this.data.operator,
       userName: this.data.userName,
-      isFromHistoryPanel: this.data.isFromHistoryPanel
+      isFromHistoryPanel: this.data.isFromHistoryPanel,
+      payMethod: this.data.payMethod
     });
   },
 
@@ -94,7 +103,7 @@ Page({
     this.setData({
       recurringType: frequency, // string 是 周期类型 周：WEEK 月：MONTH
       days: days,
-      recurringDay: defaultDay // string 是 周期日期
+      recurringDay: defaultDay // string 是 周期日期，有默认值
     });
   },
 
@@ -113,8 +122,21 @@ Page({
       userName,         // string 是 用户姓名
       isFromHistoryPanel, // boolean 是否来自历史详情面板
       recurringType,    // string 是 周期类型 周：WEEK 月：MONTH
-      recurringDay      // string 是 周期日期
+      recurringDay,     // string 是 周期日期
+      payMethod,        // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
+      lang
     } = this.data;
+    
+    // 验证是否选择了定期类型
+    if (!recurringType) {
+      my.showModal({
+        title: lang.setRecurring.modal.title,
+        content: lang.setRecurring.modal.content,
+        confirmText: lang.setRecurring.modal.button,
+        showCancel: false,
+      });
+      return;
+    }
     
     console.log('Continue with:', { 
       phoneNumber,
@@ -122,7 +144,8 @@ Page({
       userName,
       isFromHistoryPanel,
       recurringType,
-      recurringDay
+      recurringDay,
+      payMethod
     });
     
     // 构建参数对象
@@ -131,7 +154,8 @@ Page({
       operator,
       userName,
       recurringType,
-      recurringDay
+      recurringDay,
+      payMethod
     };
     
     // 将参数对象转换为 URL 查询字符串
@@ -143,18 +167,8 @@ Page({
     // 根据 isFromHistoryPanel 决定跳转页面
     if (isFromHistoryPanel) {
       // 来自历史详情面板，跳转到确认充值页面
-      // 添加 payMethod 参数，标识为定期充值
-      const confirmParams = {
-        ...params,
-        payMethod: 'recurring' // string 是 充值方式 recurring: 定期充值
-      };
-      const confirmQueryString = Object.keys(confirmParams)
-        .filter(key => confirmParams[key] !== undefined && confirmParams[key] !== '')
-        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(confirmParams[key])}`)
-        .join('&');
-      
       my.navigateTo({
-        url: `/pages/confirm-top-up/confirm-top-up?${confirmQueryString}`
+        url: `/pages/confirm-top-up/confirm-top-up?${queryString}`
       });
     } else {
       // 否则跳转到选择金额页面
@@ -163,5 +177,5 @@ Page({
       });
     }
   }
-});
+}));
 

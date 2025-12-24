@@ -16,7 +16,7 @@
   </view>
 
   <!-- 选择日期 -->
-  <view class="day-section">
+  <view class="day-section" a:if="{{selectedFrequency}}">
     <text class="section-label">{{dayLabel}}</text>
     <view class="day-picker" onTap="toggleDayPicker">
       <text class="day-value">{{selectedDay}}</text>

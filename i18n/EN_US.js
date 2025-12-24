@@ -69,6 +69,15 @@ export default {
     networkError: "Network Error, please try again later",
     userAuthorizationHasExpired: "user authorization has expired",
   },
+  setRecurring: {
+    pageTitle: 'Set up recurring',
+    modal: {
+      title: "Select Plan",
+      content: "Please select a recurring plan.",
+      button: "OK",
+    },
+    pageBtn: 'CONTINUE',
+  },
   chooseAmount: {
     selectAmountTitle: 'Select Amount',
     selectAmountContent: 'Please select a top-up amount.',

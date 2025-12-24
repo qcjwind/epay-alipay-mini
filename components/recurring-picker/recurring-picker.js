@@ -68,6 +68,12 @@ Component({
     // 根据频率更新日期选项
     updateDayOptions() {
       const { selectedFrequency, selectedDay, onDayChange } = this.props;
+      
+      // 如果频率为空，不更新日期选项
+      if (!selectedFrequency) {
+        return;
+      }
+      
       const { weekOptions, monthOptions } = this.data;
       const dayOptions = selectedFrequency === 'WEEK' ? weekOptions : monthOptions;
       
@@ -114,6 +120,11 @@ Component({
 
     // 显示/隐藏日期选择器
     toggleDayPicker() {
+      // 如果频率为空，不允许打开日期选择器
+      if (!this.props.selectedFrequency) {
+        return;
+      }
+      
       const show = !this.data.showDayPicker;
       if (show) {
         // 确保日期选项是最新的
