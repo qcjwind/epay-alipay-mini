@@ -1,0 +1,23 @@
+<popup onClose="closePopup" visible="{{visible}}" position="center">
+  <view class="save-contact">
+    <view class="save-title">{{lang.home.save.title}}</view>
+    <view class="phone">+39 {{phone}}</view>
+    <view class="contact-item">
+      <view class="label">
+        <text>{{lang.home.save.firstName}}</text>
+        <text class="require">*</text>
+      </view>
+      <input onInput="firstNameChange" value="{{firstName}}" class="inp" placeholder="{{lang.home.save.insertName}}" />
+    </view>
+
+    <view class="contact-item">
+      <text class="label">{{lang.home.save.lastName}}</text>
+      <input onInput="lastNameChange" value="{{lastName}}" class="inp" placeholder="{{lang.home.save.insertLastName}}" />
+    </view>
+
+    <view class="btns">
+      <view onTap="saveHandle" class="btn-item save-btn">{{lang.home.save.save}}</view>
+      <view onTap="closePopup" class="btn-item">{{lang.home.save.cancel}}</view>
+    </view>
+  </view>
+</popup>

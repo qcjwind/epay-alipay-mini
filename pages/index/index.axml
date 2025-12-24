@@ -22,7 +22,7 @@
                   placeholder="(000) 000-0000"
                 />
               </view>
-              <view a:if="{{ phone }}" class="add-phone-btn">{{lang.home.addPhone}}</view>
+              <view a:if="{{ phone }}" onTap="saveContact" class="add-phone-btn">{{lang.home.addPhone}}</view>
             </view>
           </view>
         </block>
@@ -87,5 +87,6 @@
 
   </view>
   <button onTap="submit" class="submit-btn">{{lang.home.continue}}</button>
+  <save-contact phone="{{phone}}" visible="{{visible}}" onClose="clsoeContact" />
   <tab-bar/>
 </view>

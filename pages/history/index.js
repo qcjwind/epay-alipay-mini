@@ -7,7 +7,8 @@ Page(createPage({
   },
   data: {
     currentKey: 'topUp',
-    tabs: []
+    tabs: [],
+    visible: false
   },
   onLoad() {
     const arr = [{
@@ -19,6 +20,24 @@ Page(createPage({
     }]
     this.setData({
       tabs: arr,
+    })
+  },
+  openTopUpDetail(e) {
+    const {
+      currentTarget: {
+        dataset: {
+          key
+        }
+      }
+    } = e || {};
+    console.log(key);
+    this.setData({
+      visible: true
+    })
+  },
+  closeDetailPopup() {
+    this.setData({
+      visible: false
     })
   },
   switchClick(e) {
@@ -34,7 +53,9 @@ Page(createPage({
     })
   },
   onSwipeAction(e) {
-    const { action } = e.detail;
+    const {
+      action
+    } = e.detail;
     if (action === 'delete') {
       // 处理删除操作
       my.showModal({

@@ -3,7 +3,7 @@ export default {
   home: {
     title: 'Phone Recharge',
     phoneLabel: 'Enter mobile phone number',
-    addPhone: 'Add',
+    addPhone: 'ADD',
     selectContact: 'Select contace',
     myNumber: 'My number',
     chooseOperaroe: 'Choose operator',
@@ -21,7 +21,18 @@ export default {
       invalidTitle: 'Number Invalid',
       msg: 'Please enter your mobile number.',
       btn: 'OK'
-    }
+    },
+    save: {
+      title: 'Save to contact book',
+      firstName: 'First name',
+      lastName: 'Last name',
+      insertName: 'insert name',
+      lastName: 'Last Name',
+      insertLastName: 'insert last name',
+      save: 'SAVE',
+      cancel: 'CANCEL',
+    },
+    firstNameRequire: 'First name is required'
   },
   history: {
     topUp: 'Top ups',
@@ -34,6 +45,17 @@ export default {
       text: 'Confirm to delete this recurring plan?',
       cancel: 'Cancel',
       confirm: 'Confirm'
+    },
+    popup: {
+      title: 'Top up to',
+      againTxt: 'TOP UP AGAIN',
+      detailTxt: 'TOP UP DETAILS',
+      operator: 'Operator',
+      amount: 'Amount Top up',
+      date: 'Date',
+      frequency: 'Frequency',
+      edit: 'EDIT',
+      delete: 'DELETE RECURRING'
     }
   },
   message: {

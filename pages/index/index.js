@@ -8,6 +8,7 @@ Page(createPage({
   },
   data() {
     return {
+      visible: false,
       firstName: '',
       user: null,
       selectedOneIndex: 0,
@@ -111,14 +112,14 @@ Page(createPage({
     });
   },
 
-  submit() {
+  checkPhoneNum() {
     if (this.data.user && !this.data.user.mobile) {
       my.alert({
         title: this.data.lang.home.alert.title,
         content: this.data.lang.home.alert.msg,
         buttonText: this.data.lang.home.alert.btn
       })
-      return
+      return false
     }
 
     if (!this.data.phone) {
@@ -127,7 +128,7 @@ Page(createPage({
         content: this.data.lang.home.alert.msg,
         buttonText: this.data.lang.home.alert.btn
       })
-      return
+      return false
     }
 
     if (this.data.phone.length !== 10) {
@@ -136,7 +137,36 @@ Page(createPage({
         content: this.data.lang.home.alert.msg,
         buttonText: this.data.lang.home.alert.btn
       })
+      return false
+    }
+    return true
+  },
+
+  saveContact() {
+    if (!this.checkPhoneNum()) {
       return
     }
+    my.addPhoneContact({
+      mobilePhoneNumber: this.data.phone,
+    })
+  },
+
+  clsoeContact() {
+    this.setData({
+      visible: false
+    })
+  },
+
+  submit() {
+    if (!this.checkPhoneNum()) {
+      return
+    }
+    let jumpUrl = '/pages/set-recurring/set-recurring'
+    if (this.data.payMethod === 'oneTime') {
+      jumpUrl = '/pages/choose-amount/choose-amount'
+    }
+    my.navigateTo({
+      url: jumpUrl
+    })
   },
 }));

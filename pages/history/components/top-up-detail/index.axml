@@ -1,0 +1,48 @@
+<popup onClose="closePopup" visible="{{visible}}">
+  <view class="top-up-detail">
+    <view class="d-header">
+      <view class="title-box">
+        <text>{{lang.history.popup.title}}</text>
+        <image onTap="closePopup" class="icon" src="../../../../assets/icons/Vector.png" />
+      </view>
+      <view class="user">
+        <view class="user-box">
+          <text class="first-name">A</text>
+          <image class="rb" src="../../assets/icons/rebell_icon.png" />
+        </view>
+        <view class="user-info">
+          <text>Amelia Rossi</text>
+          <text class="phone">+39 3421234678</text>
+        </view>
+      </view>
+      <view class="again">{{lang.history.popup.againTxt}}</view>
+    </view>
+
+    <view class="detail-title">{{lang.history.popup.detailTxt}}</view>
+    <view class="detail-item">
+      <view class="cloumn">
+        <text>{{lang.history.popup.operator}}</text>
+        <text class="label">Vodafone</text>
+      </view>
+      <view class="cloumn">
+        <text>{{lang.history.popup.amount}}</text>
+        <text class="amount">50 €</text>
+      </view>
+    </view>
+    <view class="detail-item">
+      <view class="cloumn">
+        <text>{{lang.history.popup.date}}</text>
+        <text class="label">05.11.25, 15.23</text>
+      </view>
+    </view>
+    <view class="detail-item">
+      <view class="cloumn">
+        <text>{{lang.history.popup.frequency}}</text>
+        <text class="label">5€ monthly, 5th day</text>
+      </view>
+    </view>
+
+    <view class="edit-btn">{{lang.history.popup.edit}}</view>
+    <view onTap="deleteHandle" class="edit-btn del-btn">{{lang.history.popup.delete}}</view>
+  </view>
+</popup>
