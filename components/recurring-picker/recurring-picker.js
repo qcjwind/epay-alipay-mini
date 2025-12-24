@@ -3,22 +3,20 @@ Component({
     // 频率选项配置
     frequencyOptions: [
       {
-        value: 'weekly',
+        value: 'WEEK',
         label: 'Weekly Top-up',
         icon: '/assets/icons/weekly.png'
       },
       {
-        value: 'monthly',
+        value: 'MONTH',
         label: 'Monthly Top-up',
         icon: '/assets/icons/monthly.png'
       }
     ],
     // 当前选中的频率
-    selectedFrequency: 'weekly',
+    selectedFrequency: 'WEEK',
     // 日期选择标签
     dayLabel: 'Select day',
-    // 日期选项数组
-    dayOptions: [],
     // 当前选中的日期
     selectedDay: '',
     // 继续按钮文本
@@ -36,22 +34,76 @@ Component({
   data: {
     selectedDayIndex: 0,
     showDayPicker: false,
-    currentDayOptions: []
+    currentDayOptions: [],
+    // 星期选项
+    weekOptions: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    // 月份日期选项（1-28）
+    monthOptions: Array.from({ length: 28 }, (_, i) => String(i + 1))
   },
 
   observers: {
-    'dayOptions, selectedDay'(dayOptions, selectedDay) {
-      if (dayOptions) {
-        const index = dayOptions.indexOf(selectedDay);
-        this.setData({
-          selectedDayIndex: index >= 0 ? index : 0,
-          currentDayOptions: dayOptions
-        });
-      }
+    'selectedFrequency'(selectedFrequency) {
+      // 当频率变化时，自动更新日期选项
+      this.updateDayOptions();
+    },
+    'selectedDay'(selectedDay) {
+      // 当选中日期变化时，更新索引
+      this.updateDayIndex();
+    }
+  },
+
+  didMount() {
+    // 组件挂载时初始化日期选项
+    this.updateDayOptions();
+  },
+
+  didUpdate(prevProps) {
+    // 当 props 变化时，更新日期选项
+    if (prevProps.selectedFrequency !== this.props.selectedFrequency) {
+      this.updateDayOptions();
     }
   },
 
   methods: {
+    // 根据频率更新日期选项
+    updateDayOptions() {
+      const { selectedFrequency, selectedDay, onDayChange } = this.props;
+      const { weekOptions, monthOptions } = this.data;
+      const dayOptions = selectedFrequency === 'WEEK' ? weekOptions : monthOptions;
+      
+      // 更新当前日期选项
+      this.setData({
+        currentDayOptions: dayOptions
+      });
+      
+      // 检查当前选中的日期是否在新的选项列表中
+      // 如果不在，则重置为第一个选项
+      if (selectedDay && !dayOptions.includes(selectedDay)) {
+        const defaultDay = dayOptions[0];
+        // 通过回调通知父组件更新 selectedDay
+        if (onDayChange) {
+          onDayChange(defaultDay);
+        }
+        // 立即更新索引，因为日期已经改变
+        this.setData({
+          selectedDayIndex: 0
+        });
+      } else {
+        // 更新日期索引
+        this.updateDayIndex();
+      }
+    },
+
+    // 更新日期索引
+    updateDayIndex() {
+      const { selectedDay } = this.props;
+      const { currentDayOptions } = this.data;
+      const index = currentDayOptions.indexOf(selectedDay);
+      this.setData({
+        selectedDayIndex: index >= 0 ? index : 0
+      });
+    },
+
     // 选择充值频率
     handleFrequencySelect(e) {
       const frequency = e.currentTarget.dataset.frequency;
@@ -64,12 +116,9 @@ Component({
     toggleDayPicker() {
       const show = !this.data.showDayPicker;
       if (show) {
-        const dayOptions = this.props.dayOptions || [];
-        const currentDay = this.props.selectedDay;
-        const index = dayOptions.indexOf(currentDay);
+        // 确保日期选项是最新的
+        this.updateDayOptions();
         this.setData({
-          selectedDayIndex: index >= 0 ? index : 0,
-          currentDayOptions: dayOptions,
           showDayPicker: show
         });
       } else {

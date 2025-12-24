@@ -5,7 +5,8 @@
     "nav-bar": "/components/nav-bar/nav-bar",
     "popup-picker": "/components/popup-picker/popup-picker",
     "popup": "antd-mini/es/Popup/index",
-    "recurring-picker": "/components/recurring-picker/recurring-picker"
+    "recurring-picker": "/components/recurring-picker/recurring-picker",
+    "success-modal": "/components/success-modal/success-modal"
   }
 }
 

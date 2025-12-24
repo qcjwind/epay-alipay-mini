@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "popup": "antd-mini/es/Popup/index"
+  }
+}
+

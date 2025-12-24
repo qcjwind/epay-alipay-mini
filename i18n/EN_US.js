@@ -73,4 +73,23 @@ export default {
     selectAmountTitle: 'Select Amount',
     selectAmountContent: 'Please select a top-up amount.',
   },
+  confirmTopUp: {
+    pageTitle: 'Confirm Top Up',
+    confirm: {
+      title: 'Top Up',
+      content: 'Confirm to top up?',
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+    },
+    oneTimeSuccess: {
+      title: 'Top up completed',
+      content: 'Your top-up was completed successfully.',
+      btn: 'CLOSE',
+    },
+    recurringSuccess: {
+      Title: "Recurring Top-up Set",
+      content: "Your recurring top-up was set successfully.",
+      btn: "CLOSE",
+    }
+  },
 };

@@ -136,14 +136,25 @@ Page({
     
     // 将参数对象转换为 URL 查询字符串
     const queryString = Object.keys(params)
+      .filter(key => params[key] !== undefined && params[key] !== '') // 过滤空值
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
       .join('&');
     
     // 根据 isFromHistoryPanel 决定跳转页面
     if (isFromHistoryPanel) {
       // 来自历史详情面板，跳转到确认充值页面
+      // 添加 payMethod 参数，标识为定期充值
+      const confirmParams = {
+        ...params,
+        payMethod: 'recurring' // string 是 充值方式 recurring: 定期充值
+      };
+      const confirmQueryString = Object.keys(confirmParams)
+        .filter(key => confirmParams[key] !== undefined && confirmParams[key] !== '')
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(confirmParams[key])}`)
+        .join('&');
+      
       my.navigateTo({
-        url: `/pages/confirm-top-up/confirm-top-up?${queryString}`
+        url: `/pages/confirm-top-up/confirm-top-up?${confirmQueryString}`
       });
     } else {
       // 否则跳转到选择金额页面

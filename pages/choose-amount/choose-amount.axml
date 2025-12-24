@@ -23,7 +23,7 @@
   >
     <view class="amount-buttons">
       <view 
-        a:for="{{amountOptions}}"
+        a:for="{{faceValueList}}"
         a:key="*this"
         class="amount-btn {{selectedAmount === item ? 'active' : ''}}"
         data-amount="{{item}}"

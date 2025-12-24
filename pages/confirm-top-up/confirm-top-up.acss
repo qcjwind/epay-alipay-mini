@@ -263,3 +263,63 @@
   height: 40rpx;
 }
 
+/* 确认弹窗 */
+.confirm-modal-content {
+  background-color: #fff;
+  border-radius: 24rpx;
+  padding: 60rpx 40rpx 40rpx;
+  width: 600rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.confirm-modal-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+.confirm-modal-text {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 50rpx;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.confirm-modal-buttons {
+  display: flex;
+  width: 100%;
+  gap: 20rpx;
+}
+
+.confirm-modal-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-modal-btn::after {
+  border: none;
+}
+
+.confirm-modal-btn.cancel-btn {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.confirm-modal-btn.confirm-btn {
+  background-color: #B63F81;
+  color: #fff;
+}
+

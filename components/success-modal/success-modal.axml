@@ -1,0 +1,22 @@
+<popup
+  visible="{{visible}}"
+  position="center"
+  maskClosable="{{false}}"
+  zIndex="{{9999}}"
+  disableScroll="{{true}}"
+  safeArea="{{false}}"
+>
+  <view class="success-modal-content">
+    <!-- 成功图标 -->
+    <view class="success-icon">
+      <image class="checkmark-icon" src="/assets/icons/success.png" mode="aspectFit"></image>
+    </view>
+    <!-- 标题 -->
+    <view class="success-title">{{title}}</view>
+    <!-- 内容 -->
+    <view class="success-content">{{content}}</view>
+    <!-- 关闭按钮 -->
+    <button class="success-btn" onTap="handleClose">{{buttonText}}</button>
+  </view>
+</popup>
+

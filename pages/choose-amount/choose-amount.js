@@ -14,7 +14,7 @@ Page(createPage({
     
     // 页面自身数据
     selectedAmount: '0',
-    amountOptions: ['5', '10', '20', '30', '50', '100', '200', '500'],
+    faceValueList: [], // list<string> 是 充值面额列表（从接口获取）
     backgroundClass: ''
   },
 
@@ -47,8 +47,42 @@ Page(createPage({
       isFromSetRecurring: !!(this.data.recurringType && this.data.recurringDay)
     });
     
+    // 获取充值面额列表
+    this.getFaceValueList();
+    
     // 初始化背景
     this.updateBackground('0');
+  },
+
+  // 模拟接口：获取充值面额列表
+  // 接口入参：operator string 是 运营商
+  // 接口响应：faceValueList list<string> 是 充值面额列表
+  getFaceValueList() {
+    const { operator } = this.data;
+    
+    // 模拟接口调用
+    console.info('Calling API to get face value list, operator:', operator);
+    
+    // 模拟异步接口调用
+    setTimeout(() => {
+      // 模拟接口响应数据
+      // 接口响应格式：{ faceValueList: ['5', '10', '20', ...] }
+      const mockResponse = {
+        faceValueList: ['5', '10', '20', '30', '50', '100', '200', '500']
+      };
+      
+      console.info('API response:', mockResponse);
+      
+      // 使用接口返回的 faceValueList 字段
+      this.setData({
+        faceValueList: mockResponse.faceValueList
+      });
+      
+      // 如果之前有选中的金额，需要重新计算背景
+      if (this.data.selectedAmount && this.data.selectedAmount !== '0') {
+        this.updateBackground(this.data.selectedAmount);
+      }
+    }, 300); // 模拟网络延迟
   },
 
   // 根据金额计算背景类名
@@ -58,14 +92,14 @@ Page(createPage({
       return '';
     }
 
-    const { amountOptions } = this.data;
-    const amountIndex = amountOptions.indexOf(amount);
+    const { faceValueList } = this.data;
+    const amountIndex = faceValueList.indexOf(amount);
     
     if (amountIndex === -1) {
       return ''; // 默认背景为空
     }
 
-    const totalOptions = amountOptions.length;
+    const totalOptions = faceValueList.length;
     
     // 如果选项少于3个，每个金额对应一个背景
     if (totalOptions < 3) {
@@ -109,7 +143,15 @@ Page(createPage({
 
   // 继续按钮
   handleContinue() {
-    const { selectedAmount, lang } = this.data;
+    const { 
+      selectedAmount, 
+      lang,
+      phoneNumber,      // string 是 充值号码
+      operator,         // string 是 运营商
+      userName,         // string 是 用户姓名
+      recurringType,    // string 否 周期类型 周：WEEK 月：MONTH
+      recurringDay      // string 否 周期日期
+    } = this.data;
     
     // 验证是否选择了面额
     if (!selectedAmount || selectedAmount === '0') {
@@ -118,21 +160,35 @@ Page(createPage({
         content: lang.chooseAmount.selectAmountContent,
         confirmText: lang.message.ok,
         showCancel: false,
-        success: (res) => {
-          if (res.confirm) {
-            // 用户点击了 OK
-          }
-        }
       });
       return;
     }
     
-    console.log('Continue with amount:', selectedAmount);
+    // 判断充值方式：如果有 recurringType 和 recurringDay，则为定期充值，否则为单次充值
+    const payMethod = (recurringType && recurringDay) ? 'recurring' : 'oneTime';
     
-    // TODO: 处理继续逻辑
-    my.showToast({
-      content: `已选择金额：${selectedAmount}€`,
-      duration: 2000
+    // 构建参数对象，透传所有接收到的参数，并添加 amount 和 payMethod 字段
+    const params = {
+      phoneNumber,
+      operator,
+      userName,
+      amount: selectedAmount, // string 是 充值金额
+      payMethod: payMethod, // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
+      recurringType,
+      recurringDay
+    };
+    
+    // 将参数对象转换为 URL 查询字符串
+    const queryString = Object.keys(params)
+      .filter(key => params[key] !== undefined && params[key] !== '') // 过滤空值
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .join('&');
+    
+    console.log('Navigate to confirm-top-up with params:', params);
+    
+    // 跳转到确认充值页面
+    my.navigateTo({
+      url: `/pages/confirm-top-up/confirm-top-up?${queryString}`
     });
   }
 }));

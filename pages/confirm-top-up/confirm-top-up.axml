@@ -2,7 +2,7 @@
   <!-- 导航栏占位 -->
   <nav-bar></nav-bar>
   <!-- 页面标题 -->
-  <view class="page-title">Confirm Top Up</view>
+  <view class="page-title">{{lang.confirmTopUp.pageTitle}}</view>
   <!-- 主内容区 -->
   <view class="content">
     <!-- 用户信息卡片 -->
@@ -17,8 +17,8 @@
           </view>
         </view>
         <view class="user-details">
-          <text class="user-name">{{userInfo.name}}</text>
-          <text class="user-phone">{{userInfo.phone}}</text>
+          <text class="user-name">{{userName}}</text>
+          <text class="user-phone">{{phoneNumber}}</text>
         </view>
       </view>
     </view>
@@ -44,8 +44,8 @@
       <button class="change-btn" onTap="handleChangeAmount">CHANGE</button>
     </view>
 
-    <!-- 定期充值卡片 -->
-    <view class="info-card">
+    <!-- 定期充值卡片（仅当 payMethod 为 recurring 时显示） -->
+    <view class="info-card" a:if="{{payMethod === 'recurring'}}">
       <view class="card-left">
         <view class="card-content">
           <text class="card-label">Recurring Top up</text>
@@ -58,14 +58,14 @@
 
   <!-- 继续按钮 -->
   <view class="continue-section">
-    <button class="continue-btn" onTap="handleContinue">CONFIRM</button>
+    <button class="continue-btn" onTap="handleContinue" disabled="{{isConfirming}}">{{confirmButtonText}}</button>
   </view>
 
   <!-- 金额选择弹窗 -->
   <popup-picker
     visible="{{amountPickerVisible}}"
     title="Change amount"
-    options="{{amountOptions}}"
+    options="{{faceValueList}}"
     selectedIndex="{{selectedAmountIndex}}"
     onClose="handleAmountPickerClose"
     onConfirm="handleAmountPickerConfirm"
@@ -87,10 +87,8 @@
         </view>
       </view>
       <recurring-picker
-        frequencyOptions="{{frequencyOptions}}"
         selectedFrequency="{{selectedFrequency}}"
         dayLabel="Select day"
-        dayOptions="{{dayOptions}}"
         selectedDay="{{selectedDay}}"
         continueButtonText="DONE"
         onFrequencyChange="handleFrequencyChange"
@@ -99,5 +97,14 @@
       ></recurring-picker>
     </view>
   </popup>
+
+  <!-- 成功弹窗 -->
+  <success-modal
+    visible="{{successModalVisible}}"
+    title="{{successModalTitle}}"
+    content="{{successModalContent}}"
+    buttonText="{{successModalButtonText}}"
+    onClose="handleSuccessModalClose"
+  ></success-modal>
 </view>
 
