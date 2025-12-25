@@ -82,8 +82,10 @@ export default {
     pageBtn: 'CONTINUE',
   },
   chooseAmount: {
+    pageTitle: 'Choose the amount',
     selectAmountTitle: 'Select Amount',
     selectAmountContent: 'Please select a top-up amount.',
+    pageBtn: 'CONTINUE',
   },
   confirmTopUp: {
     pageTitle: 'Confirm Top Up',

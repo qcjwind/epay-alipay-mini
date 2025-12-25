@@ -1,4 +1,5 @@
 import { createPage } from '@miniu/data'
+import { getFaceValueListAPI } from '../../services/index'
 
 Page(createPage({
   mapGlobalDataToData: {
@@ -11,6 +12,7 @@ Page(createPage({
     userName: '', // string 是 用户姓名
     recurringType: '', // string 否 周期类型 周：WEEK 月：MONTH（仅从设置定期页面跳转时有值）
     recurringDay: '', // string 否 周期日期（仅从设置定期页面跳转时有值）
+    payMethod: '', // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
     
     // 页面自身数据
     selectedAmount: '0',
@@ -27,7 +29,8 @@ Page(createPage({
     // userName: string 是 用户姓名
     // recurringType: string 否 周期类型 周：WEEK 月：MONTH（仅从设置定期页面跳转时有值）
     // recurringDay: string 否 周期日期（仅从设置定期页面跳转时有值）
-    const { phoneNumber, operator, userName, recurringType, recurringDay } = query;
+    // payMethod: string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
+    const { phoneNumber, operator, userName, recurringType, recurringDay, payMethod } = query;
     
     this.setData({
       phoneNumber: phoneNumber || '',
@@ -35,7 +38,8 @@ Page(createPage({
       userName: userName || '',
       // 这两个参数可能为空（从首页直接跳转时）
       recurringType: recurringType || '',
-      recurringDay: recurringDay || ''
+      recurringDay: recurringDay || '',
+      payMethod: payMethod || ''
     });
     
     console.info('Received params:', {
@@ -44,6 +48,7 @@ Page(createPage({
       userName: this.data.userName,
       recurringType: this.data.recurringType,
       recurringDay: this.data.recurringDay,
+      payMethod: this.data.payMethod,
       isFromSetRecurring: !!(this.data.recurringType && this.data.recurringDay)
     });
     
@@ -54,35 +59,31 @@ Page(createPage({
     this.updateBackground('0');
   },
 
-  // 模拟接口：获取充值面额列表
+  // 获取充值面额列表
   // 接口入参：operator string 是 运营商
   // 接口响应：faceValueList list<string> 是 充值面额列表
-  getFaceValueList() {
+  async getFaceValueList() {
     const { operator } = this.data;
     
-    // 模拟接口调用
+    if (!operator) {
+      console.warn('Operator is required to get face value list');
+      return;
+    }
+    
     console.info('Calling API to get face value list, operator:', operator);
     
-    // 模拟异步接口调用
-    setTimeout(() => {
-      // 模拟接口响应数据
-      // 接口响应格式：{ faceValueList: ['5', '10', '20', ...] }
-      const mockResponse = {
-        faceValueList: ['5', '10', '20', '30', '50', '100', '200', '500']
-      };
-      
-      console.info('API response:', mockResponse);
+    try {
+      const res = await getFaceValueListAPI(operator);
+      console.info('API response:', res);
       
       // 使用接口返回的 faceValueList 字段
       this.setData({
-        faceValueList: mockResponse.faceValueList
+        faceValueList: res.faceValueList || []
       });
-      
-      // 如果之前有选中的金额，需要重新计算背景
-      if (this.data.selectedAmount && this.data.selectedAmount !== '0') {
-        this.updateBackground(this.data.selectedAmount);
-      }
-    }, 300); // 模拟网络延迟
+    } catch (error) {
+      console.error('Failed to get face value list:', error);
+      // 可以在这里添加错误提示
+    }
   },
 
   // 根据金额计算背景类名
@@ -150,7 +151,8 @@ Page(createPage({
       operator,         // string 是 运营商
       userName,         // string 是 用户姓名
       recurringType,    // string 否 周期类型 周：WEEK 月：MONTH
-      recurringDay      // string 否 周期日期
+      recurringDay,     // string 否 周期日期
+      payMethod         // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
     } = this.data;
     
     // 验证是否选择了面额
@@ -164,16 +166,13 @@ Page(createPage({
       return;
     }
     
-    // 判断充值方式：如果有 recurringType 和 recurringDay，则为定期充值，否则为单次充值
-    const payMethod = (recurringType && recurringDay) ? 'recurring' : 'oneTime';
-    
-    // 构建参数对象，透传所有接收到的参数，并添加 amount 和 payMethod 字段
+    // 构建参数对象，透传所有接收到的参数，并添加 amount 字段
     const params = {
       phoneNumber,
       operator,
       userName,
       amount: selectedAmount, // string 是 充值金额
-      payMethod: payMethod, // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
+      payMethod,
       recurringType,
       recurringDay
     };
