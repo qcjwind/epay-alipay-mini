@@ -56,7 +56,10 @@ export default {
       frequency: 'Frequency',
       edit: 'EDIT',
       delete: 'DELETE RECURRING'
-    }
+    },
+    loadMoreTxt: 'load more~~~',
+    loading: 'loading...',
+    noMore: 'no more content'
   },
   message: {
     confirm: 'Confirm',

@@ -1,0 +1,10 @@
+<view id="loadMore" class="load-more-box">
+  <view class="load-more-loading">
+    <text a:if="{{ type === 'loadMore' }}">{{lang.history.loadMoreTxt}}</text>
+    <view a:if="{{ type === 'loading' }}" class="loading-box">
+      <loading type="mini" />
+      <text style="margin-left: 10px">{{lang.history.loading}}</text>
+    </view>
+    <text a:if="{{ type === 'noMore' }}">{{lang.history.noMore}}</text>
+  </view>
+</view>

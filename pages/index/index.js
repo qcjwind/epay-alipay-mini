@@ -1,6 +1,9 @@
 import {
   createPage
 } from '@miniu/data'
+import {
+  getNationListAPI
+} from '../../services/index'
 
 Page(createPage({
   mapGlobalDataToData: {
@@ -19,6 +22,9 @@ Page(createPage({
   },
   onLoad(query) {
     this.initData()
+    getNationListAPI().then(res => {}).catch(err => {
+      console.log(err);
+    })
   },
 
   initData() {

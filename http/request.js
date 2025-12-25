@@ -1,10 +1,12 @@
-import { BASE_URL } from "../utils/constant";
+import {
+  BASE_URL
+} from "../utils/constant";
 
 /**
  * HTTP 请求封装类
  * 基于支付宝小程序 my.request API
  */
-class HttpClient {
+export default class HttpClient {
   constructor() {
     // 基础配置
     this.config = {
@@ -17,7 +19,6 @@ class HttpClient {
 
     // 请求拦截器队列
     this.requestInterceptors = [];
-s
     // 响应拦截器队列
     this.responseInterceptors = [];
 
@@ -96,7 +97,9 @@ s
    * @returns {Promise<Object>} 处理后的配置
    */
   async executeRequestInterceptors(config) {
-    let processedConfig = { ...config };
+    let processedConfig = {
+      ...config
+    };
 
     for (const interceptor of this.requestInterceptors) {
       const result = interceptor(processedConfig);

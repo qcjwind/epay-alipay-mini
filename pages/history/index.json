@@ -4,7 +4,8 @@
     "nav-bar": "/components/nav-bar/nav-bar",
     "top-up-item": "./components/top-up-item/index",
     "recurring-item": "./components/recurring-item/index",
-    "top-up-detail": "./components/top-up-detail/index"
+    "top-up-detail": "./components/top-up-detail/index",
+    "load-more": "/components/load-more/index"
   },
   "styleIsolation": "apply-shared"
 }

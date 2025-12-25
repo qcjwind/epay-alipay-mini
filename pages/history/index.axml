@@ -20,6 +20,7 @@
         <view a:for="{{ 10 }}" data-key="{{index}}" key="*this" onTap="openTopUpDetail">
           <top-up-item  />
         </view>
+        <load-more isMore="{{isMore}}" onLoadMore="onLoadMore" />
       </block>
 
       <view a:else>

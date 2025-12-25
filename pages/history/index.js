@@ -8,6 +8,7 @@ Page(createPage({
   data: {
     currentKey: 'topUp',
     tabs: [],
+    isMore: true,
     visible: false
   },
   onLoad() {
@@ -69,5 +70,12 @@ Page(createPage({
         }
       });
     }
+  },
+  onLoadMore() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true)
+      }, 2000)
+    })
   }
 }));

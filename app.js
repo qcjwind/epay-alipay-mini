@@ -3,7 +3,8 @@ import { createApp } from '@miniu/data'
 
 App(createApp({
   defaultGlobalData: {
-    lang: EN_US
+    lang: EN_US,
+    userInfo: {}
   },
   async onLaunch() {
     const appIdRes = my.getAppIdSync();
