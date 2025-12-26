@@ -1,4 +1,5 @@
 import { createPage } from '@miniu/data'
+import { updateRecurringAPI, getFaceValueListAPI, getRecurringAuthUrlAPI, confirmRecurringAgreementAPI, oneTimePayAPI, getOneTimeStatusAPI } from '../../services/topup'
 
 Page(createPage({
   mapGlobalDataToData: {
@@ -13,6 +14,8 @@ Page(createPage({
     payMethod: '', // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
     recurringType: '', // string 否 周期类型 周：WEEK 月：MONTH
     recurringDay: '', // string 否 周期日期
+    editRecurring: false, // boolean 否 是否编辑定期充值
+    agreementId: '', // string 否 合约ID（编辑时必需）
 
     // 页面展示数据（基于接收的参数生成）
     recurringText: '',
@@ -40,23 +43,15 @@ Page(createPage({
     
     // 轮询相关
     pollTimer: null, // 轮询定时器
-    pollCount: 0 // 轮询次数
+    pollCount: 0, // 轮询次数
+    orderId: '' // 订单ID（用于查询支付状态）
   },
 
   onLoad(query) {
     console.info('Confirm top up page onLoad with query:', JSON.stringify(query));
 
-    // 接收来自选择金额页面的参数
-    // phoneNumber: string 是 充值号码
-    // operator: string 是 运营商
-    // userName: string 是 用户姓名
-    // amount: string 是 充值金额
-    // payMethod: string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
-    // recurringType: string 否 周期类型 周：WEEK 月：MONTH
-    // recurringDay: string 否 周期日期
-    const { phoneNumber, operator, userName, amount, payMethod, recurringType, recurringDay } = query;
+    const { phoneNumber, operator, userName, amount, payMethod, recurringType, recurringDay, editRecurring, agreementId } = query;
 
-    // 设置接收到的参数
     this.setData({
       phoneNumber: phoneNumber || '',
       operator: operator || '',
@@ -64,7 +59,9 @@ Page(createPage({
       amount: amount || '',
       payMethod: payMethod || '',
       recurringType: recurringType || '',
-      recurringDay: recurringDay || ''
+      recurringDay: recurringDay || '',
+      editRecurring: editRecurring === 'true' || editRecurring === true,
+      agreementId: agreementId || ''
     });
 
     // 根据参数生成展示数据
@@ -85,7 +82,9 @@ Page(createPage({
       amount: this.data.amount,
       payMethod: this.data.payMethod,
       recurringType: this.data.recurringType,
-      recurringDay: this.data.recurringDay
+      recurringDay: this.data.recurringDay,
+      editRecurring: this.data.editRecurring,
+      agreementId: this.data.agreementId
     });
   },
 
@@ -113,30 +112,31 @@ Page(createPage({
     this.calculateInitials();
   },
 
-  // 模拟接口：获取充值面额列表
+  // 获取充值面额列表
   // 接口入参：operator string 是 运营商
   // 接口响应：faceValueList list<string> 是 充值面额列表
-  getFaceValueList() {
+  async getFaceValueList() {
     const { operator } = this.data;
 
-    // 模拟接口调用
+    if (!operator) {
+      console.warn('Operator is required to get face value list');
+      return;
+    }
+
     console.info('Calling API to get face value list, operator:', operator);
 
-    // 模拟异步接口调用
-    setTimeout(() => {
-      // 模拟接口响应数据
-      // 接口响应格式：{ faceValueList: ['5', '10', '20', ...] }
-      const mockResponse = {
-        faceValueList: ['5', '10', '20', '30', '50', '100', '200', '500']
-      };
-
-      console.info('API response:', mockResponse);
+    try {
+      const res = await getFaceValueListAPI(operator);
+      console.info('API response:', res);
 
       // 使用接口返回的 faceValueList 字段
       this.setData({
-        faceValueList: mockResponse.faceValueList
+        faceValueList: res.faceValueList || []
       });
-    }, 300); // 模拟网络延迟
+    } catch (error) {
+      console.error('Failed to get face value list:', error);
+      // 可以在这里添加错误提示
+    }
   },
 
   // 计算姓名首字母
@@ -268,9 +268,67 @@ Page(createPage({
     });
   },
 
+  // 重置确认按钮状态
+  resetConfirmButton() {
+    const { lang } = this.data;
+    this.setData({
+      isConfirming: false,
+      confirmButtonText: lang.confirmTopUp.confirm.confirmButtonText.toUpperCase()
+    });
+  },
+
+  // 显示成功弹窗
+  // type: 'recurring' | 'oneTime' 成功类型
+  showSuccessModal(type) {
+    const { lang } = this.data;
+    
+    let title, content, buttonText;
+    
+    if (type === 'recurring') {
+      title = lang.confirmTopUp.recurringSuccess.Title;
+      content = lang.confirmTopUp.recurringSuccess.content;
+      buttonText = lang.confirmTopUp.recurringSuccess.btn;
+    } else if (type === 'oneTime') {
+      title = lang.confirmTopUp.oneTimeSuccess.title;
+      content = lang.confirmTopUp.oneTimeSuccess.content;
+      buttonText = lang.confirmTopUp.oneTimeSuccess.btn;
+    } else {
+      console.warn('Unknown success modal type:', type);
+      return;
+    }
+    
+    this.resetConfirmButton();
+    this.setData({
+      successModalVisible: true,
+      successModalTitle: title,
+      successModalContent: content,
+      successModalButtonText: buttonText
+    });
+  },
+
+  // 显示异常弹窗
+  // message: string 错误消息
+  // title: string 可选 错误标题，默认为空
+  // resetButton: boolean 可选 是否重置按钮状态，默认为 true
+  showErrorAlert(message, title = '', resetButton = true) {
+    if (resetButton) {
+      this.resetConfirmButton();
+    }
+    
+    const alertOptions = {
+      content: message || 'An error occurred'
+    };
+    
+    if (title) {
+      alertOptions.title = title;
+    }
+    
+    my.alert(alertOptions);
+  },
+
   // 执行确认操作
   doConfirm() {
-    const { lang, payMethod } = this.data;
+    const { lang, payMethod, editRecurring } = this.data;
 
     // 设置处理中标志，更新按钮文案
     this.setData({
@@ -278,22 +336,22 @@ Page(createPage({
       confirmButtonText: lang.message.loading_ellipsis.toUpperCase()
     });
 
-    console.log('Confirm top up, payMethod:', payMethod);
+    console.log('Confirm top up, payMethod:', payMethod, 'editRecurring:', editRecurring);
 
     // 根据充值类型调用不同的接口
     if (payMethod === 'recurring') {
-      // TODO: 调用开启周期充值接口
-      // 接口参数：phoneNumber, operator, userName, amount, recurringType, recurringDay
-      this.createRecurringTopUp();
+      if (editRecurring) {
+        this.editRecurringTopUp();
+      } else {
+        this.createRecurringTopUp();
+      }
     } else {
-      // TODO: 调用单次充值接口
-      // 接口参数：phoneNumber, operator, userName, amount
       this.createOneTimeTopUp();
     }
   },
 
   // 开启周期充值
-  createRecurringTopUp() {
+  async createRecurringTopUp() {
     const {
       phoneNumber,
       operator,
@@ -313,45 +371,94 @@ Page(createPage({
       recurringDay
     });
 
-    // todo 调用接口获取签约链接
-    const signStr = 'https://openauth.xxx.com/authentication.htm?authId=FBF16F91-28FB-47EC-B9BE-27B285C23CD3'
-
-    my.signContract({
-      signStr,
-      success: (res) => {
-        // TODO: 调用开启周期充值接口
-        // res.authCode
-        // 示例：模拟异步操作
-        setTimeout(() => {
-          // 接口成功后显示成功弹窗
-          this.setData({
-            isConfirming: false,
-            confirmButtonText: lang.confirmTopUp.confirm.confirmButtonText.toUpperCase(),
-            successModalVisible: true,
-            successModalTitle: lang.confirmTopUp.recurringSuccess.Title,
-            successModalContent: lang.confirmTopUp.recurringSuccess.content,
-            successModalButtonText: lang.confirmTopUp.recurringSuccess.btn
-          });
-
-          // 注意：在接口的 success 和 fail 回调中都需要重置按钮状态
-          // 成功时显示弹窗，失败时重置按钮状态即可
-        }, 1000); // 模拟异步操作延迟
-      },
-      fail: (res) => {
-        my.alert({
-          content: res.errorMessage,
-        });
-
-        this.setData({
-          isConfirming: false,
-          confirmButtonText: lang.confirmTopUp.confirm.confirmButtonText.toUpperCase(),
-        });
+    try {
+      // 调用接口获取签约链接
+      const authUrlRes = await getRecurringAuthUrlAPI();
+      console.log('Get auth URL response:', authUrlRes);
+      
+      const signStr = authUrlRes.authURL;
+      
+      if (!signStr) {
+        throw new Error('Auth URL is empty');
       }
+
+      my.signContract({
+        signStr,
+        success: async (res) => {
+          console.log('Sign contract success, authCode:', res.authCode);
+          
+          try {
+            // 调用开启周期充值接口
+            await confirmRecurringAgreementAPI({
+              phoneNumber,
+              operator,
+              amount,
+              recurringType,
+              recurringDay,
+              authCode: res.authCode
+            });
+            
+            console.log('Confirm recurring agreement success');
+            
+            // 接口成功后显示成功弹窗
+            this.showSuccessModal('recurring');
+          } catch (error) {
+            console.error('Confirm recurring agreement error:', error);
+            this.showErrorAlert(error.message || 'Failed to confirm recurring agreement');
+          }
+        },
+        fail: (res) => {
+          console.error('Sign contract fail:', res);
+          this.showErrorAlert(res.errorMessage || 'Sign contract failed');
+        }
+      });
+    } catch (error) {
+      console.error('Get auth URL error:', error);
+      this.showErrorAlert(error.message || 'Failed to get auth URL');
+    }
+  },
+
+  // 编辑周期充值（不需要签约）
+  editRecurringTopUp() {
+    const {
+      agreementId,
+      amount,
+      recurringType,
+      recurringDay,
+      lang
+    } = this.data;
+
+    console.log('Edit recurring top up:', {
+      agreementId,
+      amount,
+      recurringType,
+      recurringDay
+    });
+
+    // 验证必要参数
+    if (!agreementId) {
+      this.showErrorAlert('Agreement ID is required');
+      return;
+    }
+
+    // 调用编辑接口
+    updateRecurringAPI({
+      agreementId,
+      amount,
+      recurringType,
+      recurringDay
+    }).then((res) => {
+      console.log('Edit recurring success:', res);
+      // 接口成功后显示成功弹窗
+      this.showSuccessModal('recurring');
+    }).catch((error) => {
+      console.error('Edit recurring error:', error);
+      this.showErrorAlert(error.message || 'Edit recurring failed');
     });
   },
 
   // 单次充值
-  createOneTimeTopUp() {
+  async createOneTimeTopUp() {
     const {
       phoneNumber,
       operator,
@@ -367,26 +474,44 @@ Page(createPage({
       amount
     });
 
-    // TODO: 调用单次充值接口,拿到tradeNo
-    my.tradePay({
-      tradeNO: '201711152100110410533667792', // get the tradeNo from the server first
-      success: (res) => {
-        console.log('tradePay success:', res);
-        // 启动轮询查询支付状态
-        this.startPollingPaymentStatus(res.tradeNO || '201711152100110410533667792');
-      },
-      fail: (res) => {
-        console.error('tradePay fail:', res);
-        // 重置按钮状态
-        this.setData({
-          isConfirming: false,
-          confirmButtonText: lang.confirmTopUp.confirm.confirmButtonText.toUpperCase()
-        });
-        my.alert({
-          content: JSON.stringify(res),
-        });
+    try {
+      // 调用单次充值接口，获取 paymentId 和 orderId
+      const payRes = await oneTimePayAPI({
+        phoneNumber,
+        operator,
+        amount
+      });
+      
+      console.log('One time pay API response:', payRes);
+      
+      const { paymentId, orderId } = payRes;
+      
+      if (!paymentId) {
+        throw new Error('Payment ID is empty');
       }
-    });
+      
+      // 保存 orderId 用于后续查询状态
+      this.setData({
+        orderId: orderId || ''
+      });
+
+      // 使用 paymentId 作为 tradeNO 调用支付
+      my.tradePay({
+        tradeNO: paymentId,
+        success: (res) => {
+          console.log('tradePay success:', res);
+          // 启动轮询查询支付状态（使用 orderId）
+          this.startPollingPaymentStatus(orderId);
+        },
+        fail: (res) => {
+          console.error('tradePay fail:', res);
+          this.showErrorAlert(res.errorMessage || JSON.stringify(res));
+        }
+      });
+    } catch (error) {
+      console.error('One time pay API error:', error);
+      this.showErrorAlert(error.message || 'Failed to create one time top up');
+    }
   },
 
   // 关闭成功弹窗
@@ -394,10 +519,15 @@ Page(createPage({
     this.setData({
       successModalVisible: false
     });
+    
+    // 跳转到历史充值页面
+    my.switchTab({
+      url: '/pages/history/index'
+    });
   },
 
   // 开始轮询支付状态
-  startPollingPaymentStatus(tradeNO) {
+  startPollingPaymentStatus(orderId) {
     const { lang } = this.data;
     
     // 重置轮询计数
@@ -411,11 +541,11 @@ Page(createPage({
     }
     
     // 开始轮询
-    this.pollPaymentStatus(tradeNO);
+    this.pollPaymentStatus(orderId);
   },
 
   // 轮询支付状态
-  pollPaymentStatus(tradeNO) {
+  pollPaymentStatus(orderId) {
     const { lang, pollCount } = this.data;
     
     // 超过最大次数，当作异常处理
@@ -426,31 +556,24 @@ Page(createPage({
     }
     
     // 查询支付状态
-    this.queryPaymentStatus(tradeNO).then((result) => {
+    this.queryPaymentStatus(orderId).then((result) => {
       // 如果支付成功，显示成功弹窗
       if (result.success) {
         this.stopPolling();
-        this.setData({
-          isConfirming: false,
-          confirmButtonText: lang.confirmTopUp.confirm.confirmButtonText.toUpperCase(),
-          successModalVisible: true,
-          successModalTitle: lang.confirmTopUp.oneTimeSuccess.title,
-          successModalContent: lang.confirmTopUp.oneTimeSuccess.content,
-          successModalButtonText: lang.confirmTopUp.oneTimeSuccess.btn
-        });
+        this.showSuccessModal('oneTime');
       } else {
         // 继续轮询
-        this.continuePolling(tradeNO);
+        this.continuePolling(orderId);
       }
     }).catch((error) => {
       console.error('Query payment status error:', error);
       // 继续轮询
-      this.continuePolling(tradeNO);
+      this.continuePolling(orderId);
     });
   },
 
   // 继续轮询
-  continuePolling(tradeNO) {
+  continuePolling(orderId) {
     const { pollCount } = this.data;
     
     // 更新轮询次数
@@ -466,7 +589,7 @@ Page(createPage({
     
     // 设置定时器
     const timer = setTimeout(() => {
-      this.pollPaymentStatus(tradeNO);
+      this.pollPaymentStatus(orderId);
     }, delay);
     
     this.setData({
@@ -492,49 +615,43 @@ Page(createPage({
     // 停止轮询
     this.stopPolling();
     
-    // 重置按钮状态
-    this.setData({
-      isConfirming: false,
-      confirmButtonText: lang.confirmTopUp.confirm.confirmButtonText.toUpperCase()
-    });
-    
     // 显示错误提示
-    my.alert({
-      title: 'Error',
-      content: error || 'Payment status query failed, please try again later.',
-    });
+    this.showErrorAlert(error || 'Payment status query failed, please try again later.', 'Error');
   },
 
   // 查询支付状态接口
-  // TODO: 调用查询支付状态接口
-  // 接口入参：tradeNO string 是 交易号
-  // 接口响应：success boolean 是 是否支付成功
-  queryPaymentStatus(tradeNO) {
-    return new Promise((resolve, reject) => {
-      console.log('Query payment status, tradeNO:', tradeNO, 'pollCount:', this.data.pollCount);
+  // 接口入参：orderId string 是 订单ID
+  // 接口响应：orderStatus string 是 支付状态
+  //          待支付：WAIT_PAY
+  //          待充值：WAIT_TOP_UP
+  //          完成：FINISH
+  //          异常：EXCEPTION
+  async queryPaymentStatus(orderId) {
+    console.log('Query payment status, orderId:', orderId, 'pollCount:', this.data.pollCount);
+    
+    try {
+      const res = await getOneTimeStatusAPI(orderId);
+      console.log('Payment status response:', res);
       
-      // 模拟接口调用
-      setTimeout(() => {
-        // 模拟接口响应
-        // 这里可以根据实际接口返回的数据来判断
-        // 假设第5次轮询时支付成功（仅用于测试）
-        const mockSuccess = this.data.pollCount >= 4;
-        
-        const mockResponse = {
-          success: mockSuccess,
-          tradeNO: tradeNO,
-          status: mockSuccess ? 'SUCCESS' : 'PROCESSING'
-        };
-        
-        console.log('Payment status response:', mockResponse);
-        
-        if (mockResponse.success) {
-          resolve(mockResponse);
-        } else {
-          resolve(mockResponse);
-        }
-      }, 500); // 模拟网络延迟
-    });
+      // 根据 orderStatus 判断是否成功
+      // FINISH 表示完成（支付成功）
+      const success = res.orderStatus === 'FINISH';
+      
+      return {
+        success: success,
+        orderId: orderId,
+        orderStatus: res.orderStatus,
+        exceptionReason: res.exceptionReason
+      };
+    } catch (error) {
+      console.error('Query payment status error:', error);
+      // 查询失败时返回未成功，继续轮询
+      return {
+        success: false,
+        orderId: orderId,
+        orderStatus: 'UNKNOWN',
+        error: error.message
+      };
+    }
   }
 }));
-
