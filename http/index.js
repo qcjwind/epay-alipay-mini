@@ -23,7 +23,7 @@ const safeStringify = (err) => {
 }
 
 // Token 过期时间：30 分钟（毫秒）
-const TOKEN_EXPIRE_TIME = 30 * 60 * 1000;
+const TOKEN_EXPIRE_TIME = 60 * 60 * 1000;
 
 /**
  * 保存 token 和过期时间
@@ -133,13 +133,13 @@ const loginHandle = () => {
       scopes: ["auth_user"],
       success: async (res) => {
         try {
-          // if (!res.authCode) {
-          //   // 登录失败，清除 Promise 缓存并记录失败时间
-          //   loginPromise = null;
-          //   reject(new Error("获取授权码失败"));
-          //   return;
-          // }
-          const result = await loginAPI('2813341301bcKFhSAtMS14aM00021483');
+          if (!res.authCode) {
+            // 登录失败，清除 Promise 缓存并记录失败时间
+            loginPromise = null;
+            reject(new Error("获取授权码失败"));
+            return;
+          }
+          const result = await loginAPI(res.authCode);
           const {
             data
           } = result || {}

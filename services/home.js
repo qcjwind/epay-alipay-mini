@@ -49,17 +49,3 @@ export const getHistoryDetailAPI = (orderId) => {
 export const getRecurringListAPI = (params) => {
   return post("/topup/recurring/list", params);
 };
-
-// 删除周期充值
-// export const deleteRecurringAPI = (agreementUUID) => {
-//   return post("/topup/recurring/delete", {
-//     agreementUUID
-//   });
-// };
-
-// 暂停周期充值
-// export const pauseRecurringAPI = (agreementUUID) => {
-//   return post("/topup/recurring/pause", {
-//     agreementUUID
-//   });
-// };
