@@ -181,10 +181,12 @@ Page(
         positiveString: this.data.lang.home.operatorConfirm,
         negativeString: this.data.lang.home.operatorCancel,
         success: (res) => {
-          this.setData({
-            currentOperator: arr[res.selectedOneIndex],
-            currentOperatorIndex: res.selectedOneIndex
-          });
+          if(res.selectedOneIndex){
+            this.setData({
+              currentOperator: arr[res.selectedOneIndex],
+              currentOperatorIndex: res.selectedOneIndex
+            });
+          }
         },
       });
     },
