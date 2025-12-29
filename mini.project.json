@@ -8,7 +8,11 @@
     ".DS_Store",
     ".gitignore",
     "README.md",
-    ".git"
+    ".git",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "node_modules"
   ],
   "developOptions": {
     "hotReload": false

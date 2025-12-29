@@ -1,0 +1,45 @@
+<view>
+  <view a:for="{{ recurringList }}" key="*this">
+    <swiper-action>
+      <view class="recurring-item">
+        <view class="user-box">
+          <image class="img" src="../../../../assets/images/young.png" />
+          <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
+        </view>
+        <view class="top-info">
+          <view class="label">
+            <text>Amelia Rossi</text>
+            <image class="arrow" src="../../../../assets/icons/arrow-right.png" />
+            <text>Vodafone</text>
+          </view>
+          <view class="info-box">
+            <image class="icon" src="../../../../assets/icons/calendar-02.png" />
+            <text>5€ monthly, 5th day</text>
+          </view>
+        </view>
+        <view class="price-box">
+          <switch
+            style="border-color: {{switchBtn ? '#B63F81' : '#7F8FAB'}};background: {{switchBtn ? '#B63F81' : '#7F8FAB'}}"
+            color="#B63F81"
+            onChange="switchHandle"
+            checked="{{switchBtn}}"
+          />
+        </view>
+      </view>
+      <view
+        onTap="delRecurring"
+        data-id="{{item.agreementId}}"
+        class="del-btn-box"
+        slot="action"
+      >
+        <image class="del-icon" src="../../../../assets/icons/icon_swipe_left.png" />
+        <text>{{lang.history.deleteTxt}}</text>
+      </view>
+    </swiper-action>
+  </view>
+  <load-more
+    a:if="{{ recurringList && recurringList.length > 10 }}"
+    isMore="{{isMore}}"
+    onLoadMore="onLoadMore"
+  />
+</view>

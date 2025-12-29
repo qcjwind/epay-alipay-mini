@@ -16,6 +16,7 @@ export default {
     enterNumber: 'Enter number',
     operatorCancel: 'Cancel',
     operatorConfirm: 'Confirm',
+    chooseOperator : "Please choose a operator",
     alert: {
       title: 'Enter Mobile Number',
       invalidTitle: 'Number Invalid',

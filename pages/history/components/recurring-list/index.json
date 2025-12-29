@@ -3,6 +3,7 @@
   "styleIsolation": "apply-shared",
   "usingComponents": {
     "switch": "antd-mini/es/Switch/index",
-    "swiper-action": "/components/swiper-action/index"
+    "swiper-action": "/components/swiper-action/index",
+    "load-more": "/components/load-more/index"
   }
 }

@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "top-up-detail": "../top-up-detail/index",
+    "load-more": "/components/load-more/index"
+  }
+}

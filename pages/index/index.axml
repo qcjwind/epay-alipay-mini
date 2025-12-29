@@ -6,23 +6,25 @@
         <block a:if="{{ !user }}">
           <text class="form-title">{{lang.home.phoneLabel}}</text>
           <view class="header-inp-box">
-            <view class="header-inp-left">
+            <view onTap="chooseNation" class="header-inp-left">
               <image class="icon" src="../../assets/icons/Italy.png" />
               <image class="arrow" mode="widthFix" src="../../assets/icons/chevron-down.png" />
             </view>
             <view class="header-inp-right">
               <view class="header-inp-right-phone">
-                <text class="prefix">+39</text>
+                <text class="prefix">{{currentNation.phonePrefix}}</text>
                 <input
                   maxlength="10"
                   type="number"
-                  value="{{phone}}"
+                  value="{{code}}"
                   class="inp-box"
                   onInput="inpNumber"
                   placeholder="(000) 000-0000"
                 />
               </view>
-              <view a:if="{{ phone }}" onTap="saveContact" class="add-phone-btn">{{lang.home.addPhone}}</view>
+              <view a:if="{{ showAddBtn }}" onTap="saveContact" class="add-phone-btn">
+                {{lang.home.addPhone}}
+              </view>
             </view>
           </view>
         </block>
@@ -58,11 +60,13 @@
       </view>
     </view>
 
-    <view class="choose-operator">{{lang.home.chooseOperaroe}}</view>
-    <view onTap="chooseOperator" class="choose-operator-box">
-      <text>Vodafone</text>
-      <image class="arrow" src="../../assets/icons/chevron-down.png" />
-    </view>
+    <block a:if="{{ currentOperator }}">
+      <view class="choose-operator">{{lang.home.chooseOperaroe}}</view>
+      <view onTap="chooseOperator" class="choose-operator-box">
+        <text>{{currentOperator}}</text>
+        <image class="arrow" src="../../assets/icons/chevron-down.png" />
+      </view>
+    </block>
 
     <view class="home-banner">
       <swiper>

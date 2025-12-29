@@ -1,1 +1,2 @@
-export const BASE_URL = "https://api.example.com";
+// export const BASE_URL = "http://10.113.1.31:8080";
+export const BASE_URL = "http://d8966446.natappfree.cc"

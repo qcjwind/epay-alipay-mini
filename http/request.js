@@ -97,10 +97,18 @@ export default class HttpClient {
    * @returns {Promise<Object>} 处理后的配置
    */
   async executeRequestInterceptors(config) {
+    // 如果配置中标记跳过拦截器，直接返回配置
+    if (config.skipInterceptor) {
+      const {
+        skipInterceptor,
+        ...restConfig
+      } = config;
+      return restConfig;
+    }
+
     let processedConfig = {
       ...config
     };
-
     for (const interceptor of this.requestInterceptors) {
       const result = interceptor(processedConfig);
       if (result instanceof Promise) {
@@ -195,13 +203,10 @@ export default class HttpClient {
           dataType: options.dataType || "json",
           ...options,
         };
-
         // 构建完整 URL
         config.url = this.buildURL(config.url);
-
         // 执行请求拦截器
         config = await this.executeRequestInterceptors(config);
-
         // 发起请求
         my.request({
           ...config,
@@ -212,15 +217,7 @@ export default class HttpClient {
               const processedResponse = await this.executeResponseInterceptors(
                 response
               );
-
-              // 根据状态码决定 resolve 还是 reject
-              const statusCode =
-                processedResponse.status || processedResponse.statusCode;
-              if (statusCode >= 200 && statusCode < 300) {
-                resolve(processedResponse);
-              } else {
-                reject(processedResponse);
-              }
+              resolve(processedResponse)
             } catch (error) {
               reject(error);
             }
@@ -237,6 +234,7 @@ export default class HttpClient {
           },
         });
       } catch (error) {
+        console.error(error);
         reject(error);
       }
     });

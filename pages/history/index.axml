@@ -16,18 +16,9 @@
     </view>
 
     <view class="history-content">
-      <block a:if="{{ currentKey === 'topUp' }}">
-        <view a:for="{{ 10 }}" data-key="{{index}}" key="*this" onTap="openTopUpDetail">
-          <top-up-item  />
-        </view>
-        <load-more isMore="{{isMore}}" onLoadMore="onLoadMore" />
-      </block>
-
-      <view a:else>
-        <recurring-item />
-      </view>
+      <top-up-list a:if="{{ currentKey === 'topUp' }}" />
+      <recurring-list a:else />
     </view>
   </view>
-  <top-up-detail visible="{{visible}}" onClose="closeDetailPopup" />
   <tab-bar/>
 </view>

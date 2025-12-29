@@ -7,7 +7,8 @@ Component(createComponent({
   },
   props: {
     visible: false,
-    onClose: null
+    onClose: null,
+    historyDetail: {}
   },
   data: {},
   didMount() {

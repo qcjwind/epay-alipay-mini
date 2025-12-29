@@ -11,6 +11,14 @@ const {
   language
 } = my.env;
 
+const safeStringify = (err) => {
+  try {
+    return JSON.stringify(err)
+  } catch (error) {
+    return err
+  }
+}
+
 let loginPromise = null;
 const loginHandle = () => {
   // 如果正在登录，直接返回现有的 Promise，避免并发调用
@@ -20,18 +28,19 @@ const loginHandle = () => {
 
   // 创建新的登录 Promise
   loginPromise = new Promise((resolve, reject) => {
+    my.showLoading();
     my.getAuthCode({
       scopes: ["auth_base"],
       success: async (res) => {
         try {
-          if (!res.authCode) {
-            // 登录失败，清除 Promise 缓存并记录失败时间
-            loginPromise = null;
-            reject(new Error("获取授权码失败"));
-            return;
-          }
-          my.showLoading()
-          const result = await loginAPI(res.authCode);
+          // if (!res.authCode) {
+          //   // 登录失败，清除 Promise 缓存并记录失败时间
+          //   loginPromise = null;
+          //   reject(new Error("获取授权码失败"));
+          //   return;
+          // }
+          const result = await loginAPI('2813341301ZlBpLDrGDj70YL00004182');
+          console.log(55);
           setGlobalData((g) => {
             g.userInfo = {
               ...result,
@@ -45,10 +54,14 @@ const loginHandle = () => {
           my.hideLoading()
         }
       },
-      fail: () => {
+      fail: (err) => {
+        my.alert({
+          content: `获取授权码失败: ${safeStringify(err)}`
+        })
         loginPromise = null;
+        my.hideLoading()
         reject(new Error("获取授权码失败"));
-      },
+      }
     });
   });
 
@@ -78,13 +91,20 @@ http.addRequestInterceptor(async (config) => {
   }
 });
 http.addResponseInterceptor((response) => {
-  return response;
-});
-http.setStatusCodeHandler(200, (response) => {
-  return response;
-});
-http.setStatusCodeHandler(401, (response) => {
-  return response;
+  if (response.status !== 200) {
+    return Promise.reject(new Error('network error'))
+  }
+  const {
+    code,
+    message
+  } = response.data || {}
+  if (+code !== 200) {
+    my.showToast({
+      content: message
+    })
+    return Promise.reject(new Error(message))
+  }
+  return response.data;
 });
 
 export const get = (url, params, options) => {

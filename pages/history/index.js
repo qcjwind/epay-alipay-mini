@@ -1,6 +1,7 @@
 import {
   createPage
 } from '@miniu/data'
+
 Page(createPage({
   mapGlobalDataToData: {
     lang: (g) => g.lang
@@ -8,8 +9,6 @@ Page(createPage({
   data: {
     currentKey: 'topUp',
     tabs: [],
-    isMore: true,
-    visible: false
   },
   onLoad() {
     const arr = [{
@@ -21,24 +20,6 @@ Page(createPage({
     }]
     this.setData({
       tabs: arr,
-    })
-  },
-  openTopUpDetail(e) {
-    const {
-      currentTarget: {
-        dataset: {
-          key
-        }
-      }
-    } = e || {};
-    console.log(key);
-    this.setData({
-      visible: true
-    })
-  },
-  closeDetailPopup() {
-    this.setData({
-      visible: false
     })
   },
   switchClick(e) {
@@ -70,12 +51,5 @@ Page(createPage({
         }
       });
     }
-  },
-  onLoadMore() {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true)
-      }, 2000)
-    })
   }
 }));

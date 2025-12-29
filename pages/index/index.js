@@ -1,178 +1,264 @@
 import {
   createPage
-} from '@miniu/data'
+} from "@miniu/data";
 import {
-  getNationListAPI
-} from '../../services/index'
+  getNationListAPI,
+  getOperatorListAPI
+} from "../../services/index";
 
-Page(createPage({
-  mapGlobalDataToData: {
-    lang: (g) => g.lang
-  },
-  data() {
-    return {
-      visible: false,
-      firstName: '',
-      user: null,
-      selectedOneIndex: 0,
-      selectedOneOption: '',
-      operator: [],
-      payMethod: 'oneTime'
-    }
-  },
-  onLoad(query) {
-    this.initData()
-    getNationListAPI().then(res => {}).catch(err => {
-      console.log(err);
-    })
-  },
+Page(
+  createPage({
+    mapGlobalDataToData: {
+      lang: (g) => g.lang,
+      code: (g) => g.code,
+    },
+    data() {
+      return {
+        visible: false,
+        firstName: "",
+        user: null,
+        showAddBtn: false,
+        selectedOneIndex: 0,
+        selectedOneOption: "",
+        operator: [],
+        payMethod: "oneTime",
+        operatorList: [],
+        currentNation: {},
+        currentNationIndex: 0,
+        currentOperator: '',
+        currentOperatorIndex: 0
+      };
+    },
+    onLoad(query) {
+      this.initData();
+      this.getNationList();
+    },
 
-  initData() {
-    const arr = [{
-        key: 'oneTime',
-        icon: '/assets/icons/repeate-one.png',
-        label: this.data.lang.home.oneTime
-      },
-      {
-        key: 'recurring',
-        icon: '/assets/icons/calendar-01.png',
-        label: this.data.lang.home.recurring
+    async getNationList() {
+      try {
+        my.showLoading();
+        const res = await getNationListAPI();
+        my.hideLoading();
+        const {
+          data
+        } = res || {};
+        this.setData({
+          nationList: data,
+          currentNation: data ? data[0] : null,
+        });
+      } catch (error) {
+        my.hideLoading();
       }
-    ]
-    this.setData({
-      operator: arr
-    })
-  },
+    },
 
-  switchOperator(e) {
-    const {
-      currentTarget: {
-        dataset: {
-          key
+    async getgetOperatorList(number) {
+      try {
+        my.showLoading();
+        const res = await getOperatorListAPI(number);
+        my.hideLoading();
+        const {
+          data
+        } = res || {};
+        this.setData({
+          operatorList: data,
+          currentOperator: data ? data[0].operator : ''
+        });
+      } catch (error) {
+        my.hideLoading();
+      }
+    },
+
+    chooseNation() {
+      const arr = this.data.nationList.map((item) => item.nation);
+      my.optionsSelect({
+        selectedOneIndex: this.data.currentNationIndex,
+        optionsOne: arr,
+        positiveString: this.data.lang.home.operatorConfirm,
+        negativeString: this.data.lang.home.operatorCancel,
+        success: (res) => {
+          this.setData({
+            currentNation: this.data.nationList[res.selectedOneIndex],
+            currentNationIndex: res.selectedOneIndex
+          });
+        },
+      });
+    },
+
+    initData() {
+      const arr = [{
+          key: "oneTime",
+          icon: "/assets/icons/repeate-one.png",
+          label: this.data.lang.home.oneTime,
+        },
+        {
+          key: "recurring",
+          icon: "/assets/icons/calendar-01.png",
+          label: this.data.lang.home.recurring,
+        },
+      ];
+      this.setData({
+        operator: arr,
+      });
+    },
+
+    switchOperator(e) {
+      const {
+        currentTarget: {
+          dataset: {
+            key
+          },
+        },
+      } = e || {};
+      this.setData({
+        payMethod: key,
+      });
+    },
+
+    selectContact() {
+      my.choosePhoneContact({
+        success: (res) => {
+          this.setData({
+            user: {
+              ...res,
+            },
+            firstName: res.name && res.name.substring(0, 1),
+          });
+          this.getgetOperatorList(res.mobile)
+        },
+      });
+    },
+
+    getMyNumber() {
+      my.getAuthCode({
+        scopes: ["auth_base"],
+        success: (res) => {
+          console.log("authCode", res);
+          const authCode = res.authCode;
+          this.clearUser();
+        },
+        fail: (err) => {
+          my.alert({
+            content: JSON.stringify(err),
+          });
+        },
+      });
+    },
+
+    enterNumber() {
+      this.clearUser();
+    },
+
+    inpNumber(e) {
+      const {
+        detail: {
+          value
+        },
+      } = e || {};
+      this.setData({
+        phone: value,
+      })
+      if (this.checkPhoneNum(false)) {
+        this.setData({
+          showAddBtn: true,
+        })
+        this.getgetOperatorList(value);
+      }
+    },
+
+    clearUser() {
+      this.setData({
+        user: null,
+        phone: "",
+        firstName: "",
+      });
+    },
+
+    chooseOperator() {
+      const arr = this.data.operatorList.map(item => item.operator)
+      my.optionsSelect({
+        selectedOneIndex: this.data.currentOperatorIndex,
+        optionsOne: arr,
+        positiveString: this.data.lang.home.operatorConfirm,
+        negativeString: this.data.lang.home.operatorCancel,
+        success: (res) => {
+          this.setData({
+            currentOperator: arr[res.selectedOneIndex],
+            currentOperatorIndex: res.selectedOneIndex
+          });
+        },
+      });
+    },
+
+    checkPhoneNum(isTip = true) {
+      if (this.data.user) {
+        if (!this.data.user.mobile) {
+          isTip &&
+            my.alert({
+              title: this.data.lang.home.alert.title,
+              content: this.data.lang.home.alert.msg,
+              buttonText: this.data.lang.home.alert.btn,
+            });
+          return false;
+        }
+      } else {
+        if (!this.data.phone) {
+          isTip &&
+            my.alert({
+              title: this.data.lang.home.alert.title,
+              content: this.data.lang.home.alert.msg,
+              buttonText: this.data.lang.home.alert.btn,
+            });
+          return false;
+        }
+        if (this.data.phone.length !== 10) {
+          isTip &&
+            my.alert({
+              title: this.data.lang.home.alert.invalidTitle,
+              content: this.data.lang.home.alert.msg,
+              buttonText: this.data.lang.home.alert.btn,
+            });
+          return false;
         }
       }
-    } = e || {}
-    this.setData({
-      payMethod: key
-    })
-  },
+      return true;
+    },
 
-  selectContact() {
-    my.choosePhoneContact({
-      success: (res) => {
-        this.setData({
-          user: {
-            ...res
-          },
-          firstName: res.name && res.name.substring(0, 1)
-        })
+    saveContact() {
+      if (!this.checkPhoneNum()) {
+        return;
       }
-    })
-  },
+      my.addPhoneContact({
+        mobilePhoneNumber: this.data.phone,
+      });
+    },
 
-  getMyNumber() {
-    my.getAuthCode({
-      scopes: ['PLAINTEXT_MOBILE_PHONE'],
-      success: (res) => {
-        const authCode = res.authCode;
-        this.clearUser()
+    clsoeContact() {
+      this.setData({
+        visible: false,
+      });
+    },
+
+    submit() {
+      if (!this.checkPhoneNum()) {
+        return;
       }
-    })
-  },
-
-  enterNumber() {
-    this.clearUser()
-  },
-
-  inpNumber(e) {
-    const {
-      detail: {
-        value
+      if (!this.data.currentOperator) {
+        my.showToast({
+          content: this.data.lang.home.chooseOperator
+        });
+        return;
       }
-    } = e || {}
-    this.setData({
-      phone: value
-    })
-  },
-
-  clearUser() {
-    this.setData({
-      user: null,
-      phone: '',
-      firstName: ''
-    })
-  },
-
-  chooseOperator() {
-    my.optionsSelect({
-      selectedOneIndex: 0,
-      optionsOne: ['Vodafone'],
-      positiveString: this.data.lang.home.operatorConfirm,
-      negativeString: this.data.lang.home.operatorCancel,
-      success: res => {
-        this.setData({
-          selectedOneIndex: res.selectedOneIndex,
-          selectedOneOption: res.selectedOneOption
-        })
+      let queryStr = `phoneNumber=${encodeURIComponent(this.data.currentNation.phonePrefix)} ${this.data.phone}&operator=${this.data.currentOperator}`;
+      if (this.data.user && this.data.user.mobile) {
+        queryStr = `phoneNumber=${this.data.user.mobile}&userName=${this.data.user.name}&operator=${this.data.currentOperator}`;
       }
-    });
-  },
-
-  checkPhoneNum() {
-    if (this.data.user && !this.data.user.mobile) {
-      my.alert({
-        title: this.data.lang.home.alert.title,
-        content: this.data.lang.home.alert.msg,
-        buttonText: this.data.lang.home.alert.btn
-      })
-      return false
-    }
-
-    if (!this.data.phone) {
-      my.alert({
-        title: this.data.lang.home.alert.title,
-        content: this.data.lang.home.alert.msg,
-        buttonText: this.data.lang.home.alert.btn
-      })
-      return false
-    }
-
-    if (this.data.phone.length !== 10) {
-      my.alert({
-        title: this.data.lang.home.alert.invalidTitle,
-        content: this.data.lang.home.alert.msg,
-        buttonText: this.data.lang.home.alert.btn
-      })
-      return false
-    }
-    return true
-  },
-
-  saveContact() {
-    if (!this.checkPhoneNum()) {
-      return
-    }
-    my.addPhoneContact({
-      mobilePhoneNumber: this.data.phone,
-    })
-  },
-
-  clsoeContact() {
-    this.setData({
-      visible: false
-    })
-  },
-
-  submit() {
-    if (!this.checkPhoneNum()) {
-      return
-    }
-    let jumpUrl = '/pages/set-recurring/set-recurring'
-    if (this.data.payMethod === 'oneTime') {
-      jumpUrl = '/pages/choose-amount/choose-amount'
-    }
-    my.navigateTo({
-      url: jumpUrl
-    })
-  },
-}));
+      let jumpUrl = `/pages/set-recurring/set-recurring?${queryStr}`;
+      if (this.data.payMethod === "oneTime") {
+        jumpUrl = `/pages/choose-amount/choose-amount?${queryStr}`;
+      }
+      my.navigateTo({
+        url: jumpUrl,
+      });
+    },
+  })
+);
