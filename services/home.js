@@ -47,15 +47,15 @@ export const getRecurringListAPI = (params) => {
 };
 
 // 删除周期充值
-export const deleteRecurringAPI = (agreementUUID) => {
-  return post("/topup/recurring/delete", {
-    agreementUUID
-  });
-};
+// export const deleteRecurringAPI = (agreementUUID) => {
+//   return post("/topup/recurring/delete", {
+//     agreementUUID
+//   });
+// };
 
 // 暂停周期充值
-export const pauseRecurringAPI = (agreementUUID) => {
-  return post("/topup/recurring/pause", {
-    agreementUUID
-  });
-};
+// export const pauseRecurringAPI = (agreementUUID) => {
+//   return post("/topup/recurring/pause", {
+//     agreementUUID
+//   });
+// };
