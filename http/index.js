@@ -6,6 +6,9 @@ import {
 import {
   loginAPI
 } from "../services/index";
+import {
+  RB_TOKEN
+} from "/utils/constant";
 
 const {
   language
@@ -19,6 +22,103 @@ const safeStringify = (err) => {
   }
 }
 
+// Token 过期时间：30 分钟（毫秒）
+const TOKEN_EXPIRE_TIME = 30 * 60 * 1000;
+
+/**
+ * 保存 token 和过期时间
+ * @param {string} token 
+ */
+const setToken = (token) => {
+  const expireTime = Date.now() + TOKEN_EXPIRE_TIME;
+  const tokenData = {
+    token,
+    expireTime
+  };
+  try {
+    my.setStorageSync({
+      key: RB_TOKEN,
+      data: tokenData
+    });
+  } catch (error) {
+    console.error('保存 token 失败:', error);
+  }
+};
+
+/**
+ * 获取 token，如果过期则返回 null
+ * @returns {string|null}
+ */
+const getStoredToken = () => {
+  try {
+    const storageResult = my.getStorageSync({
+      key: RB_TOKEN
+    });
+    
+    if (!storageResult || !storageResult.data) {
+      return null;
+    }
+
+    const tokenData = storageResult.data;
+    const { token, expireTime } = tokenData;
+    
+    // 检查是否过期
+    if (!expireTime || Date.now() > expireTime) {
+      // 已过期，清除存储
+      my.removeStorageSync({
+        key: RB_TOKEN
+      });
+      return null;
+    }
+
+    return token;
+  } catch (error) {
+    console.error('获取 token 失败:', error);
+    return null;
+  }
+};
+
+/**
+ * 清除存储的 token
+ */
+const clearToken = () => {
+  try {
+    my.removeStorageSync({
+      key: RB_TOKEN
+    });
+  } catch (error) {
+    console.error('清除 token 失败:', error);
+  }
+};
+
+/**
+ * 获取有效的 token，如果过期则重新获取
+ * @returns {Promise<string>}
+ */
+const getToken = async () => {
+  // 先从本地存储获取 token
+  let token = getStoredToken();
+  
+  if (!token) {
+    // 本地没有 token 或已过期，需要重新获取
+    let userInfo = getGlobalData((g) => g.userInfo);
+    
+    if (!userInfo || !userInfo.token) {
+      // 等待登录完成（如果正在登录，会复用同一个 Promise）
+      await loginHandle();
+      userInfo = getGlobalData((g) => g.userInfo);
+    }
+    
+    if (userInfo && userInfo.token) {
+      token = userInfo.token;
+      // 保存新的 token 和过期时间
+      setToken(token);
+    }
+  }
+  
+  return token;
+}
+
 let loginPromise = null;
 const loginHandle = () => {
   // 如果正在登录，直接返回现有的 Promise，避免并发调用
@@ -30,7 +130,7 @@ const loginHandle = () => {
   loginPromise = new Promise((resolve, reject) => {
     my.showLoading();
     my.getAuthCode({
-      scopes: ["auth_base"],
+      scopes: ["auth_user"],
       success: async (res) => {
         try {
           // if (!res.authCode) {
@@ -39,13 +139,21 @@ const loginHandle = () => {
           //   reject(new Error("获取授权码失败"));
           //   return;
           // }
-          const result = await loginAPI('2813341301ZlBpLDrGDj70YL00004182');
-          console.log(55);
+          const result = await loginAPI('2813341301bcKFhSAtMS14aM00021483');
+          const {
+            data
+          } = result || {}
           setGlobalData((g) => {
             g.userInfo = {
-              ...result,
+              ...data,
             };
           });
+          
+          // 登录成功后，保存 token 和过期时间
+          if (data && data.token) {
+            setToken(data.token);
+          }
+          
           resolve();
         } catch (error) {
           reject(error);
@@ -72,17 +180,18 @@ const loginHandle = () => {
 const http = new HttpClient();
 http.addRequestInterceptor(async (config) => {
   try {
-    let userInfo = getGlobalData((g) => g.userInfo);
-    if (!userInfo || !userInfo.token) {
-      // 等待登录完成（如果正在登录，会复用同一个 Promise）
-      await loginHandle();
-      userInfo = getGlobalData((g) => g.userInfo);
+    // 使用 getToken 获取有效的 token（会自动处理过期）
+    const token = await getToken();
+    
+    if (!token) {
+      return Promise.reject(new Error('获取 token 失败'));
     }
-    // 如果已有 token，直接添加到请求头
+    
+    // 将 token 添加到请求头
     config.headers = {
       ...config.headers,
       language,
-      Authorization: `Bearer ${userInfo.token}`,
+      Authorization: token,
     };
     return config;
   } catch (error) {

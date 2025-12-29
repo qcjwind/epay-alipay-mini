@@ -3,7 +3,8 @@ import {
 } from "@miniu/data";
 import {
   getNationListAPI,
-  getOperatorListAPI
+  getOperatorListAPI,
+  getUserInfoAPI
 } from "../../services/index";
 
 Page(
@@ -128,9 +129,26 @@ Page(
       });
     },
 
-    getMyNumber() {
+    async getMyNumber() {
+      // try {
+      //   my.showLoading()
+      //   const res = await getUserInfoAPI();
+      //   const {
+      //     data
+      //   } = res || {}
+      //   const {
+      //     phoneNumber
+      //   } = data || {}
+      //   if (phoneNumber) {
+      //     this.setData({
+      //       phone: phoneNumber
+      //     })
+      //   }
+      // } catch (error) {
+      //   my.hideLoading()
+      // }
       my.getAuthCode({
-        scopes: ["auth_base"],
+        scopes: ["auth_user"],
         success: (res) => {
           console.log("authCode", res);
           const authCode = res.authCode;
@@ -181,7 +199,7 @@ Page(
         positiveString: this.data.lang.home.operatorConfirm,
         negativeString: this.data.lang.home.operatorCancel,
         success: (res) => {
-          if(res.selectedOneIndex){
+          if (res.selectedOneIndex) {
             this.setData({
               currentOperator: arr[res.selectedOneIndex],
               currentOperatorIndex: res.selectedOneIndex

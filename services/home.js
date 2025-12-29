@@ -13,10 +13,14 @@ export const loginAPI = (authCode) => {
   );
 };
 
+export const getUserInfoAPI = () => {
+  return post("/topup/auth/userInfo");
+};
+
 // 查询可充值国家
 export const getNationListAPI = () => {
   return post("/topup/operator/nationList", {}, {
-    skipInterceptor: true,
+    // skipInterceptor: true,
   });
 };
 
@@ -25,7 +29,7 @@ export const getOperatorListAPI = (phoneNumber) => {
   return post("/topup/operator/operatorList", {
     phoneNumber,
   }, {
-    skipInterceptor: true,
+    // skipInterceptor: true,
   });
 };
 
