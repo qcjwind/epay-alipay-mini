@@ -59,7 +59,8 @@ Page(createPage({
     errorModalContent: '',
     errorModalShowRetry: false,
     errorModalOkText: '', // 确定按钮文案
-    errorModalRetryText: '' // 重试按钮文案
+    errorModalRetryText: '', // 重试按钮文案
+    errorModalErrorType: 'oneTime' // 错误类型：'oneTime' | 'recurring'
   },
 
   onLoad(query) {
@@ -345,7 +346,7 @@ Page(createPage({
     let title, content, buttonText;
 
     if (type === 'recurring') {
-      title = lang.confirmTopUp.recurringSuccess.Title;
+      title = lang.confirmTopUp.recurringSuccess.title;
       content = lang.confirmTopUp.recurringSuccess.content;
       buttonText = lang.confirmTopUp.recurringSuccess.btn;
     } else if (type === 'oneTime') {
@@ -366,20 +367,25 @@ Page(createPage({
     });
   },
 
-  // 显示异常弹窗（所有文案使用 i18n errorConfig）
-  showErrorModal() {
+  // 显示异常弹窗
+  // errorType: 'oneTime' | 'recurring' 错误类型，默认为 'oneTime'
+  showErrorModal(errorType = 'oneTime', errorModalShowRetry = true) {
     this.resetConfirmButton();
 
     const { lang } = this.data;
-    const errorConfig = lang.confirmTopUp.error;
+    // 根据错误类型选择对应的 i18n 配置
+    const errorConfig = errorType === 'recurring'
+      ? lang.confirmTopUp.recurringError
+      : lang.confirmTopUp.oneTimeError;
 
     this.setData({
       errorModalVisible: true,
       errorModalTitle: errorConfig.title,
       errorModalContent: errorConfig.content,
-      errorModalShowRetry: true,
+      errorModalShowRetry,
       errorModalOkText: errorConfig.btn,
-      errorModalRetryText: errorConfig.retry
+      errorModalRetryText: errorConfig.retry,
+      errorModalErrorType: errorType // 保存错误类型用于重试
     });
   },
 
@@ -475,17 +481,17 @@ Page(createPage({
             this.showSuccessModal('recurring');
           } catch (error) {
             console.error('Confirm recurring agreement error:', error);
-            this.showErrorModal();
+            this.showErrorModal('recurring');
           }
         },
         fail: (res) => {
           console.error('Sign contract fail:', res);
-          this.showErrorModal();
+          this.showErrorModal('recurring');
         }
       })
     } catch (error) {
       console.error('Get auth URL error:', error);
-      this.showErrorModal();
+      this.showErrorModal('recurring');
     }
   },
 
@@ -508,7 +514,7 @@ Page(createPage({
 
     // 验证必要参数
     if (!agreementId) {
-      this.showErrorModal();
+      this.showErrorModal('recurring');
       return;
     }
 
@@ -524,7 +530,7 @@ Page(createPage({
       this.showSuccessModal('recurring');
     }).catch((error) => {
       console.error('Edit recurring error:', error);
-      this.showErrorModal();
+      this.showErrorModal('recurring');
     });
   },
 
@@ -538,14 +544,11 @@ Page(createPage({
       lang
     } = this.data;
 
-    console.log('Create one time top up:', {
-      phoneNumber,
-      operator,
-      userName,
-      amount
-    });
-
     try {
+      my.showLoading({
+        content: 'Paying...'
+      });
+
       // 获取授权码并通知授权
       await new Promise((resolve, reject) => {
         my.getAuthCode({
@@ -597,6 +600,8 @@ Page(createPage({
         redirectUrl: redirectUrl || ''
       });
 
+      my.hideLoading();
+
       // 使用 paymentId 作为 tradeNO 调用支付
       my.tradePay({
         tradeNO: paymentId,
@@ -619,6 +624,7 @@ Page(createPage({
       });
     } catch (error) {
       console.error('One time pay API error:', error);
+      my.hideLoading();
       this.showErrorModal();
     }
   },
@@ -670,23 +676,23 @@ Page(createPage({
 
     // 查询支付状态
     this.queryPaymentStatus(orderId).then((result) => {
-      const { payStatus } = result;
+      const { orderStatus } = result;
 
-      // 根据支付状态处理
-      if (payStatus === 'SUCCESS') {
-        // 支付成功，停止轮询，显示成功弹窗
+      // 根据订单状态处理
+      if (orderStatus === 'TOPUP_SUCCESS') {
+        // 充值成功，停止轮询，显示成功弹窗
         this.stopPolling();
         this.showSuccessModal('oneTime');
-      } else if (payStatus === 'FAILED') {
-        // 支付失败，停止轮询，显示异常弹窗
+      } else if (orderStatus === 'TOPUP_FAILED' || orderStatus === 'CLOSED' || orderStatus === 'ERROR') {
+        // 充值失败，停止轮询，显示异常弹窗
         this.stopPolling();
-        this.showErrorModal();
-      } else if (payStatus === 'PENDING') {
-        // 待支付，继续轮询
+        this.showErrorModal('oneTime');
+      } else if (orderStatus === 'PENDING' || orderStatus === 'PAID') {
+        // 待支付或已支付，继续轮询
         this.continuePolling(orderId);
       } else {
         // 未知状态，继续轮询
-        console.warn('Unknown payment status:', payStatus);
+        console.warn('Unknown order status:', orderStatus);
         this.continuePolling(orderId);
       }
     }).catch((error) => {
@@ -740,7 +746,7 @@ Page(createPage({
     this.stopPolling();
 
     // 显示异常弹窗
-    this.showErrorModal();
+    this.showErrorModal('oneTime', false);
   },
 
 
@@ -751,22 +757,35 @@ Page(createPage({
     });
   },
 
-  // 重试支付
+  // 重试（根据错误类型执行不同的重试逻辑）
   handleErrorModalRetry() {
-    const { paymentId, redirectUrl } = this.data;
-
-    if (!paymentId) {
-      console.error('Payment ID is empty, cannot retry');
-      this.setData({
-        errorModalVisible: false
-      });
-      return;
-    }
+    const { errorModalErrorType, paymentId, redirectUrl, payMethod, editRecurring } = this.data;
 
     // 关闭弹窗
     this.setData({
       errorModalVisible: false
     });
+
+    // 根据错误类型执行不同的重试逻辑
+    if (errorModalErrorType === 'oneTime') {
+      // 单次充值重试：重新调用支付
+      this.retryOneTimePayment(paymentId, redirectUrl);
+    } else if (errorModalErrorType === 'recurring') {
+      // 定期充值重试：重新执行定期充值流程
+      if (editRecurring) {
+        this.editRecurringTopUp();
+      } else {
+        this.createRecurringTopUp();
+      }
+    }
+  },
+
+  // 重试单次支付
+  retryOneTimePayment(paymentId, redirectUrl) {
+    if (!paymentId) {
+      console.error('Payment ID is empty, cannot retry');
+      return;
+    }
 
     // 重新调用支付
     my.tradePay({
@@ -780,24 +799,27 @@ Page(createPage({
           this.startPollingPaymentStatus(orderId);
         } else if (res.resultCode === '4000' || res.resultCode === '6002') {
           // 支付失败，显示异常弹窗
-          this.showErrorModal();
+          this.showErrorModal('oneTime');
         }
       },
       fail: (res) => {
         console.error('tradePay retry fail:', res);
         // 支付失败，显示异常弹窗
-        this.showErrorModal();
+        this.showErrorModal('oneTime');
       }
     });
   },
 
   // 查询支付状态接口
   // 接口入参：orderId string 是 订单ID
-  // 返回：{ payStatus: string, orderId: string }
-  // payStatus 支付状态：
-  //         PENDING: "PENDING", // 待支付
-  //         SUCCESS: "SUCCESS", // 支付成功
-  //         FAILED: "FAILED", // 支付失败
+  // 返回：{ orderStatus: string, orderId: string }
+  // orderStatus 订单状态：
+  //   PAID("PAID"), // 已支付
+  //   PENDING("PENDING"), // 待支付
+  //   TOPUP_SUCCESS("TOPUP_SUCCESS"), // 充值成功
+  //   TOPUP_FAILED("TOPUP_FAILED"), // 充值失败
+  //   CLOSED("CLOSED"), // 已关闭
+  //   ERROR("ERROR"), // 错误
   async queryPaymentStatus(orderId) {
     console.log('Query payment status, orderId:', orderId, 'pollCount:', this.data.pollCount);
 
@@ -805,17 +827,17 @@ Page(createPage({
       const res = await getOneTimeStatusAPI(orderId);
       console.log('Payment status response:', res);
 
-      const payStatus = res.data.payStatus || 'UNKNOWN';
+      const orderStatus = res.data.orderStatus || 'UNKNOWN';
 
       return {
-        payStatus,
+        orderStatus,
         orderId,
       };
     } catch (error) {
       console.error('Query payment status error:', error);
       // 查询失败时返回 UNKNOWN 状态，继续轮询
       return {
-        payStatus: 'UNKNOWN',
+        orderStatus: 'UNKNOWN',
         orderId: orderId,
         error: error.message
       };

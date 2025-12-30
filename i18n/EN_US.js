@@ -102,14 +102,20 @@ export default {
       btn: 'CLOSE',
     },
     recurringSuccess: {
-      Title: "Recurring Top-up Set",
+      title: "Recurring Top-up Set",
       content: "Your recurring top-up was set successfully.",
       btn: "CLOSE",
     },
-    error: {
+    oneTimeError: {
       title: 'Top Up Issue',
       content: 'The top-up times out.',
       btn: 'OK',
+      retry: 'Retry',
+    },
+    recurringError: {
+      title: 'Agreement Anomaly',
+      content: 'Error activating recurring top-up.',
+      btn: 'Close',
       retry: 'Retry',
     }
   },
