@@ -5,8 +5,8 @@
   <view class="page-title">{{lang.confirmTopUp.pageTitle}}</view>
   <!-- 主内容区 -->
   <view class="content">
-    <!-- 用户信息卡片 -->
-    <view class="info-card avatar-card">
+    <!-- 用户信息卡片（有 userName 时显示头像和名称） -->
+    <view class="info-card avatar-card" a:if="{{userName}}">
       <view class="card-left">
         <view class="avatar-wrapper">
           <view class="avatar">
@@ -18,7 +18,17 @@
         </view>
         <view class="user-details">
           <text class="user-name">{{userName}}</text>
-          <text class="user-phone">{{phoneNumber}}</text>
+          <text class="user-phone">{{displayPhoneNumber}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 电话号码卡片（没有 userName 时显示，样式和下面卡片保持一致） -->
+    <view class="info-card" a:if="{{!userName}}">
+      <view class="card-left">
+        <view class="card-content">
+          <text class="card-label">Mobile number</text>
+          <text class="card-value">{{displayPhoneNumber}}</text>
         </view>
       </view>
     </view>
@@ -38,7 +48,7 @@
       <view class="card-left">
         <view class="card-content">
           <text class="card-label">Amount Top up</text>
-          <text class="card-value">{{amount}}€</text>
+          <text class="card-value">{{displayAmount}}€</text>
         </view>
       </view>
       <button class="change-btn" onTap="handleChangeAmount">CHANGE</button>
@@ -106,5 +116,17 @@
     buttonText="{{successModalButtonText}}"
     onClose="handleSuccessModalClose"
   ></success-modal>
+
+  <!-- 异常弹窗 -->
+  <error-modal
+    visible="{{errorModalVisible}}"
+    title="{{errorModalTitle}}"
+    content="{{errorModalContent}}"
+    okButtonText="{{errorModalOkText}}"
+    retryButtonText="{{errorModalRetryText}}"
+    showRetry="{{errorModalShowRetry}}"
+    onOk="handleErrorModalOk"
+    onRetry="handleErrorModalRetry"
+  ></error-modal>
 </view>
 

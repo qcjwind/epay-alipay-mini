@@ -1,0 +1,21 @@
+<popup
+  visible="{{visible}}"
+  position="center"
+  maskClosable="{{false}}"
+  zIndex="{{9999}}"
+  disableScroll="{{true}}"
+  safeArea="{{false}}"
+>
+  <view class="error-modal-content">
+    <!-- 标题 -->
+    <view class="error-title">{{title}}</view>
+    <!-- 内容 -->
+    <view class="error-content">{{content}}</view>
+    <!-- 按钮组 -->
+    <view class="error-buttons">
+      <button class="error-btn error-btn-ok {{showRetry ? 'error-btn-with-retry' : 'error-btn-full'}}" onTap="handleOk">{{okButtonText}}</button>
+      <button a:if="{{showRetry}}" class="error-btn error-btn-retry" onTap="handleRetry">{{retryButtonText}}</button>
+    </view>
+  </view>
+</popup>
+

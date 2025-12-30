@@ -15,8 +15,10 @@ Page(createPage({
     payMethod: '', // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
     
     // 页面自身数据
-    selectedAmount: '0',
-    faceValueList: [], // list<string> 是 充值面额列表（从接口获取）
+    selectedAmount: '0', // 选中的 amount 值（用于传参）
+    selectedFaceValue: '0', // 选中的 faceValue 值（用于显示）
+    faceValueList: [], // list<string> 是 充值面额列表（用于显示，faceValue 数组）
+    faceValueDataList: [], // 完整的数据对象数组 {amount, currency, faceValue}
     backgroundClass: ''
   },
 
@@ -30,10 +32,12 @@ Page(createPage({
     // recurringType: string 否 周期类型 周：WEEK 月：MONTH（仅从设置定期页面跳转时有值）
     // recurringDay: string 否 周期日期（仅从设置定期页面跳转时有值）
     // payMethod: string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
-    const { phoneNumber, operator, userName, recurringType, recurringDay, payMethod } = query;
+    // phonePrefix: string 否 电话前缀
+    const { phoneNumber, phonePrefix, operator, userName, recurringType, recurringDay, payMethod } = query;
     
     this.setData({
       phoneNumber: phoneNumber || '',
+      phonePrefix: phonePrefix || '',
       operator: operator || '',
       userName: userName || '',
       // 这两个参数可能为空（从首页直接跳转时）
@@ -61,7 +65,7 @@ Page(createPage({
 
   // 获取充值面额列表
   // 接口入参：operator string 是 运营商
-  // 接口响应：faceValueList list<string> 是 充值面额列表
+  // 接口响应：data array 是 充值面额列表，对象结构 {amount: 500, currency: "EUR", faceValue: "5.00"}
   async getFaceValueList() {
     const { operator } = this.data;
     
@@ -76,9 +80,13 @@ Page(createPage({
       const res = await getFaceValueListAPI(operator);
       console.info('API response:', res);
       
-      // 使用接口返回的 faceValueList 字段
+      // 保存完整的数据对象数组
+      const data = res.data || [];
+      const faceValueList = data.map(item => item.faceValue || '');
+      
       this.setData({
-        faceValueList: res.faceValueList || []
+        faceValueList: faceValueList,
+        faceValueDataList: data
       });
     } catch (error) {
       console.error('Failed to get face value list:', error);
@@ -87,14 +95,14 @@ Page(createPage({
   },
 
   // 根据金额计算背景类名
-  getBackgroundClass(amount) {
+  getBackgroundClass(faceValue) {
     // 默认背景为空
-    if (amount === '0' || !amount) {
+    if (faceValue === '0' || !faceValue) {
       return '';
     }
 
     const { faceValueList } = this.data;
-    const amountIndex = faceValueList.indexOf(amount);
+    const amountIndex = faceValueList.indexOf(faceValue);
     
     if (amountIndex === -1) {
       return ''; // 默认背景为空
@@ -125,8 +133,8 @@ Page(createPage({
   },
 
   // 更新背景
-  updateBackground(amount) {
-    const backgroundClass = this.getBackgroundClass(amount);
+  updateBackground(faceValue) {
+    const backgroundClass = this.getBackgroundClass(faceValue);
     this.setData({
       backgroundClass: backgroundClass
     });
@@ -134,12 +142,20 @@ Page(createPage({
 
   // 选择金额
   selectAmount(e) {
+    const faceValue = e.currentTarget.dataset.faceValue;
     const amount = e.currentTarget.dataset.amount;
+    
+    // 根据 faceValue 找到对应的 amount
+    const { faceValueDataList } = this.data;
+    const selectedItem = faceValueDataList.find(item => item.faceValue === faceValue);
+    const selectedAmountValue = selectedItem ? String(selectedItem.amount) : amount;
+    
     this.setData({
-      selectedAmount: amount
+      selectedAmount: selectedAmountValue, // 保存 amount 用于传参
+      selectedFaceValue: faceValue // 保存 faceValue 用于显示
     });
     // 更新背景
-    this.updateBackground(amount);
+    this.updateBackground(faceValue);
   },
 
   // 继续按钮
@@ -152,16 +168,16 @@ Page(createPage({
       userName,         // string 是 用户姓名
       recurringType,    // string 否 周期类型 周：WEEK 月：MONTH
       recurringDay,     // string 否 周期日期
-      payMethod         // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
+      payMethod,         // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
+      phonePrefix
     } = this.data;
     
     // 验证是否选择了面额
     if (!selectedAmount || selectedAmount === '0') {
-      my.showModal({
+      my.alert({
         title: lang.chooseAmount.selectAmountTitle,
         content: lang.chooseAmount.selectAmountContent,
-        confirmText: lang.message.ok,
-        showCancel: false,
+        buttonText: lang.message.ok
       });
       return;
     }
@@ -169,6 +185,7 @@ Page(createPage({
     // 构建参数对象，透传所有接收到的参数，并添加 amount 字段
     const params = {
       phoneNumber,
+      phonePrefix, // 透传 phonePrefix
       operator,
       userName,
       amount: selectedAmount, // string 是 充值金额

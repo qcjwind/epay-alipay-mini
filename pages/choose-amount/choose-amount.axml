@@ -7,7 +7,7 @@
   <view class="content">
     <!-- 金额显示 -->
     <view class="amount-display">
-      <text class="amount-value">{{selectedAmount}}</text>
+      <text class="amount-value">{{selectedFaceValue}}</text>
       <text class="amount-currency">€</text>
     </view>
     <!-- 背景图区域 -->
@@ -23,13 +23,14 @@
   >
     <view class="amount-buttons">
       <view 
-        a:for="{{faceValueList}}"
-        a:key="*this"
-        class="amount-btn {{selectedAmount === item ? 'active' : ''}}"
-        data-amount="{{item}}"
+        a:for="{{faceValueDataList}}"
+        a:key="index"
+        class="amount-btn {{selectedFaceValue === item.faceValue ? 'active' : ''}}"
+        data-face-value="{{item.faceValue}}"
+        data-amount="{{item.amount}}"
         onTap="selectAmount"
       >
-        <text class="amount-btn-text">{{item}}€</text>
+        <text class="amount-btn-text">{{item.faceValue}}€</text>
       </view>
     </view>
   </scroll-view>

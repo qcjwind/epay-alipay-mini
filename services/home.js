@@ -1,5 +1,4 @@
 import {
-  get,
   post
 } from "../http/index";
 
@@ -15,6 +14,15 @@ export const loginAPI = (authCode) => {
 
 export const getUserInfoAPI = () => {
   return post("/topup/auth/userInfo");
+};
+
+// 通知授权
+// 入参：authCode string 是 授权码
+// 出参：无
+export const notificationAuthAPI = (authCode) => {
+  return post("/topup/auth/notification", {
+    authCode
+  });
 };
 
 // 查询可充值国家
@@ -35,12 +43,12 @@ export const getOperatorListAPI = (phoneNumber) => {
 
 // 查询充值记录列表
 export const getHistoryListAPI = (params) => {
-  return get("/topup/history/list", params);
+  return post("/topup/history/list", params);
 };
 
 // 历史详情
 export const getHistoryDetailAPI = (orderId) => {
-  return get("/topup/history/detial", {
+  return post("/topup/history/detial", {
     orderId,
   });
 };

@@ -10,7 +10,7 @@
       selectedFrequency="{{recurringType}}"
       dayLabel="Select day"
       dayOptions="{{days}}"
-      selectedDay="{{recurringDay}}"
+      selectedDay="{{displayRecurringDay || recurringDay}}"
       showContinueButton="{{false}}"
       onFrequencyChange="onFrequencyChange"
       onDayChange="onDayChange"
