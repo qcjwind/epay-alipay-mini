@@ -1,12 +1,11 @@
 import {
-  get,
   post
 } from "../http/index";
 import { uuid } from "../utils/uuid";
 
 // 查询充值面额列表
 export const getFaceValueListAPI = (operator) => {
-  return get('/topup/operator/faceValueList', {
+  return post('/topup/operator/faceValueList', {
     operator
   })
 }
@@ -19,12 +18,10 @@ export const getFaceValueListAPI = (operator) => {
 // 出参：paymentId string 是 支付ID
 //      orderId string 是 订单ID
 export const oneTimePayAPI = (params) => {
-  const { phoneNumber, operator, amount } = params;
   const requestId = uuid(); // 内部自动生成请求幂等ID
+
   return post('/topup/oneTime/pay', {
-    phoneNumber,
-    operator,
-    amount,
+    ...params,
     requestId
   })
 }
@@ -38,16 +35,16 @@ export const oneTimePayAPI = (params) => {
 //          异常：EXCEPTION
 //      exceptionReason string 否 异常原因
 export const getOneTimeStatusAPI = (orderId) => {
-  return get('/topup/oneTime/status', {
+  return post('/topup/oneTime/status', {
     orderId
   })
 }
 
 // 获取周期签约信息
-// 入参：无
-// 出参：authURL string 是 授权URL
-export const getRecurringAuthUrlAPI = () => {
-  return get('/topup/recurring/authUrl')
+//      agreedAmount object 否 授权金额 {currency: "EUR", value: "1000"} value为欧分
+// 出参：authUrl string 是 授权URL
+export const getRecurringAuthUrlAPI = (params) => {
+  return post('/topup/recurring/authUrl', params)
 }
 
 // 开启周期充值
@@ -59,15 +56,8 @@ export const getRecurringAuthUrlAPI = () => {
 //      authCode string 是 签约授权码
 // 出参：无
 export const confirmRecurringAgreementAPI = (params) => {
-  const { phoneNumber, operator, amount, recurringType, recurringDay, authCode } = params;
-  return post('/topup/recurring/confirmAgreement', {
-    phoneNumber,
-    operator,
-    amount,
-    recurringType,
-    recurringDay,
-    authCode
-  })
+  // const { phoneNumber, operator, amount, recurringType, recurringDay, authCode } = params;
+  return post('/topup/recurring/confirmAgreement', params)
 }
 
 // 暂停周期充值

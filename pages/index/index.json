@@ -4,6 +4,7 @@
     "drawer": "/components/Drawer/Drawer",
     "nav-bar": "/components/nav-bar//nav-bar",
     "tab-bar": "/components/tab-bar/index",
-    "save-contact": "./components/save-contact/index"
+    "save-contact": "./components/save-contact/index",
+    "popup-picker": "/components/popup-picker/popup-picker"
   }
 }

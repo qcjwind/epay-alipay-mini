@@ -68,6 +68,16 @@
       </view>
     </block>
 
+    <!-- 运营商选择弹窗 -->
+    <popup-picker
+      visible="{{operatorPickerVisible}}"
+      title="{{lang.home.chooseOperaroe}}"
+      options="{{operatorOptions}}"
+      selectedIndex="{{currentOperatorIndex}}"
+      onClose="handleOperatorPickerClose"
+      onConfirm="handleOperatorPickerConfirm"
+    ></popup-picker>
+
     <view class="home-banner">
       <swiper>
         <swiper-item>

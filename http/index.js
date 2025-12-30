@@ -221,5 +221,6 @@ export const get = (url, params, options) => {
 };
 
 export const post = (url, data, options) => {
+  // return http.post(url, data, { ...options, skipInterceptor: true });
   return http.post(url, data, options);
 };

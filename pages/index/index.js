@@ -25,10 +25,12 @@ Page(
         phone: '',
         payMethod: "oneTime",
         operatorList: [],
+        operatorOptions: [], // 运营商选项数组（用于 popup-picker）
         currentNation: {},
         currentNationIndex: 0,
         currentOperator: '',
-        currentOperatorIndex: 0
+        currentOperatorIndex: 0,
+        operatorPickerVisible: false
       };
     },
     onLoad(query) {
@@ -61,9 +63,12 @@ Page(
         const {
           data
         } = res || {};
+        const operatorOptions = data ? data.map(item => item.operator) : [];
         this.setData({
           operatorList: data,
-          currentOperator: data ? data[0].operator : ''
+          operatorOptions: operatorOptions,
+          currentOperator: data ? data[0].operator : '',
+          currentOperatorIndex: 0
         });
       } catch (error) {
         my.hideLoading();
@@ -204,20 +209,31 @@ Page(
     },
 
     chooseOperator() {
-      const arr = this.data.operatorList.map(item => item.operator)
-      my.optionsSelect({
-        selectedOneIndex: this.data.currentOperatorIndex,
-        optionsOne: arr,
-        positiveString: this.data.lang.home.operatorConfirm,
-        negativeString: this.data.lang.home.operatorCancel,
-        success: (res) => {
-          if (res.selectedOneIndex) {
-            this.setData({
-              currentOperator: arr[res.selectedOneIndex],
-              currentOperatorIndex: res.selectedOneIndex
-            });
-          }
-        },
+      const arr = this.data.operatorList.map(item => item.operator);
+      if (arr.length === 0) {
+        my.showToast({
+          content: 'No operator available'
+        });
+        return;
+      }
+      this.setData({
+        operatorPickerVisible: true
+      });
+    },
+
+    handleOperatorPickerClose() {
+      this.setData({
+        operatorPickerVisible: false
+      });
+    },
+
+    handleOperatorPickerConfirm(index) {
+      const { operatorOptions } = this.data;
+      const selectedOperator = operatorOptions[index];
+      this.setData({
+        currentOperator: selectedOperator,
+        currentOperatorIndex: index,
+        operatorPickerVisible: false
       });
     },
 
@@ -280,9 +296,14 @@ Page(
         });
         return;
       }
-      let queryStr = `phoneNumber=${encodeURIComponent(this.data.currentNation.phonePrefix)} ${this.data.phone}&operator=${this.data.currentOperator}`;
+
+      const phonePrefix = this.data.currentNation.phonePrefix || '';
+
+      // 使用 encodeURIComponent 编码参数，确保 + 号不会丢失
+      let queryStr = `phoneNumber=${encodeURIComponent(this.data.phone)}&phonePrefix=${encodeURIComponent(phonePrefix)}&operator=${encodeURIComponent(this.data.currentOperator)}&payMethod=${encodeURIComponent(this.data.payMethod)}`;
       if (this.data.user && this.data.user.mobile) {
-        queryStr = `phoneNumber=${this.data.user.mobile}&userName=${this.data.user.name}&operator=${this.data.currentOperator}`;
+        // 选择联系人时，mobile 可能已包含前缀，但为了统一处理，也传递 phonePrefix
+        queryStr = `phoneNumber=${encodeURIComponent(this.data.user.mobile)}&phonePrefix=${encodeURIComponent(phonePrefix)}&userName=${encodeURIComponent(this.data.user.name)}&operator=${encodeURIComponent(this.data.currentOperator)}&payMethod=${encodeURIComponent(this.data.payMethod)}`;
       }
       let jumpUrl = `/pages/set-recurring/set-recurring?${queryStr}`;
       if (this.data.payMethod === "oneTime") {

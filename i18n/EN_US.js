@@ -105,6 +105,12 @@ export default {
       Title: "Recurring Top-up Set",
       content: "Your recurring top-up was set successfully.",
       btn: "CLOSE",
+    },
+    error: {
+      title: 'Top Up Issue',
+      content: 'The top-up times out.',
+      btn: 'OK',
+      retry: 'Retry',
     }
   },
 };
