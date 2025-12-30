@@ -222,36 +222,34 @@ Page(
     },
 
     checkPhoneNum(isTip = true) {
-      if (this.data.user) {
-        if (!this.data.user.mobile) {
-          isTip &&
-            my.alert({
-              title: this.data.lang.home.alert.title,
-              content: this.data.lang.home.alert.msg,
-              buttonText: this.data.lang.home.alert.btn,
-            });
-          return false;
+      // 获取手机号
+      const phoneNumber = (this.data.user && this.data.user.mobile) || this.data.phone;
+
+      // 检查手机号是否存在
+      if (!phoneNumber) {
+        if (isTip) {
+          my.alert({
+            title: this.data.lang.home.alert.title,
+            content: this.data.lang.home.alert.msg,
+            buttonText: this.data.lang.home.alert.btn,
+          });
         }
-      } else {
-        if (!this.data.phone) {
-          isTip &&
-            my.alert({
-              title: this.data.lang.home.alert.title,
-              content: this.data.lang.home.alert.msg,
-              buttonText: this.data.lang.home.alert.btn,
-            });
-          return false;
-        }
-        if (this.data.phone.length !== 10) {
-          isTip &&
-            my.alert({
-              title: this.data.lang.home.alert.invalidTitle,
-              content: this.data.lang.home.alert.msg,
-              buttonText: this.data.lang.home.alert.btn,
-            });
-          return false;
-        }
+        return false;
       }
+
+      // 检查手机号长度：支持 9 位或 10 位
+      const phoneLength = phoneNumber.length;
+      if (phoneLength !== 9 && phoneLength !== 10) {
+        if (isTip) {
+          my.alert({
+            title: this.data.lang.home.alert.invalidTitle,
+            content: this.data.lang.home.alert.msg,
+            buttonText: this.data.lang.home.alert.btn,
+          });
+        }
+        return false;
+      }
+
       return true;
     },
 
