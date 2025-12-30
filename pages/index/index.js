@@ -22,6 +22,7 @@ Page(
         selectedOneIndex: 0,
         selectedOneOption: "",
         operator: [],
+        phone: '',
         payMethod: "oneTime",
         operatorList: [],
         currentNation: {},
@@ -130,36 +131,47 @@ Page(
     },
 
     async getMyNumber() {
-      // try {
-      //   my.showLoading()
-      //   const res = await getUserInfoAPI();
-      //   const {
-      //     data
-      //   } = res || {}
-      //   const {
-      //     phoneNumber
-      //   } = data || {}
-      //   if (phoneNumber) {
-      //     this.setData({
-      //       phone: phoneNumber
-      //     })
-      //   }
-      // } catch (error) {
-      //   my.hideLoading()
-      // }
-      my.getAuthCode({
-        scopes: ["auth_user"],
-        success: (res) => {
-          console.log("authCode", res);
-          const authCode = res.authCode;
-          this.clearUser();
-        },
-        fail: (err) => {
-          my.alert({
-            content: JSON.stringify(err),
-          });
-        },
-      });
+      try {
+        my.showLoading()
+        const res = await getUserInfoAPI();
+        my.hideLoading()
+        const {
+          data
+        } = res || {}
+        const {
+          phoneNumber
+        } = data || {}
+        if (phoneNumber) {
+          const arr = phoneNumber.split('-')
+          const nationIndex = this.data.nationList.findIndex(item => item.phonePrefix === `+${arr[0]}`)
+          const data = {
+            phone: arr[1]
+          }
+          if (nationIndex >= 0) {
+            data.currentNation = this.data.nationList[nationIndex]
+            data.currentNationIndex = nationIndex
+          }
+          this.getgetOperatorList(arr[1])
+          this.setData({
+            phone: arr[1]
+          })
+        }
+      } catch (error) {
+        my.hideLoading()
+      }
+      // my.getAuthCode({
+      //   scopes: ["auth_user"],
+      //   success: (res) => {
+      //     console.log("authCode", res);
+      //     const authCode = res.authCode;
+      //     this.clearUser();
+      //   },
+      //   fail: (err) => {
+      //     my.alert({
+      //       content: JSON.stringify(err),
+      //     });
+      //   },
+      // });
     },
 
     enterNumber() {

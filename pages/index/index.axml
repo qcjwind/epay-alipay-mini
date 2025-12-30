@@ -16,7 +16,7 @@
                 <input
                   maxlength="10"
                   type="number"
-                  value="{{code}}"
+                  value="{{phone}}"
                   class="inp-box"
                   onInput="inpNumber"
                   placeholder="(000) 000-0000"
