@@ -45,13 +45,12 @@ Page(createPage({
     successModalTitle: '', // 成功弹窗标题
     successModalContent: '', // 成功弹窗内容
     successModalButtonText: '', // 成功弹窗按钮文案
+    successModalType: '', // 成功弹窗类型：'oneTime' | 'recurring'
 
     // 轮询相关
     pollTimer: null, // 轮询定时器
     pollCount: 0, // 轮询次数
     orderId: '', // 订单ID（用于查询支付状态）
-    paymentId: '', // 支付ID（用于重试支付）
-    redirectUrl: '', // 支付跳转URL（用于重试支付）
 
     // 异常弹窗相关
     errorModalVisible: false,
@@ -212,7 +211,6 @@ Page(createPage({
 
   // 修改金额
   handleChangeAmount() {
-    console.log('Change amount');
     // 找到当前金额在选项中的索引（根据 amount 值查找）
     const { amount, faceValueDataList } = this.data;
     const currentIndex = faceValueDataList.findIndex(item => String(item.amount) === String(amount));
@@ -240,19 +238,17 @@ Page(createPage({
         displayAmount: selectedItem.faceValue, // 保存 faceValue 用于显示
         amountPickerVisible: false
       });
-      console.log('Selected amount:', selectedItem.amount, 'faceValue:', selectedItem.faceValue);
     }
   },
 
   // 修改定期充值
   handleChangeRecurring() {
-    console.log('Change recurring');
     // 使用当前接收到的参数设置初始值
     const { recurringType, recurringDay } = this.data;
 
     // 如果没有参数，使用默认值
     let frequency = recurringType || 'WEEK';
-    let day = recurringDay || '1'; // 默认使用数字 '1' (MONDAY)
+    let day = recurringDay || '1'; // 默认使用数字 '1' (SUNDAY)
 
     // 如果是周，将数字转换为星期名称用于显示
     if (frequency === 'WEEK') {
@@ -304,7 +300,6 @@ Page(createPage({
       recurringPickerVisible: false
     });
 
-    console.log('Selected recurring:', recurringText, 'dayValue for API:', day);
   },
 
   // 确认按钮（带防抖）
@@ -363,7 +358,8 @@ Page(createPage({
       successModalVisible: true,
       successModalTitle: title,
       successModalContent: content,
-      successModalButtonText: buttonText
+      successModalButtonText: buttonText,
+      successModalType: type // 保存类型用于关闭时判断
     });
   },
 
@@ -399,7 +395,6 @@ Page(createPage({
       confirmButtonText: lang.message.loading_ellipsis.toUpperCase()
     });
 
-    console.log('Confirm top up, payMethod:', payMethod, 'editRecurring:', editRecurring);
 
     // 根据充值类型调用不同的接口
     if (payMethod === 'recurring') {
@@ -418,21 +413,11 @@ Page(createPage({
     const {
       phoneNumber,
       operator,
-      userName,
-      amount,
-      recurringType,
-      recurringDay,
-      lang
-    } = this.data;
-
-    console.log('Create recurring top up:', {
-      phoneNumber,
-      operator,
-      userName,
       amount,
       recurringType,
       recurringDay
-    });
+    } = this.data;
+
 
     try {
       const { faceValueDataList } = this.data;
@@ -451,44 +436,66 @@ Page(createPage({
         recurringType,
         recurringDay,
       });
-      console.log('Get auth URL response:', authUrlRes);
 
-      const authUrl = authUrlRes.data.authUrl;
+      const { contractStatus, authUrl } = authUrlRes.data;
 
-      if (!authUrl) {
-        throw new Error('Auth URL is empty');
-      }
+      // 根据签约状态决定流程
+      if (contractStatus === 'VALID') {
+        // 签约有效，直接调用后续签约接口
+        try {
+          await confirmRecurringAgreementAPI({
+            phoneNumber,
+            operator,
+            amount,
+            recurringType,
+            recurringDay
+            // VALID 状态不需要 authCode
+          });
 
-      my.call("customSignContract", {
-        authUrl,
-        success: async (res) => {
-          console.log('Sign contract success, authCode:', res.authCode);
 
-          try {
-            // 调用开启周期充值接口
-            await confirmRecurringAgreementAPI({
-              phoneNumber,
-              operator,
-              amount,
-              recurringType,
-              recurringDay,
-              authCode: res.authCode
-            });
-
-            console.log('Confirm recurring agreement success');
-
-            // 接口成功后显示成功弹窗
-            this.showSuccessModal('recurring');
-          } catch (error) {
-            console.error('Confirm recurring agreement error:', error);
-            this.showErrorModal('recurring');
-          }
-        },
-        fail: (res) => {
-          console.error('Sign contract fail:', res);
+          // 接口成功后显示成功弹窗
+          this.showSuccessModal('recurring');
+        } catch (error) {
+          console.error('Confirm recurring agreement error:', error);
           this.showErrorModal('recurring');
         }
-      })
+      } else if (contractStatus === 'INVALID') {
+        // 签约无效，返回 authUrl 拉起签约页面
+        if (!authUrl) {
+          throw new Error('Auth URL is empty');
+        }
+
+        my.call("customSignContract", {
+          authUrl,
+          success: async (res) => {
+
+            try {
+              // 调用开启周期充值接口
+              await confirmRecurringAgreementAPI({
+                phoneNumber,
+                operator,
+                amount,
+                recurringType,
+                recurringDay,
+                authCode: res.authCode
+              });
+
+
+              // 接口成功后显示成功弹窗
+              this.showSuccessModal('recurring');
+            } catch (error) {
+              console.error('Confirm recurring agreement error:', error);
+              this.showErrorModal('recurring');
+            }
+          },
+          fail: (res) => {
+            console.error('Sign contract fail:', res);
+            this.showErrorModal('recurring');
+          }
+        });
+      } else {
+        throw new Error(`Unknown contract status: ${contractStatus}`);
+      }
     } catch (error) {
       console.error('Get auth URL error:', error);
       this.showErrorModal('recurring');
@@ -501,16 +508,9 @@ Page(createPage({
       agreementId,
       amount,
       recurringType,
-      recurringDay,
-      lang
+      recurringDay
     } = this.data;
 
-    console.log('Edit recurring top up:', {
-      agreementId,
-      amount,
-      recurringType,
-      recurringDay
-    });
 
     // 验证必要参数
     if (!agreementId) {
@@ -525,7 +525,6 @@ Page(createPage({
       recurringType,
       recurringDay
     }).then((res) => {
-      console.log('Edit recurring success:', res);
       // 接口成功后显示成功弹窗
       this.showSuccessModal('recurring');
     }).catch((error) => {
@@ -539,9 +538,7 @@ Page(createPage({
     const {
       phoneNumber,
       operator,
-      userName,
-      amount,
-      lang
+      amount
     } = this.data;
 
     try {
@@ -550,14 +547,13 @@ Page(createPage({
       });
 
       // 获取授权码并通知授权
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve) => {
         my.getAuthCode({
           scopes: ['NOTIFICATION_INBOX'],
           success: async (res) => {
             try {
               // 调用通知授权接口
               await notificationAuthAPI(res.authCode);
-              console.log('Notification auth success');
               resolve();
             } catch (error) {
               console.error('Notification auth error:', error);
@@ -585,7 +581,6 @@ Page(createPage({
         currency
       });
 
-      console.log('One time pay API response:', payRes);
 
       const { paymentId, orderId, redirectUrl } = payRes.data;
 
@@ -593,11 +588,9 @@ Page(createPage({
         throw new Error('Payment ID is empty');
       }
 
-      // 保存 orderId、paymentId 和 redirectUrl 用于后续查询状态和重试
+      // 保存 orderId 用于后续查询状态
       this.setData({
-        orderId: orderId || '',
-        paymentId: paymentId || '',
-        redirectUrl: redirectUrl || ''
+        orderId: orderId || ''
       });
 
       my.hideLoading();
@@ -607,13 +600,14 @@ Page(createPage({
         tradeNO: paymentId,
         paymentUrl: redirectUrl,
         success: (res) => {
-          console.log('tradePay success:', res);
           if (res.resultCode === '9000') {
             // 启动轮询查询支付状态（使用 orderId）
             this.startPollingPaymentStatus(orderId);
           } else if (res.resultCode === '4000' || res.resultCode === '6002') {
             // 支付失败，显示异常弹窗
             this.showErrorModal();
+          } else {
+            this.resetConfirmButton();
           }
         },
         fail: (res) => {
@@ -631,13 +625,15 @@ Page(createPage({
 
   // 关闭成功弹窗
   handleSuccessModalClose() {
+    const { successModalType } = this.data;
+    
     this.setData({
       successModalVisible: false
     });
 
     // 跳转到历史充值页面
     my.switchTab({
-      url: '/pages/history/index'
+      url: successModalType === 'oneTime' ? '/pages/history/index?currentKey=topUp' : '/pages/history/index'
     });
   },
 
@@ -741,14 +737,13 @@ Page(createPage({
   },
 
   // 处理轮询异常
-  handlePollingError(error) {
+  handlePollingError() {
     // 停止轮询
     this.stopPolling();
 
     // 显示异常弹窗
     this.showErrorModal('oneTime', false);
   },
-
 
   // 关闭异常弹窗
   handleErrorModalOk() {
@@ -759,7 +754,7 @@ Page(createPage({
 
   // 重试（根据错误类型执行不同的重试逻辑）
   handleErrorModalRetry() {
-    const { errorModalErrorType, paymentId, redirectUrl, payMethod, editRecurring } = this.data;
+    const { errorModalErrorType, payMethod, editRecurring } = this.data;
 
     // 关闭弹窗
     this.setData({
@@ -768,8 +763,8 @@ Page(createPage({
 
     // 根据错误类型执行不同的重试逻辑
     if (errorModalErrorType === 'oneTime') {
-      // 单次充值重试：重新调用支付
-      this.retryOneTimePayment(paymentId, redirectUrl);
+      // 单次充值重试：重新执行单次充值流程（重新获取 paymentId 和 redirectUrl）
+      this.createOneTimeTopUp();
     } else if (errorModalErrorType === 'recurring') {
       // 定期充值重试：重新执行定期充值流程
       if (editRecurring) {
@@ -778,36 +773,6 @@ Page(createPage({
         this.createRecurringTopUp();
       }
     }
-  },
-
-  // 重试单次支付
-  retryOneTimePayment(paymentId, redirectUrl) {
-    if (!paymentId) {
-      console.error('Payment ID is empty, cannot retry');
-      return;
-    }
-
-    // 重新调用支付
-    my.tradePay({
-      tradeNO: paymentId,
-      paymentUrl: redirectUrl,
-      success: (res) => {
-        console.log('tradePay retry success:', res);
-        if (res.resultCode === '9000') {
-          // 重新启动轮询查询支付状态
-          const { orderId } = this.data;
-          this.startPollingPaymentStatus(orderId);
-        } else if (res.resultCode === '4000' || res.resultCode === '6002') {
-          // 支付失败，显示异常弹窗
-          this.showErrorModal('oneTime');
-        }
-      },
-      fail: (res) => {
-        console.error('tradePay retry fail:', res);
-        // 支付失败，显示异常弹窗
-        this.showErrorModal('oneTime');
-      }
-    });
   },
 
   // 查询支付状态接口

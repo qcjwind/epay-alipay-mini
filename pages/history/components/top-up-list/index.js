@@ -68,11 +68,11 @@ Component({
         const res = await getHistoryListAPI(param)
         my.hideLoading()
         const {
-          orderList,
+          list,
           total
         } = res.data || {};
         this.setData({
-          historyList: orderList,
+          historyList: list,
           paging: {
             ...this.data.paging,
             isMore: (+total / this.paging.pageSize) > this.paging.pageSize,

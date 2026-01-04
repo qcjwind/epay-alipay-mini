@@ -48,10 +48,10 @@ Component(
           my.showLoading();
           const res = await getRecurringListAPI(param);
           my.hideLoading();
-          const { orderList, total } = res.data || {};
+          const { list, total } = res.data || {};
           this.setData({
             isMore: +total / this.paging.pageSize > this.paging.pageSize,
-            recurringList: orderList,
+            recurringList: list,
             total,
           });
         } catch (error) {

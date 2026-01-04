@@ -1,3 +1,5 @@
+import { WEEK_DAY_MAP, WEEK_DAY_REVERSE_MAP } from '../../utils/util';
+
 Component({
   props: {
     // 频率选项配置
@@ -35,8 +37,9 @@ Component({
     selectedDayIndex: 0,
     showDayPicker: false,
     currentDayOptions: [],
-    // 星期选项
-    weekOptions: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'],
+    displayDay: '', // 用于显示的日期值
+    // 星期选项（1=SUNDAY, 2=MONDAY, ..., 7=SATURDAY）
+    weekOptions: ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'],
     // 月份日期选项（1-28）
     monthOptions: Array.from({ length: 28 }, (_, i) => String(i + 1))
   },
@@ -45,22 +48,29 @@ Component({
     'selectedFrequency'(selectedFrequency) {
       // 当频率变化时，自动更新日期选项
       this.updateDayOptions();
+      this.updateDisplayDay();
     },
     'selectedDay'(selectedDay) {
-      // 当选中日期变化时，更新索引
+      // 当选中日期变化时，更新索引和显示值
       this.updateDayIndex();
+      this.updateDisplayDay();
     }
   },
 
   didMount() {
-    // 组件挂载时初始化日期选项
+    // 组件挂载时初始化日期选项和显示值
     this.updateDayOptions();
+    this.updateDisplayDay();
   },
 
   didUpdate(prevProps) {
-    // 当 props 变化时，更新日期选项
+    // 当 props 变化时，更新日期选项和显示值
     if (prevProps.selectedFrequency !== this.props.selectedFrequency) {
       this.updateDayOptions();
+      this.updateDisplayDay();
+    }
+    if (prevProps.selectedDay !== this.props.selectedDay) {
+      this.updateDisplayDay();
     }
   },
 
@@ -86,16 +96,7 @@ Component({
       // 如果是周，需要将数字转换为星期名称来检查
       let dayToCheck = selectedDay;
       if (selectedFrequency === 'WEEK' && selectedDay) {
-        const numberToWeekMap = {
-          '1': 'MONDAY',
-          '2': 'TUESDAY',
-          '3': 'WEDNESDAY',
-          '4': 'THURSDAY',
-          '5': 'FRIDAY',
-          '6': 'SATURDAY',
-          '7': 'SUNDAY'
-        };
-        dayToCheck = numberToWeekMap[String(selectedDay)] || selectedDay;
+        dayToCheck = WEEK_DAY_REVERSE_MAP[String(selectedDay)] || selectedDay;
       }
       
       if (selectedDay && !dayOptions.includes(dayToCheck)) {
@@ -105,16 +106,7 @@ Component({
         if (onDayChange) {
           let defaultDayValue = defaultDay;
           if (selectedFrequency === 'WEEK') {
-            const weekDayMap = {
-              'MONDAY': '1',
-              'TUESDAY': '2',
-              'WEDNESDAY': '3',
-              'THURSDAY': '4',
-              'FRIDAY': '5',
-              'SATURDAY': '6',
-              'SUNDAY': '7'
-            };
-            defaultDayValue = weekDayMap[defaultDay] || defaultDay;
+            defaultDayValue = WEEK_DAY_MAP[defaultDay] || defaultDay;
           }
           onDayChange(defaultDayValue);
         }
@@ -136,21 +128,34 @@ Component({
       // 如果是周，需要将数字转换为星期名称来查找索引
       let dayToFind = selectedDay;
       if (selectedFrequency === 'WEEK') {
-        const numberToWeekMap = {
-          '1': 'MONDAY',
-          '2': 'TUESDAY',
-          '3': 'WEDNESDAY',
-          '4': 'THURSDAY',
-          '5': 'FRIDAY',
-          '6': 'SATURDAY',
-          '7': 'SUNDAY'
-        };
-        dayToFind = numberToWeekMap[String(selectedDay)] || selectedDay;
+        dayToFind = WEEK_DAY_REVERSE_MAP[String(selectedDay)] || selectedDay;
       }
       
       const index = currentDayOptions.indexOf(dayToFind);
       this.setData({
         selectedDayIndex: index >= 0 ? index : 0
+      });
+    },
+
+    // 更新显示值（将数字转换为星期名称用于显示）
+    updateDisplayDay() {
+      const { selectedDay, selectedFrequency } = this.props;
+      
+      if (!selectedDay) {
+        this.setData({
+          displayDay: ''
+        });
+        return;
+      }
+      
+      let displayValue = selectedDay;
+      // 如果是周，将数字转换为星期名称
+      if (selectedFrequency === 'WEEK') {
+        displayValue = WEEK_DAY_REVERSE_MAP[String(selectedDay)] || selectedDay;
+      }
+      
+      this.setData({
+        displayDay: displayValue
       });
     },
 
@@ -202,16 +207,7 @@ Component({
         let dayValue = selectedDay;
         if (selectedFrequency === 'WEEK') {
           // 星期名称转换为数字
-          const weekDayMap = {
-            'MONDAY': '1',
-            'TUESDAY': '2',
-            'WEDNESDAY': '3',
-            'THURSDAY': '4',
-            'FRIDAY': '5',
-            'SATURDAY': '6',
-            'SUNDAY': '7'
-          };
-          dayValue = weekDayMap[selectedDay] || selectedDay;
+          dayValue = WEEK_DAY_MAP[selectedDay] || selectedDay;
         }
         this.props.onDayChange(dayValue);
       }
@@ -224,16 +220,7 @@ Component({
         // 如果是周，需要将星期名称转换为数字（接口需要）
         let dayValue = selectedDay;
         if (selectedFrequency === 'WEEK') {
-          const weekDayMap = {
-            'MONDAY': '1',
-            'TUESDAY': '2',
-            'WEDNESDAY': '3',
-            'THURSDAY': '4',
-            'FRIDAY': '5',
-            'SATURDAY': '6',
-            'SUNDAY': '7'
-          };
-          dayValue = weekDayMap[selectedDay] || selectedDay;
+          dayValue = WEEK_DAY_MAP[selectedDay] || selectedDay;
         }
         
         this.props.onContinue({

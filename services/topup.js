@@ -41,8 +41,14 @@ export const getOneTimeStatusAPI = (orderId) => {
 }
 
 // 获取周期签约信息
-//      agreedAmount object 否 授权金额 {currency: "EUR", value: "1000"} value为欧分
-// 出参：authUrl string 是 授权URL
+// 入参：agreedAmount object 否 授权金额 {currency: "EUR", value: "1000"} value为欧分
+//      phoneNumber string 是 充值号码
+//      recurringType string 是 周期类型 周：WEEK 月：MONTH
+//      recurringDay string 是 周期日期
+// 出参：contractStatus string 是 签约状态
+//           VALID("VALID"), // 有效，直接调用后续签约接口confirmAgreement
+//           INVALID("INVALID"), // 无效，返回authUrl拉起签约页面
+//      authUrl string 否 授权URL（contractStatus为INVALID时返回）
 export const getRecurringAuthUrlAPI = (params) => {
   return post('/topup/recurring/authUrl', params)
 }

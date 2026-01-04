@@ -20,29 +20,31 @@ export function compareVersion(v1, v2) {
   return true;
 }
 
-// 星期名称和数字的映射
-const WEEK_DAY_MAP = {
-  'MONDAY': '1',
-  'TUESDAY': '2',
-  'WEDNESDAY': '3',
-  'THURSDAY': '4',
-  'FRIDAY': '5',
-  'SATURDAY': '6',
-  'SUNDAY': '7'
+// 星期名称和数字的映射（1=SUNDAY, 2=MONDAY, ..., 7=SATURDAY）
+// 星期名称 -> 数字（用于接口传参）
+export const WEEK_DAY_MAP = {
+  'SUNDAY': '1',
+  'MONDAY': '2',
+  'TUESDAY': '3',
+  'WEDNESDAY': '4',
+  'THURSDAY': '5',
+  'FRIDAY': '6',
+  'SATURDAY': '7'
 };
 
-const WEEK_DAY_REVERSE_MAP = {
-  '1': 'MONDAY',
-  '2': 'TUESDAY',
-  '3': 'WEDNESDAY',
-  '4': 'THURSDAY',
-  '5': 'FRIDAY',
-  '6': 'SATURDAY',
-  '7': 'SUNDAY'
+// 数字 -> 星期名称（用于显示）
+export const WEEK_DAY_REVERSE_MAP = {
+  '1': 'SUNDAY',
+  '2': 'MONDAY',
+  '3': 'TUESDAY',
+  '4': 'WEDNESDAY',
+  '5': 'THURSDAY',
+  '6': 'FRIDAY',
+  '7': 'SATURDAY'
 };
 
 // 将星期名称转换为数字（用于接口传参）
-// 输入：'MONDAY' -> 输出：'1'
+// 输入：'SUNDAY' -> 输出：'1'
 export function weekDayToNumber(weekDay) {
   if (!weekDay) return weekDay;
   // 如果已经是数字，直接返回
@@ -53,7 +55,7 @@ export function weekDayToNumber(weekDay) {
 }
 
 // 将数字转换为星期名称（用于显示）
-// 输入：'1' -> 输出：'MONDAY'
+// 输入：'1' -> 输出：'SUNDAY'
 export function numberToWeekDay(number) {
   if (!number) return number;
   // 如果已经是星期名称，直接返回

@@ -10,7 +10,9 @@ Page(createPage({
     currentKey: 'topUp',
     tabs: [],
   },
-  onLoad() {
+  onLoad(query) {
+    const { currentKey } = query || {};
+    
     const arr = [{
       key: 'topUp',
       label: this.data.lang.history.topUp,
@@ -18,8 +20,10 @@ Page(createPage({
       key: 'recurring',
       label: this.data.lang.history.recurring
     }]
+    
     this.setData({
       tabs: arr,
+      currentKey: currentKey || 'topUp'
     })
   },
   switchClick(e) {

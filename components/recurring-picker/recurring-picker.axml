@@ -19,7 +19,7 @@
   <view class="day-section" a:if="{{selectedFrequency}}">
     <text class="section-label">{{dayLabel}}</text>
     <view class="day-picker" onTap="toggleDayPicker">
-      <text class="day-value">{{selectedDay}}</text>
+      <text class="day-value">{{displayDay}}</text>
       <view class="day-arrow">▼</view>
     </view>
   </view>
