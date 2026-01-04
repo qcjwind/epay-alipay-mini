@@ -228,7 +228,9 @@ Page(
     },
 
     handleOperatorPickerConfirm(index) {
-      const { operatorOptions } = this.data;
+      const {
+        operatorOptions
+      } = this.data;
       const selectedOperator = operatorOptions[index];
       this.setData({
         currentOperator: selectedOperator,
@@ -311,5 +313,9 @@ Page(
         url: jumpUrl,
       });
     },
+    async onPullDownRefresh() {
+      await this.getNationList();
+      my.stopPullDownRefresh()
+    }
   })
 );

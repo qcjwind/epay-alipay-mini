@@ -1,5 +1,6 @@
 {
   "titleBarColor": "#c4227b",
+  "pullRefresh": true,
   "usingComponents": {
     "drawer": "/components/Drawer/Drawer",
     "nav-bar": "/components/nav-bar//nav-bar",

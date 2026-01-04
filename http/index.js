@@ -14,13 +14,6 @@ const {
   language
 } = my.env;
 
-const safeStringify = (err) => {
-  try {
-    return JSON.stringify(err)
-  } catch (error) {
-    return err
-  }
-}
 
 // Token 过期时间：30 分钟（毫秒）
 const TOKEN_EXPIRE_TIME = 60 * 60 * 1000;
@@ -54,14 +47,17 @@ const getStoredToken = () => {
     const storageResult = my.getStorageSync({
       key: RB_TOKEN
     });
-    
+
     if (!storageResult || !storageResult.data) {
       return null;
     }
 
     const tokenData = storageResult.data;
-    const { token, expireTime } = tokenData;
-    
+    const {
+      token,
+      expireTime
+    } = tokenData;
+
     // 检查是否过期
     if (!expireTime || Date.now() > expireTime) {
       // 已过期，清除存储
@@ -86,6 +82,9 @@ const clearToken = () => {
     my.removeStorageSync({
       key: RB_TOKEN
     });
+    setGlobalData((g) => {
+      g.userInfo = {};
+    });
   } catch (error) {
     console.error('清除 token 失败:', error);
   }
@@ -98,24 +97,24 @@ const clearToken = () => {
 const getToken = async () => {
   // 先从本地存储获取 token
   let token = getStoredToken();
-  
+
   if (!token) {
     // 本地没有 token 或已过期，需要重新获取
     let userInfo = getGlobalData((g) => g.userInfo);
-    
+
     if (!userInfo || !userInfo.token) {
       // 等待登录完成（如果正在登录，会复用同一个 Promise）
       await loginHandle();
       userInfo = getGlobalData((g) => g.userInfo);
     }
-    
+
     if (userInfo && userInfo.token) {
       token = userInfo.token;
       // 保存新的 token 和过期时间
       setToken(token);
     }
   }
-  
+
   return token;
 }
 
@@ -148,12 +147,12 @@ const loginHandle = () => {
               ...data,
             };
           });
-          
+
           // 登录成功后，保存 token 和过期时间
           if (data && data.token) {
             setToken(data.token);
           }
-          
+
           resolve();
         } catch (error) {
           reject(error);
@@ -163,9 +162,6 @@ const loginHandle = () => {
         }
       },
       fail: (err) => {
-        my.alert({
-          content: `获取授权码失败: ${safeStringify(err)}`
-        })
         loginPromise = null;
         my.hideLoading()
         reject(new Error("获取授权码失败"));
@@ -182,11 +178,11 @@ http.addRequestInterceptor(async (config) => {
   try {
     // 使用 getToken 获取有效的 token（会自动处理过期）
     const token = await getToken();
-    
+
     if (!token) {
       return Promise.reject(new Error('获取 token 失败'));
     }
-    
+
     // 将 token 添加到请求头
     config.headers = {
       ...config.headers,
@@ -207,6 +203,9 @@ http.addResponseInterceptor((response) => {
     code,
     message
   } = response.data || {}
+  if (+code === 403) {
+    clearToken();
+  }
   if (+code !== 200) {
     my.showToast({
       content: message
