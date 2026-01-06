@@ -248,7 +248,7 @@ Page(createPage({
 
     // 如果没有参数，使用默认值
     let frequency = recurringType || 'WEEK';
-    let day = recurringDay || '1'; // 默认使用数字 '1' (SUNDAY)
+    let day = recurringDay || '1'; // 默认使用数字 '1' (MONDAY)
 
     // 如果是周，将数字转换为星期名称用于显示
     if (frequency === 'WEEK') {
@@ -412,11 +412,17 @@ Page(createPage({
   async createRecurringTopUp() {
     const {
       phoneNumber,
+      phonePrefix,
       operator,
       amount,
       recurringType,
       recurringDay
     } = this.data;
+    
+    // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
+    const phoneNumberWithPrefix = phonePrefix && phoneNumber
+      ? `${phonePrefix} ${phoneNumber}`
+      : phoneNumber || '';
 
 
     try {
@@ -432,7 +438,7 @@ Page(createPage({
       // 调用接口获取签约链接
       const authUrlRes = await getRecurringAuthUrlAPI({
         agreedAmount,
-        phoneNumber,
+        phoneNumber: phoneNumberWithPrefix,
         recurringType,
         recurringDay,
       });
@@ -444,7 +450,7 @@ Page(createPage({
         // 签约有效，直接调用后续签约接口
         try {
           await confirmRecurringAgreementAPI({
-            phoneNumber,
+            phoneNumber: phoneNumberWithPrefix,
             operator,
             amount,
             recurringType,
@@ -472,7 +478,7 @@ Page(createPage({
             try {
               // 调用开启周期充值接口
               await confirmRecurringAgreementAPI({
-                phoneNumber,
+                phoneNumber: phoneNumberWithPrefix,
                 operator,
                 amount,
                 recurringType,
@@ -537,9 +543,15 @@ Page(createPage({
   async createOneTimeTopUp() {
     const {
       phoneNumber,
+      phonePrefix,
       operator,
       amount
     } = this.data;
+    
+    // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
+    const phoneNumberWithPrefix = phonePrefix && phoneNumber
+      ? `${phonePrefix} ${phoneNumber}`
+      : phoneNumber || '';
 
     try {
       my.showLoading({
@@ -575,7 +587,7 @@ Page(createPage({
 
       // 调用单次充值接口，获取 paymentId 和 orderId
       const payRes = await oneTimePayAPI({
-        phoneNumber,
+        phoneNumber: phoneNumberWithPrefix,
         operator,
         amount,
         currency
@@ -633,7 +645,7 @@ Page(createPage({
 
     // 跳转到历史充值页面
     my.switchTab({
-      url: successModalType === 'oneTime' ? '/pages/history/index?currentKey=topUp' : '/pages/history/index'
+      url: successModalType === 'oneTime' ? '/pages/history/index?currentKey=topUp' : '/pages/history/index?currentKey=recurring'
     });
   },
 

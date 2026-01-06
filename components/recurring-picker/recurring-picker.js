@@ -38,8 +38,8 @@ Component({
     showDayPicker: false,
     currentDayOptions: [],
     displayDay: '', // 用于显示的日期值
-    // 星期选项（1=SUNDAY, 2=MONDAY, ..., 7=SATURDAY）
-    weekOptions: ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'],
+    // 星期选项（1=MONDAY, 2=TUESDAY, ..., 7=SUNDAY）
+    weekOptions: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'],
     // 月份日期选项（1-28）
     monthOptions: Array.from({ length: 28 }, (_, i) => String(i + 1))
   },

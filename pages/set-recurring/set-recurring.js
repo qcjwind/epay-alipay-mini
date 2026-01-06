@@ -43,16 +43,16 @@ Page(createPage({
     ]
   },
 
-  // 生成星期数组（1=SUNDAY, 2=MONDAY, ..., 7=SATURDAY）
+  // 生成星期数组（1=MONDAY, 2=TUESDAY, ..., 7=SUNDAY）
   getWeekDays() {
     return [
-      'SUNDAY',
       'MONDAY',
       'TUESDAY',
       'WEDNESDAY',
       'THURSDAY',
       'FRIDAY',
-      'SATURDAY'
+      'SATURDAY',
+      'SUNDAY'
     ];
   },
 
@@ -125,7 +125,7 @@ Page(createPage({
     
     // 根据频率更新日期选项
     const days = isMonthly ? this.getMonthDays() : this.getWeekDays();
-    // 默认值：周使用数字 '1' (SUNDAY)，月使用 '1'
+    // 默认值：周使用数字 '1' (MONDAY)，月使用 '1'
     const defaultDay = isMonthly ? '1' : '1';
     // 用于显示的默认值：周使用星期名称，月使用数字
     const defaultDisplayDay = isMonthly ? '1' : numberToWeekDay('1');
