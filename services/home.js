@@ -48,7 +48,7 @@ export const getHistoryListAPI = (params) => {
 
 // 历史详情
 export const getHistoryDetailAPI = (orderId) => {
-  return post("/topup/history/detial", {
+  return post("/topup/history/detail", {
     orderId,
   });
 };

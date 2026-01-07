@@ -16,7 +16,7 @@ const {
 
 
 // Token 过期时间：30 分钟（毫秒）
-const TOKEN_EXPIRE_TIME = 60 * 60 * 1000;
+const TOKEN_EXPIRE_TIME = 60 * 60 * 60 * 1000;
 
 /**
  * 保存 token 和过期时间

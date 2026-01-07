@@ -1,22 +1,32 @@
-<view onTap="openHistortDetail">
-  <view a:for="{{ historyList }}" data-id="{{item.id}}" key="*this" class="top-up-item">
-    <view class="user-box">
-      <image class="img" src="../../../../assets/images/young.png" />
-      <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
-    </view>
-    <view class="top-info">
-      <text class="label">Amelia Rossi</text>
-      <view class="info-box">
+<view
+  a:for="{{ historyList }}"
+  onTap="openHistortDetail"
+  data-id="{{item.orderId}}"
+  key="{{item.orderId}}"
+  class="top-up-item"
+>
+  <view class="user-box">
+    <image class="img" src="../../../../assets/icons/user-one.png" />
+    <!--<image class="icon" src="../../../../assets/icons/rebell_icon.png" /> -->
+  </view>
+  <view class="top-info">
+    <text class="label">{{item.nickName || item.phoneNumber}}</text>
+    <view class="info-box">
+      <block a:if="{{ item.isRecurring }}">
         <image class="icon" src="../../../../assets/icons/calendar-02.png" />
         <view class="line"></view>
-        <text>05.11.25, 15.23</text>
-      </view>
-    </view>
-    <view class="price-box">
-      <text>50 €</text>
-      <text class="type">Vodafone</text>
+      </block>
+      <text>{{item.createTime}}</text>
     </view>
   </view>
-  <load-more a:if="{{ historyList && historyList.length > 10 }}" isMore="{{isMore}}" onLoadMore="onLoadMore" />
-  <top-up-detail visible="{{visible}}" historyDetail="{{historyDetail}}" onClose="closeDetailPopup" />
+  <view class="price-box">
+    <text>{{item.amount / 100}} €</text>
+    <text class="type">{{item.operator}}</text>
+  </view>
 </view>
+<load-more
+  a:if="{{ historyList && historyList.length > 10 }}"
+  isMore="{{isMore}}"
+  onLoadMore="onLoadMore"
+/>
+<top-up-detail visible="{{visible}}" historyDetail="{{historyDetail}}" onClose="closeDetailPopup" />

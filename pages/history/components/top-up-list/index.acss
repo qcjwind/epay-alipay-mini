@@ -17,13 +17,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 142rpx;
+  width: 82rpx;
   height: 82rpx;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 0 16rpx;
 }
 
 .top-up-item .user-box .img {
-  width: 82rpx;
-  height: 82rpx;
+  width: 42rpx;
+  height: 42rpx;
   border-radius: 50%;
 }
 

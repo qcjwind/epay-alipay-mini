@@ -7,12 +7,13 @@
       </view>
       <view class="user">
         <view class="user-box">
-          <text class="first-name">A</text>
-          <image class="rb" src="../../assets/icons/rebell_icon.png" />
+          <text a:if="{{ historyDetail.nickName }}" class="first-name">A</text>
+          <image a:else class="user-icon" src="../../../../assets/icons/user.png" />
+          <!-- <image class="rb" src="../../assets/icons/rebell_icon.png" /> -->
         </view>
         <view class="user-info">
-          <text>Amelia Rossi</text>
-          <text class="phone">+39 3421234678</text>
+          <text class="name" a:if="{{ historyDetail.nickName }}">Amelia Rossi</text>
+          <text class="phone">{{historyDetail.phoneNumber}}</text>
         </view>
       </view>
       <view class="again">{{lang.history.popup.againTxt}}</view>
@@ -22,17 +23,17 @@
     <view class="detail-item">
       <view class="cloumn">
         <text>{{lang.history.popup.operator}}</text>
-        <text class="label">Vodafone</text>
+        <text class="label">{{historyDetail.operator}}</text>
       </view>
       <view class="cloumn">
         <text>{{lang.history.popup.amount}}</text>
-        <text class="amount">50 €</text>
+        <text class="amount">{{historyDetail.amount / 100}} €</text>
       </view>
     </view>
     <view class="detail-item">
       <view class="cloumn">
         <text>{{lang.history.popup.date}}</text>
-        <text class="label">05.11.25, 15.23</text>
+        <text class="label">{{historyDetail.createTime}}</text>
       </view>
     </view>
     <view class="detail-item">

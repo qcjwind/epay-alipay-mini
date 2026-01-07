@@ -2,6 +2,7 @@ import {
   getHistoryListAPI,
   getHistoryDetailAPI
 } from '../../../../services/index'
+import dayjs from 'dayjs'
 
 Component({
   props: {},
@@ -53,7 +54,10 @@ Component({
         my.hideLoading()
         this.setData({
           visible: true,
-          historyDetail: res.data || {}
+          historyDetail: {
+            ...res.data || {},
+            createTime: dayjs(res.data.createDate).format('DD.MM.YYYY, HH:mm')
+          }
         })
       }).catch(() => {
         my.hideLoading()
@@ -71,8 +75,14 @@ Component({
           list,
           total
         } = res.data || {};
+        const arr = list.map(item => {
+          return {
+            ...item,
+            createTime: dayjs(item.createDate).format('DD.MM.YYYY, HH:mm')
+          }
+        })
         this.setData({
-          historyList: list,
+          historyList: arr,
           paging: {
             ...this.data.paging,
             isMore: (+total / this.paging.pageSize) > this.paging.pageSize,

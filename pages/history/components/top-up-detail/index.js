@@ -12,7 +12,6 @@ Component(createComponent({
   },
   data: {},
   didMount() {
-
   },
   methods: {
     closePopup() {

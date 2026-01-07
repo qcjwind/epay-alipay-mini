@@ -164,19 +164,6 @@ Page(
       } catch (error) {
         my.hideLoading()
       }
-      // my.getAuthCode({
-      //   scopes: ["auth_user"],
-      //   success: (res) => {
-      //     console.log("authCode", res);
-      //     const authCode = res.authCode;
-      //     this.clearUser();
-      //   },
-      //   fail: (err) => {
-      //     my.alert({
-      //       content: JSON.stringify(err),
-      //     });
-      //   },
-      // });
     },
 
     enterNumber() {
@@ -241,7 +228,7 @@ Page(
 
     checkPhoneNum(isTip = true) {
       // 获取手机号
-      const phoneNumber = (this.data.user && this.data.user.mobile) || this.data.phone;
+      let phoneNumber = (this.data.user && this.data.user.mobile) || this.data.phone;
 
       // 检查手机号是否存在
       if (!phoneNumber) {
@@ -253,6 +240,10 @@ Page(
           });
         }
         return false;
+      }
+
+      if (phoneNumber.includes('+')) {
+        phoneNumber = phoneNumber.split(' ')[1]
       }
 
       // 检查手机号长度：支持 9 位或 10 位
