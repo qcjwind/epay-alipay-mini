@@ -34,23 +34,66 @@
   position: relative;
   width: 98rpx;
   height: 98rpx;
+}
+
+/* 有用户名称：适配白色背景的样式 */
+.top-up-detail .d-header .user .user-box .avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.top-up-detail .d-header .user .user-box .avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #F4F6F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-up-detail .d-header .user .user-box .avatar-text {
+  color: #272727;
+  font-size: 50rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.top-up-detail .d-header .user .user-box .avatar-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32rpx;
+  height: 32rpx;
+  background: #B63F81;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-up-detail .d-header .user .user-box .avatar-badge .badge-icon {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+/* 没有用户名称：参考详情面板样式 */
+.top-up-detail .d-header .user .user-box .avatar-img-box {
+  position: relative;
+  width: 98rpx;
+  height: 98rpx;
   background: #F4F6F9;
   border-radius: 50%;
-  font-size: 50rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
-.top-up-detail .d-header .user .user-box .user-icon {
+.top-up-detail .d-header .user .user-box .avatar-img-box .user-icon {
   width: 42rpx;
   height: 42rpx;
   border-radius: 50%;
-}
-
-.top-up-detail .d-header .user .user-box .first-name {
-  font-weight: 700;
 }
 
 .top-up-detail .d-header .user .user-box .rb {
@@ -86,14 +129,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 28rpx 22rpx 36rpx 22rpx;
-  width: 100%;
+  margin: 28rpx auto 36rpx auto;
+  width: calc(100% - 44rpx);
   height: 88rpx;
   border: 2rpx solid #B5B5B5;
   font-size: 26rpx;
   color: #403F41;
   font-weight: 500;
   border-radius: 100rpx;
+  box-sizing: border-box;
 }
 
 .top-up-detail .detail-title {
@@ -159,4 +203,24 @@
   color: #fff;
   margin-top: 0;
   margin-bottom: 0;
+}
+
+.top-up-detail .turn-into-recurring-btn {
+  background: #272727;
+  color: #fff;
+  border: none;
+}
+
+.top-up-detail .edit-btn-disabled {
+  background: #F4F6F9;
+  color: #B5B5B5;
+  border: 2rpx solid #E5E5E5;
+  pointer-events: none;
+}
+
+.top-up-detail .del-btn-disabled {
+  background: #F4F6F9;
+  color: #B5B5B5;
+  border: 2rpx solid #E5E5E5;
+  pointer-events: none;
 }

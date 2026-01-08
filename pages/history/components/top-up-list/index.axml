@@ -6,11 +6,25 @@
   class="top-up-item"
 >
   <view class="user-box">
-    <image class="img" src="../../../../assets/icons/user-one.png" />
-    <!--<image class="icon" src="../../../../assets/icons/rebell_icon.png" /> -->
+    <!-- 有用户名称：参考支付确认页样式 -->
+    <view a:if="{{item.hasUserName}}" class="avatar-wrapper">
+      <view class="avatar">
+        <text class="avatar-text">{{item.avatarInitials}}</text>
+      </view>
+      <view class="avatar-badge">
+        <image class="badge-icon" src="../../../../assets/icons/rebell_icon.png" mode="aspectFit"></image>
+      </view>
+    </view>
+    <!-- 没有用户名称：参考充值列表样式 -->
+    <block a:else>
+      <view class="avatar-img-box">
+        <image class="img" src="../../../../assets/icons/user-one.png" />
+      </view>
+      <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
+    </block>
   </view>
   <view class="top-info">
-    <text class="label">{{item.nickName || item.phoneNumber}}</text>
+    <text class="label">{{item.phoneUserName || item.nickName || item.phoneNumber}}</text>
     <view class="info-box">
       <block a:if="{{ item.isRecurring }}">
         <image class="icon" src="../../../../assets/icons/calendar-02.png" />
@@ -20,7 +34,7 @@
     </view>
   </view>
   <view class="price-box">
-    <text>{{item.amount / 100}} €</text>
+    <text>{{item.amount.faceValue}} €</text>
     <text class="type">{{item.operator}}</text>
   </view>
 </view>

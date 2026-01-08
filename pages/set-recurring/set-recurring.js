@@ -10,6 +10,7 @@ Page(createPage({
     phoneNumber: '', // string 是 充值号码
     operator: '', // string 是 运营商
     userName: '', // string 是 用户姓名
+    amount: '', // string 是 充值金额
     isFromHistoryPanel: false, // boolean 是否来自历史详情面板
     payMethod: '', // string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
     
@@ -73,11 +74,12 @@ Page(createPage({
     // phonePrefix: string 否 电话前缀
     // operator: string 是 运营商
     // userName: string 是 用户姓名
+    // amount: string 是 充值金额
     // isFromHistoryPanel: boolean 是否来自历史详情面板
     // payMethod: string 是 充值方式 oneTime: 单次充值 recurring: 定期充值
     // recurringType: string 否 周期类型
     // recurringDay: string 否 周期日期（可能是数字 1-7 或星期名称）
-    const { phoneNumber, phonePrefix, operator, userName, isFromHistoryPanel, payMethod, recurringType, recurringDay } = query;
+    const { phoneNumber, phonePrefix, operator, userName, amount, isFromHistoryPanel, payMethod, recurringType, recurringDay } = query;
     
     // 处理 recurringDay：如果是数字，转换为星期名称用于显示
     let displayRecurringDay = recurringDay || '';
@@ -98,6 +100,7 @@ Page(createPage({
       phonePrefix: phonePrefix || '',
       operator: operator || '',
       userName: userName || '',
+      amount: amount || '',
       // 默认为 false，有值就为 true
       isFromHistoryPanel: !!isFromHistoryPanel,
       payMethod: payMethod || '',
@@ -188,12 +191,13 @@ Page(createPage({
     });
     
     // 构建参数对象
-    const { phonePrefix } = this.data;
+    const { phonePrefix, amount } = this.data;
     const params = {
       phoneNumber,
       phonePrefix, // 透传 phonePrefix
       operator,
       userName,
+      amount, // 透传 amount
       recurringType,
       recurringDay,
       payMethod

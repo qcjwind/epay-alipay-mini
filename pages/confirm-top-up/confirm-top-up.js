@@ -416,7 +416,8 @@ Page(createPage({
       operator,
       amount,
       recurringType,
-      recurringDay
+      recurringDay,
+      userName
     } = this.data;
     
     // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
@@ -451,6 +452,7 @@ Page(createPage({
         try {
           await confirmRecurringAgreementAPI({
             phoneNumber: phoneNumberWithPrefix,
+            phoneUserName: userName,
             operator,
             amount,
             recurringType,
@@ -479,6 +481,7 @@ Page(createPage({
               // 调用开启周期充值接口
               await confirmRecurringAgreementAPI({
                 phoneNumber: phoneNumberWithPrefix,
+                phoneUserName: userName,
                 operator,
                 amount,
                 recurringType,
@@ -545,7 +548,8 @@ Page(createPage({
       phoneNumber,
       phonePrefix,
       operator,
-      amount
+      amount,
+      userName
     } = this.data;
     
     // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
@@ -588,6 +592,7 @@ Page(createPage({
       // 调用单次充值接口，获取 paymentId 和 orderId
       const payRes = await oneTimePayAPI({
         phoneNumber: phoneNumberWithPrefix,
+        phoneUserName: userName,
         operator,
         amount,
         currency
@@ -644,7 +649,7 @@ Page(createPage({
     });
 
     // 跳转到历史充值页面
-    my.switchTab({
+    my.reLaunch({
       url: successModalType === 'oneTime' ? '/pages/history/index?currentKey=topUp' : '/pages/history/index?currentKey=recurring'
     });
   },

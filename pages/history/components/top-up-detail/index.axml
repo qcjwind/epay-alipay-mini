@@ -7,16 +7,28 @@
       </view>
       <view class="user">
         <view class="user-box">
-          <text a:if="{{ historyDetail.nickName }}" class="first-name">A</text>
-          <image a:else class="user-icon" src="../../../../assets/icons/user.png" />
-          <!-- <image class="rb" src="../../assets/icons/rebell_icon.png" /> -->
+          <!-- 有用户名称：参考支付确认页样式 -->
+          <view a:if="{{historyDetail.hasUserName}}" class="avatar-wrapper">
+            <view class="avatar">
+              <text class="avatar-text">{{historyDetail.avatarInitials}}</text>
+            </view>
+            <view class="avatar-badge">
+              <image class="badge-icon" src="../../../../assets/icons/rebell_icon.png" mode="aspectFit"></image>
+            </view>
+          </view>
+          <!-- 没有用户名称：参考详情面板样式 -->
+          <block a:else>
+            <view class="avatar-img-box">
+              <image class="user-icon" src="../../../../assets/icons/user.png" />
+            </view>
+          </block>
         </view>
         <view class="user-info">
-          <text class="name" a:if="{{ historyDetail.nickName }}">Amelia Rossi</text>
+          <text class="name" a:if="{{historyDetail.hasUserName}}">{{historyDetail.phoneUserName || historyDetail.nickName}}</text>
           <text class="phone">{{historyDetail.phoneNumber}}</text>
         </view>
       </view>
-      <view class="again">{{lang.history.popup.againTxt}}</view>
+      <view class="again" onTap="topUpAgainHandle">{{lang.history.popup.againTxt}}</view>
     </view>
 
     <view class="detail-title">{{lang.history.popup.detailTxt}}</view>
@@ -27,7 +39,7 @@
       </view>
       <view class="cloumn">
         <text>{{lang.history.popup.amount}}</text>
-        <text class="amount">{{historyDetail.amount / 100}} €</text>
+        <text class="amount">{{historyDetail.amount.faceValue}} €</text>
       </view>
     </view>
     <view class="detail-item">
@@ -36,14 +48,32 @@
         <text class="label">{{historyDetail.createTime}}</text>
       </view>
     </view>
-    <view class="detail-item">
+    <!-- 周期充值显示频率 -->
+    <view a:if="{{historyDetail.isRecurring}}" class="detail-item">
       <view class="cloumn">
         <text>{{lang.history.popup.frequency}}</text>
-        <text class="label">5€ monthly, 5th day</text>
+        <text class="label">{{historyDetail.frequencyText}}</text>
       </view>
     </view>
 
-    <view class="edit-btn">{{lang.history.popup.edit}}</view>
-    <view onTap="deleteHandle" class="edit-btn del-btn">{{lang.history.popup.delete}}</view>
+    <!-- 周期充值的按钮 -->
+    <block a:if="{{historyDetail.isRecurring}}">
+      <view 
+        onTap="{{historyDetail.agreementStatus !== 'DELETED' ? 'editHandle' : ''}}" 
+        class="edit-btn {{historyDetail.agreementStatus === 'DELETED' ? 'edit-btn-disabled' : ''}}"
+      >
+        {{lang.history.popup.edit}}
+      </view>
+      <view 
+        onTap="{{historyDetail.agreementStatus !== 'DELETED' ? 'deleteHandle' : ''}}" 
+        class="edit-btn del-btn {{historyDetail.agreementStatus === 'DELETED' ? 'del-btn-disabled' : ''}}"
+      >
+        {{lang.history.popup.delete}}
+      </view>
+    </block>
+    <!-- 单次充值的按钮 -->
+    <block a:else>
+      <view onTap="turnIntoRecurringHandle" class="edit-btn turn-into-recurring-btn">{{lang.history.popup.turnIntoRecurring}}</view>
+    </block>
   </view>
 </popup>

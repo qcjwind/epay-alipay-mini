@@ -68,10 +68,15 @@ export const confirmRecurringAgreementAPI = (params) => {
 
 // 暂停周期充值
 // 入参：agreementId string 是 合约ID
+//      status string 是 状态 
+//      ACTIVE 启用
+//      PAUSED 暂停
+//      DELETED 删除
 // 出参：无
-export const pauseRecurringAPI = (agreementId) => {
-  return post('/topup/recurring/pause', {
-    agreementId
+export const changeRecurringStatusAPI = (agreementId,status) => {
+  return post('/topup/recurring/changeStatus', {
+    agreementId,
+    status
   })
 }
 

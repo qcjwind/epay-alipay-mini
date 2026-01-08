@@ -56,7 +56,8 @@ export default {
       date: 'Date',
       frequency: 'Frequency',
       edit: 'EDIT',
-      delete: 'DELETE RECURRING'
+      delete: 'DELETE RECURRING',
+      turnIntoRecurring: 'TURN INTO RECURRING'
     },
     loadMoreTxt: 'load more~~~',
     loading: 'loading...',

@@ -17,14 +17,65 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 142rpx;
+  height: 82rpx;
+  margin: 0 16rpx;
+}
+
+/* 有用户名称：参考支付确认页样式 */
+.top-up-item .user-box .avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.top-up-item .user-box .avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-up-item .user-box .avatar-text {
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.top-up-item .user-box .avatar-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32rpx;
+  height: 32rpx;
+  background: #B63F81;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-up-item .user-box .avatar-badge .badge-icon {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+/* 没有用户名称：参考充值列表样式 */
+.top-up-item .user-box .avatar-img-box {
+  position: relative;
   width: 82rpx;
   height: 82rpx;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.3);
-  margin: 0 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.top-up-item .user-box .img {
+.top-up-item .user-box .avatar-img-box .img {
   width: 42rpx;
   height: 42rpx;
   border-radius: 50%;

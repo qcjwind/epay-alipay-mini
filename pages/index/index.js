@@ -290,11 +290,36 @@ Page(
 
       const phonePrefix = this.data.currentNation.phonePrefix || '';
 
+      // 获取 phoneNumber（优先使用联系人的 mobile）
+      let phoneNumber = this.data.user && this.data.user.mobile 
+        ? this.data.user.mobile 
+        : (this.data.phone || '');
+      
+      // 如果 phoneNumber 包含前缀（以 + 开头且可能包含空格），去掉前缀
+      if (phoneNumber && phoneNumber.includes('+')) {
+        // 如果包含空格分隔（如 "+39 123456789"），去掉前缀部分
+        if (phoneNumber.includes(' ')) {
+          const parts = phoneNumber.split(' ');
+          // 如果第一个部分是前缀（以 + 开头），去掉它
+          if (parts[0].startsWith('+')) {
+            phoneNumber = parts.slice(1).join(' ');
+          }
+        } else {
+          // 如果前缀和号码没有空格分隔，尝试根据 phonePrefix 截取
+          if (phonePrefix) {
+            const prefixWithoutPlus = phonePrefix.replace(/^\+/, '').trim();
+            if (phoneNumber.startsWith(prefixWithoutPlus)) {
+              phoneNumber = phoneNumber.substring(prefixWithoutPlus.length);
+            }
+          }
+        }
+      }
+
       // 使用 encodeURIComponent 编码参数，确保 + 号不会丢失
-      let queryStr = `phoneNumber=${encodeURIComponent(this.data.phone)}&phonePrefix=${encodeURIComponent(phonePrefix)}&operator=${encodeURIComponent(this.data.currentOperator)}&payMethod=${encodeURIComponent(this.data.payMethod)}`;
+      let queryStr = `phoneNumber=${encodeURIComponent(phoneNumber)}&phonePrefix=${encodeURIComponent(phonePrefix)}&operator=${encodeURIComponent(this.data.currentOperator)}&payMethod=${encodeURIComponent(this.data.payMethod)}`;
       if (this.data.user && this.data.user.mobile) {
-        // 选择联系人时，mobile 可能已包含前缀，但为了统一处理，也传递 phonePrefix
-        queryStr = `phoneNumber=${encodeURIComponent(this.data.user.mobile)}&phonePrefix=${encodeURIComponent(phonePrefix)}&userName=${encodeURIComponent(this.data.user.name)}&operator=${encodeURIComponent(this.data.currentOperator)}&payMethod=${encodeURIComponent(this.data.payMethod)}`;
+        // 选择联系人时，传递 userName
+        queryStr = `phoneNumber=${encodeURIComponent(phoneNumber)}&phonePrefix=${encodeURIComponent(phonePrefix)}&userName=${encodeURIComponent(this.data.user.name)}&operator=${encodeURIComponent(this.data.currentOperator)}&payMethod=${encodeURIComponent(this.data.payMethod)}`;
       }
       let jumpUrl = `/pages/set-recurring/set-recurring?${queryStr}`;
       if (this.data.payMethod === "oneTime") {
