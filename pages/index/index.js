@@ -149,17 +149,17 @@ Page(
         if (phoneNumber) {
           const arr = phoneNumber.split('-')
           const nationIndex = this.data.nationList.findIndex(item => item.phonePrefix === `+${arr[0]}`)
-          const data = {
-            phone: arr[1]
+          const updateData = {
+            phone: arr[1],
+            user: null,
+            firstName: ""
           }
           if (nationIndex >= 0) {
-            data.currentNation = this.data.nationList[nationIndex]
-            data.currentNationIndex = nationIndex
+            updateData.currentNation = this.data.nationList[nationIndex]
+            updateData.currentNationIndex = nationIndex
           }
           this.getgetOperatorList(arr[1])
-          this.setData({
-            phone: arr[1]
-          })
+          this.setData(updateData)
         }
       } catch (error) {
         my.hideLoading()

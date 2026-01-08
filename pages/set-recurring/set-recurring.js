@@ -171,11 +171,10 @@ Page(createPage({
     
     // 验证是否选择了定期类型
     if (!recurringType) {
-      my.showModal({
+      my.alert({
         title: lang.setRecurring.modal.title,
         content: lang.setRecurring.modal.content,
-        confirmText: lang.setRecurring.modal.button,
-        showCancel: false,
+        buttonText: lang.setRecurring.modal.button,
       });
       return;
     }
