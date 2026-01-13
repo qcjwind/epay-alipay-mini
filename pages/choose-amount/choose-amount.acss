@@ -109,6 +109,7 @@
 .amount-buttons {
   display: inline-flex;
   gap: 20rpx;
+  padding-bottom: 20rpx;
 }
 
 .amount-btn {
