@@ -58,7 +58,13 @@ Page(
     async getgetOperatorList(number) {
       try {
         my.showLoading();
-        const res = await getOperatorListAPI(number);
+        // 获取当前国家的前缀
+        const phonePrefix = this.data.currentNation.phonePrefix || '';
+        // 如果前缀存在，将前缀和号码用空格连接
+        const phoneNumberWithPrefix = phonePrefix 
+          ? `${phonePrefix} ${number}` 
+          : number;
+        const res = await getOperatorListAPI(phoneNumberWithPrefix);
         my.hideLoading();
         const {
           data
