@@ -124,13 +124,14 @@ export default class HttpClient {
   /**
    * 执行响应拦截器
    * @param {Object} response 响应对象
+   * @param {Object} config 请求配置
    * @returns {Promise<Object>} 处理后的响应
    */
-  async executeResponseInterceptors(response) {
+  async executeResponseInterceptors(response, config = {}) {
     let processedResponse = response;
 
     for (const interceptor of this.responseInterceptors) {
-      const result = interceptor(processedResponse);
+      const result = interceptor(processedResponse, config);
       if (result instanceof Promise) {
         processedResponse = await result;
       } else if (result !== undefined) {
@@ -215,7 +216,8 @@ export default class HttpClient {
               this.handleStatusCode(response);
               // 执行响应拦截器
               const processedResponse = await this.executeResponseInterceptors(
-                response
+                response,
+                config
               );
               resolve(processedResponse)
             } catch (error) {
@@ -224,7 +226,7 @@ export default class HttpClient {
           },
           fail: (error) => {
             // 执行响应拦截器处理错误
-            this.executeResponseInterceptors(error)
+            this.executeResponseInterceptors(error, config)
               .then((processedError) => {
                 reject(processedError);
               })

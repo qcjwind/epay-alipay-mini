@@ -118,6 +118,11 @@ export default {
       content: 'Error activating recurring top-up.',
       btn: 'Close',
       retry: 'Retry',
+    },
+    numberInvalidError: {
+      title: 'Number Invalid',
+      content: 'Please check your number validity.',
+      btn: 'OK',
     }
   },
 };

@@ -195,7 +195,7 @@ http.addRequestInterceptor(async (config) => {
     return Promise.reject(error);
   }
 });
-http.addResponseInterceptor((response) => {
+http.addResponseInterceptor((response, config) => {
   if (response.status !== 200) {
     return Promise.reject(new Error('network error'))
   }
@@ -207,9 +207,13 @@ http.addResponseInterceptor((response) => {
     clearToken();
   }
   if (+code !== 200) {
-    my.showToast({
-      content: message
-    })
+    // 检查 showToast 配置，默认为 true
+    const showToast = config.showToast !== false;
+    if (showToast) {
+      my.showToast({
+        content: message
+      })
+    }
     return Promise.reject(new Error(message))
   }
   return response.data;

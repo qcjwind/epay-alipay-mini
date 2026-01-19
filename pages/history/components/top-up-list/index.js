@@ -2,7 +2,6 @@ import {
   getHistoryListAPI,
   getHistoryDetailAPI
 } from '../../../../services/index'
-import dayjs from 'dayjs'
 import { numberToWeekDay } from '../../../../utils/util'
 
 Component({
@@ -92,7 +91,6 @@ Component({
           visible: true,
           historyDetail: {
             ...data,
-            createTime: dayjs(data.createDate).format('DD.MM.YYYY, HH:mm'),
             frequencyText: frequencyText,
             avatarInitials,
             hasUserName: !!userName
@@ -145,7 +143,6 @@ Component({
           
           return {
             ...item,
-            createTime: dayjs(item.createDate).format('DD.MM.YYYY, HH:mm'),
             avatarInitials,
             hasUserName: !!userName
           }

@@ -364,15 +364,22 @@ Page(createPage({
   },
 
   // 显示异常弹窗
-  // errorType: 'oneTime' | 'recurring' 错误类型，默认为 'oneTime'
+  // errorType: 'oneTime' | 'recurring' | 'numberInvalid' 错误类型，默认为 'oneTime'
   showErrorModal(errorType = 'oneTime', errorModalShowRetry = true) {
     this.resetConfirmButton();
 
     const { lang } = this.data;
     // 根据错误类型选择对应的 i18n 配置
-    const errorConfig = errorType === 'recurring'
-      ? lang.confirmTopUp.recurringError
-      : lang.confirmTopUp.oneTimeError;
+    let errorConfig;
+    if (errorType === 'recurring') {
+      errorConfig = lang.confirmTopUp.recurringError;
+    } else if (errorType === 'numberInvalid') {
+      errorConfig = lang.confirmTopUp.numberInvalidError;
+      // 号码无效错误不显示重试按钮
+      errorModalShowRetry = false;
+    } else {
+      errorConfig = lang.confirmTopUp.oneTimeError;
+    }
 
     this.setData({
       errorModalVisible: true,
@@ -380,7 +387,7 @@ Page(createPage({
       errorModalContent: errorConfig.content,
       errorModalShowRetry,
       errorModalOkText: errorConfig.btn,
-      errorModalRetryText: errorConfig.retry,
+      errorModalRetryText: errorConfig.retry || '',
       errorModalErrorType: errorType // 保存错误类型用于重试
     });
   },
@@ -598,7 +605,6 @@ Page(createPage({
         currency
       });
 
-
       const { paymentId, orderId, redirectUrl } = payRes.data;
 
       if (!paymentId) {
@@ -636,7 +642,14 @@ Page(createPage({
     } catch (error) {
       console.error('One time pay API error:', error);
       my.hideLoading();
-      this.showErrorModal();
+      
+      // 检查错误消息是否包含 "Phone Number not found in Precision"
+      const errorMessage = error.message || '';
+      if (errorMessage.includes('Phone Number not found in Precision')) {
+        this.showErrorModal('numberInvalid');
+      } else {
+        this.showErrorModal();
+      }
     }
   },
 

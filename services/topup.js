@@ -23,6 +23,8 @@ export const oneTimePayAPI = (params) => {
   return post('/topup/oneTime/pay', {
     ...params,
     requestId
+  }, {
+    showToast: false
   })
 }
 

@@ -30,7 +30,7 @@
         <image class="icon" src="../../../../assets/icons/calendar-02.png" />
         <view class="line"></view>
       </block>
-      <text>{{item.createTime}}</text>
+      <text>{{item.createDate}}</text>
     </view>
   </view>
   <view class="price-box">
