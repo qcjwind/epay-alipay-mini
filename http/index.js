@@ -195,7 +195,7 @@ http.addRequestInterceptor(async (config) => {
     return Promise.reject(error);
   }
 });
-http.addResponseInterceptor((response, config) => {
+http.addResponseInterceptor(async (response, config) => {
   if (response.status !== 200) {
     return Promise.reject(new Error('network error'))
   }
@@ -203,10 +203,69 @@ http.addResponseInterceptor((response, config) => {
     code,
     message
   } = response.data || {}
+  
+  // 处理 token 无效的情况（状态码 1103）
+  if (+code === 1103) {
+    // 清除旧的 token
+    clearToken();
+    
+    // 如果已经重试过，不再重试，避免无限循环
+    if (config._retryCount) {
+      const showToast = config.showToast !== false;
+      if (showToast) {
+        my.showToast({
+          content: message || 'Token 无效，请重新登录'
+        })
+      }
+      return Promise.reject(new Error(message || 'Token 无效，请重新登录'))
+    }
+    
+    // 标记为重试，避免无限循环
+    config._retryCount = 1;
+    
+    try {
+      // 重新获取 token
+      await loginHandle();
+      
+      // 重新获取 token 并更新请求头
+      const token = await getToken();
+      if (!token) {
+        const showToast = config.showToast !== false;
+        if (showToast) {
+          my.showToast({
+            content: '重新获取 token 失败'
+          })
+        }
+        return Promise.reject(new Error('重新获取 token 失败'))
+      }
+      
+      // 更新请求配置中的 Authorization header
+      config.headers = {
+        ...config.headers,
+        Authorization: token,
+      };
+      
+      // 重新发起请求
+      return http.request(config);
+    } catch (error) {
+      const showToast = config.showToast !== false;
+      if (showToast) {
+        my.showToast({
+          content: '重新获取 token 失败'
+        })
+      }
+      return Promise.reject(error);
+    }
+  }
+  
   if (+code === 403) {
     clearToken();
   }
   if (+code !== 200) {
+    // 对于 10301、10003 等业务错误码，不 reject，返回数据让调用方判断
+    if (+code === 10301 || +code === 10003) {
+      return response.data;
+    }
     // 检查 showToast 配置，默认为 true
     const showToast = config.showToast !== false;
     if (showToast) {
@@ -214,7 +273,6 @@ http.addResponseInterceptor((response, config) => {
         content: message
       })
     }
-    return Promise.reject(new Error(message))
   }
   return response.data;
 });

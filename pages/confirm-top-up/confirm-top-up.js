@@ -364,8 +364,10 @@ Page(createPage({
   },
 
   // 显示异常弹窗
-  // errorType: 'oneTime' | 'recurring' | 'numberInvalid' 错误类型，默认为 'oneTime'
-  showErrorModal(errorType = 'oneTime', errorModalShowRetry = true) {
+  // errorType: 'oneTime' | 'recurring' | 'numberInvalid' | 'recurringAlreadyActivated' 错误类型，默认为 'oneTime'
+  // customTitle: 自定义标题（可选）
+  // customContent: 自定义内容（可选）
+  showErrorModal(errorType = 'oneTime', errorModalShowRetry = true, customTitle = null, customContent = null) {
     this.resetConfirmButton();
 
     const { lang } = this.data;
@@ -376,6 +378,10 @@ Page(createPage({
     } else if (errorType === 'numberInvalid') {
       errorConfig = lang.confirmTopUp.numberInvalidError;
       // 号码无效错误不显示重试按钮
+      errorModalShowRetry = false;
+    } else if (errorType === 'recurringAlreadyActivated') {
+      errorConfig = lang.confirmTopUp.recurringAlreadyActivatedError;
+      // 已激活错误不显示重试按钮
       errorModalShowRetry = false;
     } else {
       errorConfig = lang.confirmTopUp.oneTimeError;
@@ -457,7 +463,7 @@ Page(createPage({
       if (contractStatus === 'VALID') {
         // 签约有效，直接调用后续签约接口
         try {
-          await confirmRecurringAgreementAPI({
+          const confirmRes = await confirmRecurringAgreementAPI({
             phoneNumber: phoneNumberWithPrefix,
             phoneUserName: userName,
             operator,
@@ -467,6 +473,11 @@ Page(createPage({
             // VALID 状态不需要 authCode
           });
 
+          // 根据状态码判断是否已激活
+          if (+confirmRes.code === 10003) {
+            this.showErrorModal('recurringAlreadyActivated');
+            return;
+          }
 
           // 接口成功后显示成功弹窗
           this.showSuccessModal('recurring');
@@ -486,7 +497,7 @@ Page(createPage({
 
             try {
               // 调用开启周期充值接口
-              await confirmRecurringAgreementAPI({
+              const confirmRes = await confirmRecurringAgreementAPI({
                 phoneNumber: phoneNumberWithPrefix,
                 phoneUserName: userName,
                 operator,
@@ -496,6 +507,11 @@ Page(createPage({
                 authCode: res.authCode
               });
 
+              // 根据状态码判断是否已激活
+              if (+confirmRes.code === 10003) {
+                this.showErrorModal('recurringAlreadyActivated');
+                return;
+              }
 
               // 接口成功后显示成功弹窗
               this.showSuccessModal('recurring');
@@ -605,6 +621,13 @@ Page(createPage({
         currency
       });
 
+      // 根据状态码判断是否为手机号非法
+      if (+payRes.code === 10301) {
+        my.hideLoading();
+        this.showErrorModal('numberInvalid');
+        return;
+      }
+
       const { paymentId, orderId, redirectUrl } = payRes.data;
 
       if (!paymentId) {
@@ -642,14 +665,7 @@ Page(createPage({
     } catch (error) {
       console.error('One time pay API error:', error);
       my.hideLoading();
-      
-      // 检查错误消息是否包含 "Phone Number not found in Precision"
-      const errorMessage = error.message || '';
-      if (errorMessage.includes('Phone Number not found in Precision')) {
-        this.showErrorModal('numberInvalid');
-      } else {
-        this.showErrorModal();
-      }
+      this.showErrorModal();
     }
   },
 

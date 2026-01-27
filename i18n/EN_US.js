@@ -123,6 +123,11 @@ export default {
       title: 'Number Invalid',
       content: 'Please check your number validity.',
       btn: 'OK',
+    },
+    recurringAlreadyActivatedError: {
+      title: 'Recurring Top-up',
+      content: 'Recurring top-up is already activated for this phone number.',
+      btn: 'OK',
     }
   },
 };
