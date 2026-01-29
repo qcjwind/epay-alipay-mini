@@ -4,7 +4,7 @@ export default {
     title: 'Phone Recharge',
     phoneLabel: 'Enter mobile phone number',
     addPhone: 'ADD',
-    selectContact: 'Select contace',
+    selectContact: 'Select contact',
     myNumber: 'My number',
     chooseOperaroe: 'Choose operator',
     oneTime: 'One time Top-up',
