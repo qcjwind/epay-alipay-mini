@@ -45,7 +45,7 @@
     <view class="detail-item">
       <view class="cloumn">
         <text>{{lang.history.popup.date}}</text>
-        <text class="label">{{historyDetail.createTime}}</text>
+        <text class="label">{{historyDetail.createDate}}</text>
       </view>
     </view>
     <!-- 周期充值显示频率 -->

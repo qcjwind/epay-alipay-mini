@@ -1,46 +1,51 @@
-<view
-  a:for="{{ historyList }}"
-  onTap="openHistortDetail"
-  data-id="{{item.orderId}}"
-  key="{{item.orderId}}"
-  class="top-up-item"
->
-  <view class="user-box">
-    <!-- 有用户名称：参考支付确认页样式 -->
-    <view a:if="{{item.hasUserName}}" class="avatar-wrapper">
-      <view class="avatar">
-        <text class="avatar-text">{{item.avatarInitials}}</text>
+<block a:if="{{ historyList && historyList.length > 0 }}">
+  <view
+    a:for="{{ historyList }}"
+    onTap="openHistortDetail"
+    data-id="{{item.orderId}}"
+    key="{{item.orderId}}"
+    class="top-up-item"
+  >
+    <view class="user-box">
+      <!-- 有用户名称：参考支付确认页样式 -->
+      <view a:if="{{item.hasUserName}}" class="avatar-wrapper">
+        <view class="avatar">
+          <text class="avatar-text">{{item.avatarInitials}}</text>
+        </view>
+        <view class="avatar-badge">
+          <image class="badge-icon" src="../../../../assets/icons/rebell_icon.png" mode="aspectFit"></image>
+        </view>
       </view>
-      <view class="avatar-badge">
-        <image class="badge-icon" src="../../../../assets/icons/rebell_icon.png" mode="aspectFit"></image>
-      </view>
-    </view>
-    <!-- 没有用户名称：参考充值列表样式 -->
-    <block a:else>
-      <view class="avatar-img-box">
-        <image class="img" src="../../../../assets/icons/user-one.png" />
-      </view>
-      <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
-    </block>
-  </view>
-  <view class="top-info">
-    <text class="label">{{item.phoneUserName || item.nickName || item.phoneNumber}}</text>
-    <view class="info-box">
-      <block a:if="{{ item.isRecurring }}">
-        <image class="icon" src="../../../../assets/icons/calendar-02.png" />
-        <view class="line"></view>
+      <!-- 没有用户名称：参考充值列表样式 -->
+      <block a:else>
+        <view class="avatar-img-box">
+          <image class="img" src="../../../../assets/icons/user-one.png" />
+        </view>
+        <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
       </block>
-      <text>{{item.createDate}}</text>
+    </view>
+    <view class="top-info">
+      <text class="label">{{item.phoneUserName || item.nickName || item.phoneNumber}}</text>
+      <view class="info-box">
+        <block a:if="{{ item.isRecurring }}">
+          <image class="icon" src="../../../../assets/icons/calendar-02.png" />
+          <view class="line"></view>
+        </block>
+        <text>{{item.createDate}}</text>
+      </view>
+    </view>
+    <view class="price-box">
+      <text>{{item.amount.faceValue}} €</text>
+      <text class="type">{{item.operator}}</text>
     </view>
   </view>
-  <view class="price-box">
-    <text>{{item.amount.faceValue}} €</text>
-    <text class="type">{{item.operator}}</text>
-  </view>
+  <load-more
+    a:if="{{ historyList && historyList.length > 10 }}"
+    isMore="{{isMore}}"
+    onLoadMore="onLoadMore"
+  />
+</block>
+<view a:else class="empty-state">
+  <text class="empty-text">{{lang.history.noTopUpsData}}</text>
 </view>
-<load-more
-  a:if="{{ historyList && historyList.length > 10 }}"
-  isMore="{{isMore}}"
-  onLoadMore="onLoadMore"
-/>
 <top-up-detail visible="{{visible}}" historyDetail="{{historyDetail}}" onClose="closeDetailPopup" />

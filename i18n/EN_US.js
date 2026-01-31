@@ -61,7 +61,9 @@ export default {
     },
     loadMoreTxt: 'load more~~~',
     loading: 'loading...',
-    noMore: 'no more content'
+    noMore: 'no more content',
+    noTopUpsData: 'No Top Ups Data',
+    noRecurringData: 'No Recurring Data'
   },
   message: {
     confirm: 'Confirm',

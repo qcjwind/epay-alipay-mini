@@ -137,3 +137,17 @@
   font-size: 24rpx;
   margin-top: 8rpx;
 }
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400rpx;
+}
+
+.empty-state .empty-text {
+  color: #fff;
+  font-size: 28rpx;
+  text-align: center;
+}

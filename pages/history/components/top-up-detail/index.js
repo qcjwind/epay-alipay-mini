@@ -1,7 +1,7 @@
 import {
   createComponent
 } from '@miniu/data'
-import { changeRecurringStatusAPI } from '../../../../services/index'
+import { changeRecurringStatusAPI, getRecurringAuthUrlAPI, confirmRecurringAgreementAPI } from '../../../../services/index'
 
 Component(createComponent({
   mapGlobalDataToData: {
@@ -132,7 +132,7 @@ Component(createComponent({
         }
       })
     },
-    turnIntoRecurringHandle() {
+    async turnIntoRecurringHandle() {
       // 跳转到设置定期页面，携带相关参数
       const { historyDetail } = this.props;
       
@@ -150,10 +150,43 @@ Component(createComponent({
         phoneNumber = parts.slice(1).join(' ');
       }
       
+      // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
+      const phoneNumberWithPrefix = phonePrefix && phoneNumber
+        ? `${phonePrefix} ${phoneNumber}`
+        : phoneNumber || '';
+      
       // 处理金额：携带参数用 amount.amount
       const amount = historyDetail.amount.amount 
         ? String(historyDetail.amount.amount) 
         : '';
+      
+      // 提前校验手机号的激活状态（使用默认周期信息）
+      // try {
+      //   my.showLoading();
+
+      //   const confirmRes = await confirmRecurringAgreementAPI({
+      //     phoneNumber: phoneNumberWithPrefix,
+      //     phoneUserName: historyDetail.phoneUserName || '',
+      //     operator: historyDetail.operator || '',
+      //   });
+        
+      //   // 根据状态码判断是否已激活
+      //   if (+confirmRes.code === 10003) {
+      //     my.hideLoading();
+      //     my.alert({
+      //       title: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.title,
+      //       content: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.content,
+      //       buttonText: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.btn,
+      //     });
+      //     return;
+      //   }
+        
+      //   my.hideLoading();
+      // } catch (error) {
+      //   my.hideLoading();
+      //   // 如果校验失败，继续跳转（可能是网络错误等）
+      //   console.error('Check recurring status error:', error);
+      // }
       
       // 构建参数
       const params = {

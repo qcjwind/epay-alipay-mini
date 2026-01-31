@@ -3,15 +3,20 @@ import {
   getHistoryDetailAPI
 } from '../../../../services/index'
 import { numberToWeekDay } from '../../../../utils/util'
+import { createComponent } from "@miniu/data";
 
-Component({
-  props: {},
-  data: {
-    isMore: true,
-    visible: false,
-    historyList: [],
-    historyDetail: null
-  },
+Component(
+  createComponent({
+    mapGlobalDataToData: {
+      lang: (g) => g.lang,
+    },
+    props: {},
+    data: {
+      isMore: true,
+      visible: false,
+      historyList: [],
+      historyDetail: null
+    },
   didMount() {
     this.paging = {
       pageSize: 20,
@@ -160,5 +165,6 @@ Component({
         my.hideLoading()
       }
     },
-  },
-});
+    },
+  })
+);

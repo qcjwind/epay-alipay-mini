@@ -58,12 +58,15 @@ Page(
     async getgetOperatorList(number) {
       try {
         my.showLoading();
+        // 清理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
+        const cleanNumber = this.cleanPhoneNumber(number || '');
         // 获取当前国家的前缀
         const phonePrefix = this.data.currentNation.phonePrefix || '';
-        // 如果前缀存在，将前缀和号码用空格连接
-        const phoneNumberWithPrefix = phonePrefix 
-          ? `${phonePrefix} ${number}` 
-          : number;
+        // 如果号码已经包含前缀，直接使用；否则添加前缀
+        let phoneNumberWithPrefix = cleanNumber;
+        if (phonePrefix && !cleanNumber.startsWith('+')) {
+          phoneNumberWithPrefix = `${phonePrefix} ${cleanNumber}`;
+        }
         const res = await getOperatorListAPI(phoneNumberWithPrefix);
         my.hideLoading();
         const {
@@ -127,16 +130,43 @@ Page(
       });
     },
 
+    // 清理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
+    // 例如："+39 123 456 789" -> "+39 123456789"
+    cleanPhoneNumber(phoneNumber) {
+      if (!phoneNumber) return '';
+      
+      // 如果包含 + 前缀，保留前缀和第一个空格，去掉后面的空格
+      if (phoneNumber.trim().startsWith('+')) {
+        const trimmed = phoneNumber.trim();
+        const firstSpaceIndex = trimmed.indexOf(' ');
+        if (firstSpaceIndex > 0) {
+          // 有空格分隔前缀和号码
+          const prefix = trimmed.substring(0, firstSpaceIndex + 1); // 包含空格
+          const numberPart = trimmed.substring(firstSpaceIndex + 1).replace(/\s+/g, '');
+          return prefix + numberPart;
+        } else {
+          // 没有空格，直接去掉所有空格
+          return trimmed.replace(/\s+/g, '');
+        }
+      } else {
+        // 没有 + 前缀，直接去掉所有空格
+        return phoneNumber.replace(/\s+/g, '');
+      }
+    },
+
     selectContact() {
       my.choosePhoneContact({
         success: (res) => {
+          // 处理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
+          const mobile = this.cleanPhoneNumber(res.mobile || '');
           this.setData({
             user: {
               ...res,
+              mobile: mobile,
             },
             firstName: res.name && res.name.substring(0, 1),
           });
-          this.getgetOperatorList(res.mobile)
+          this.getgetOperatorList(mobile)
         },
       });
     },
@@ -301,14 +331,17 @@ Page(
         ? this.data.user.mobile 
         : (this.data.phone || '');
       
-      // 如果 phoneNumber 包含前缀（以 + 开头且可能包含空格），去掉前缀
+      // 清理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
+      phoneNumber = this.cleanPhoneNumber(phoneNumber);
+      
+      // 如果 phoneNumber 包含前缀（以 + 开头），去掉前缀
       if (phoneNumber && phoneNumber.includes('+')) {
         // 如果包含空格分隔（如 "+39 123456789"），去掉前缀部分
         if (phoneNumber.includes(' ')) {
           const parts = phoneNumber.split(' ');
           // 如果第一个部分是前缀（以 + 开头），去掉它
           if (parts[0].startsWith('+')) {
-            phoneNumber = parts.slice(1).join(' ');
+            phoneNumber = parts.slice(1).join('');
           }
         } else {
           // 如果前缀和号码没有空格分隔，尝试根据 phonePrefix 截取

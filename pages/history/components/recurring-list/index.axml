@@ -1,60 +1,65 @@
-<view>
-  <view a:for="{{ recurringList }}" a:key="agreementId">
-    <swiper-action>
-      <view class="recurring-item">
-        <view class="user-box">
-          <!-- 有用户名称：参考支付确认页样式 -->
-          <view a:if="{{item.phoneUserName}}" class="avatar-wrapper">
-            <view class="avatar">
-              <text class="avatar-text">{{item.avatarInitials}}</text>
+<view class="recurring-list-container">
+  <block a:if="{{ recurringList && recurringList.length > 0 }}">
+    <view a:for="{{ recurringList }}" a:key="agreementId">
+      <swiper-action>
+        <view class="recurring-item">
+          <view class="user-box">
+            <!-- 有用户名称：参考支付确认页样式 -->
+            <view a:if="{{item.phoneUserName}}" class="avatar-wrapper">
+              <view class="avatar">
+                <text class="avatar-text">{{item.avatarInitials}}</text>
+              </view>
+              <view class="avatar-badge">
+                <image class="badge-icon" src="../../../../assets/icons/rebell_icon.png" mode="aspectFit"></image>
+              </view>
             </view>
-            <view class="avatar-badge">
-              <image class="badge-icon" src="../../../../assets/icons/rebell_icon.png" mode="aspectFit"></image>
+            <!-- 没有用户名称：参考充值列表样式 -->
+            <block a:else>
+              <view class="avatar-img-box">
+                <image class="img" src="../../../../assets/icons/user-one.png" />
+              </view>
+              <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
+            </block>
+          </view>
+          <view class="top-info">
+            <view class="label">
+              <text>{{item.phoneNumber}}</text>
+              <image class="arrow" src="../../../../assets/icons/arrow-right.png" />
+              <text>{{item.operator}}</text>
+            </view>
+            <view class="info-box">
+              <image class="icon" src="../../../../assets/icons/calendar-02.png" />
+              <text>{{item.amountDisplay}} € {{item.frequencyText}}</text>
             </view>
           </view>
-          <!-- 没有用户名称：参考充值列表样式 -->
-          <block a:else>
-            <view class="avatar-img-box">
-              <image class="img" src="../../../../assets/icons/user-one.png" />
-            </view>
-            <image class="icon" src="../../../../assets/icons/rebell_icon.png" />
-          </block>
-        </view>
-        <view class="top-info">
-          <view class="label">
-            <text>{{item.phoneNumber}}</text>
-            <image class="arrow" src="../../../../assets/icons/arrow-right.png" />
-            <text>{{item.operator}}</text>
-          </view>
-          <view class="info-box">
-            <image class="icon" src="../../../../assets/icons/calendar-02.png" />
-            <text>{{item.amountDisplay}} € {{item.frequencyText}}</text>
+          <view class="price-box" onTap="switchHandle" data-id="{{item.agreementId}}">
+            <switch
+              style="border-color: {{item.status === 'ACTIVE' ? '#B63F81' : '#7F8FAB'}};background: {{item.status === 'ACTIVE' ? '#B63F81' : '#7F8FAB'}}"
+              color="#B63F81"
+              checked="{{item.status === 'ACTIVE'}}"
+              onChange="switchHandle"
+              data-id="{{item.agreementId}}"
+            />
           </view>
         </view>
-        <view class="price-box" onTap="switchHandle" data-id="{{item.agreementId}}">
-          <switch
-            style="border-color: {{item.status === 'ACTIVE' ? '#B63F81' : '#7F8FAB'}};background: {{item.status === 'ACTIVE' ? '#B63F81' : '#7F8FAB'}}"
-            color="#B63F81"
-            checked="{{item.status === 'ACTIVE'}}"
-            onChange="switchHandle"
-            data-id="{{item.agreementId}}"
-          />
+        <view
+          onTap="delRecurring"
+          data-id="{{item.agreementId}}"
+          class="del-btn-box"
+          slot="action"
+        >
+          <image class="del-icon" src="../../../../assets/icons/icon_swipe_left.png" />
+          <text>{{lang.history.deleteTxt}}</text>
         </view>
-      </view>
-      <view
-        onTap="delRecurring"
-        data-id="{{item.agreementId}}"
-        class="del-btn-box"
-        slot="action"
-      >
-        <image class="del-icon" src="../../../../assets/icons/icon_swipe_left.png" />
-        <text>{{lang.history.deleteTxt}}</text>
-      </view>
-    </swiper-action>
+      </swiper-action>
+    </view>
+    <load-more
+      a:if="{{ recurringList && recurringList.length > 10 }}"
+      isMore="{{isMore}}"
+      onLoadMore="onLoadMore"
+    />
+  </block>
+  <view a:else class="empty-state">
+    <text class="empty-text">{{lang.history.noRecurringData}}</text>
   </view>
-  <load-more
-    a:if="{{ recurringList && recurringList.length > 10 }}"
-    isMore="{{isMore}}"
-    onLoadMore="onLoadMore"
-  />
 </view>
