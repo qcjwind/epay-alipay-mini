@@ -8,11 +8,8 @@ import {
 } from "../services/index";
 import {
   RB_TOKEN
-} from "/utils/constant";
-
-const {
-  language
-} = my.env;
+} from "../utils/constant";
+import { getLanguage } from "../utils/util";
 
 
 // Token 过期时间：30 分钟（毫秒）
@@ -186,7 +183,7 @@ http.addRequestInterceptor(async (config) => {
     // 将 token 添加到请求头
     config.headers = {
       ...config.headers,
-      language,
+      language: getLanguage(),
       Authorization: token,
     };
     return config;
@@ -242,6 +239,7 @@ http.addResponseInterceptor(async (response, config) => {
       // 更新请求配置中的 Authorization header
       config.headers = {
         ...config.headers,
+        language: getLanguage(),
         Authorization: token,
       };
       

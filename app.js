@@ -10,11 +10,5 @@ App(createApp({
   async onLaunch() {
     const appIdRes = my.getAppIdSync();
     this.globalData.appId = appIdRes.appId;
-    const env = getEnv();
-    if (env !== 'prod') {
-      my.setNavigationBar({
-        title: env
-      });
-    }
   },
 }));

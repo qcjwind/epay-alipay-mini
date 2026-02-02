@@ -1,7 +1,7 @@
 import {
   createComponent
 } from '@miniu/data'
-import { changeRecurringStatusAPI, getRecurringAuthUrlAPI, confirmRecurringAgreementAPI } from '../../../../services/index'
+import { changeRecurringStatusAPI, checkRecurringAPI } from '../../../../services/index'
 
 Component(createComponent({
   mapGlobalDataToData: {
@@ -161,32 +161,30 @@ Component(createComponent({
         : '';
       
       // 提前校验手机号的激活状态（使用默认周期信息）
-      // try {
-      //   my.showLoading();
+      try {
+        my.showLoading();
 
-      //   const confirmRes = await confirmRecurringAgreementAPI({
-      //     phoneNumber: phoneNumberWithPrefix,
-      //     phoneUserName: historyDetail.phoneUserName || '',
-      //     operator: historyDetail.operator || '',
-      //   });
+        const isRecurring = await checkRecurringAPI({
+          phoneNumber: phoneNumberWithPrefix,
+        });
         
-      //   // 根据状态码判断是否已激活
-      //   if (+confirmRes.code === 10003) {
-      //     my.hideLoading();
-      //     my.alert({
-      //       title: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.title,
-      //       content: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.content,
-      //       buttonText: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.btn,
-      //     });
-      //     return;
-      //   }
+        // 根据状态码判断是否已激活
+        if (isRecurring) {
+          my.hideLoading();
+          my.alert({
+            title: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.title,
+            content: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.content,
+            buttonText: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.btn,
+          });
+          return;
+        }
         
-      //   my.hideLoading();
-      // } catch (error) {
-      //   my.hideLoading();
-      //   // 如果校验失败，继续跳转（可能是网络错误等）
-      //   console.error('Check recurring status error:', error);
-      // }
+        my.hideLoading();
+      } catch (error) {
+        my.hideLoading();
+        // 如果校验失败，继续跳转（可能是网络错误等）
+        console.error('Check recurring status error:', error);
+      }
       
       // 构建参数
       const params = {

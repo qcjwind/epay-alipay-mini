@@ -20,6 +20,31 @@ export function compareVersion(v1, v2) {
   return true;
 }
 
+// 缓存系统语言
+let cachedLanguage = null;
+
+/**
+ * 获取系统语言（带缓存）
+ * @returns {string} 系统语言，默认为 'en-US'
+ */
+export const getLanguage = () => {
+  // 如果已缓存，直接返回
+  // if (cachedLanguage !== null) {
+  //   return cachedLanguage;
+  // }
+  
+  // 首次获取，从系统信息中读取
+  try {
+    const systemInfo = my.getSystemInfoSync();
+    cachedLanguage = systemInfo.language || 'en-US';
+    return cachedLanguage;
+  } catch (error) {
+    console.error('获取系统语言失败:', error);
+    cachedLanguage = 'en-US';
+    return cachedLanguage;
+  }
+};
+
 // 星期名称和数字的映射（1=MONDAY, 2=TUESDAY, ..., 7=SUNDAY）
 // 星期名称 -> 数字（用于接口传参）
 export const WEEK_DAY_MAP = {

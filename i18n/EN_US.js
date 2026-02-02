@@ -130,6 +130,11 @@ export default {
       title: 'Recurring Top-up',
       content: 'Recurring top-up is already activated for this phone number.',
       btn: 'OK',
+    },
+    recurringAuthUrlError: {
+      title: 'Recurring Auth Issue',
+      content: 'Recurring authUrl something wrong.',
+      btn: 'Close',
     }
   },
 };

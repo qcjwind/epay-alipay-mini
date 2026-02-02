@@ -63,6 +63,12 @@ Page(createPage({
   },
 
   onLoad(query) {
+    // 设置导航栏返回箭头为白色
+    my.setNavigationBar({
+      backgroundColor: '#000000',
+      frontColor: '#ffffff'
+    });
+
     console.info('Confirm top up page onLoad with query:', JSON.stringify(query));
 
     const { phoneNumber, phonePrefix, operator, userName, amount, payMethod, recurringType, recurringDay, editRecurring, agreementId } = query;
@@ -364,7 +370,7 @@ Page(createPage({
   },
 
   // 显示异常弹窗
-  // errorType: 'oneTime' | 'recurring' | 'numberInvalid' | 'recurringAlreadyActivated' 错误类型，默认为 'oneTime'
+  // errorType: 'oneTime' | 'recurring' | 'numberInvalid' | 'recurringAlreadyActivated' | 'recurringAuthUrl' 错误类型，默认为 'oneTime'
   // customTitle: 自定义标题（可选）
   // customContent: 自定义内容（可选）
   showErrorModal(errorType = 'oneTime', errorModalShowRetry = true, customTitle = null, customContent = null) {
@@ -382,6 +388,10 @@ Page(createPage({
     } else if (errorType === 'recurringAlreadyActivated') {
       errorConfig = lang.confirmTopUp.recurringAlreadyActivatedError;
       // 已激活错误不显示重试按钮
+      errorModalShowRetry = false;
+    } else if (errorType === 'recurringAuthUrl') {
+      errorConfig = lang.confirmTopUp.recurringAuthUrlError;
+      // 签约异常错误不显示重试按钮
       errorModalShowRetry = false;
     } else {
       errorConfig = lang.confirmTopUp.oneTimeError;
@@ -432,7 +442,7 @@ Page(createPage({
       recurringDay,
       userName
     } = this.data;
-    
+
     // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
     const phoneNumberWithPrefix = phonePrefix && phoneNumber
       ? `${phonePrefix} ${phoneNumber}`
@@ -473,9 +483,21 @@ Page(createPage({
             // VALID 状态不需要 authCode
           });
 
+          // 根据状态码判断是否为手机号非法
+          if (+confirmRes.code === 10301) {
+            this.showErrorModal('numberInvalid');
+            return;
+          }
+
           // 根据状态码判断是否已激活
           if (+confirmRes.code === 10003) {
             this.showErrorModal('recurringAlreadyActivated');
+            return;
+          }
+
+          // 签约异常
+          if (+confirmRes.code === 10005) {
+            this.showErrorModal('recurringAuthUrl');
             return;
           }
 
@@ -507,9 +529,21 @@ Page(createPage({
                 authCode: res.authCode
               });
 
+              // 根据状态码判断是否为手机号非法
+              if (+confirmRes.code === 10301) {
+                this.showErrorModal('numberInvalid');
+                return;
+              }
+
               // 根据状态码判断是否已激活
               if (+confirmRes.code === 10003) {
                 this.showErrorModal('recurringAlreadyActivated');
+                return;
+              }
+
+              // 签约异常
+              if (+confirmRes.code === 10005) {
+                this.showErrorModal('recurringAuthUrl');
                 return;
               }
 
@@ -574,7 +608,7 @@ Page(createPage({
       amount,
       userName
     } = this.data;
-    
+
     // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
     const phoneNumberWithPrefix = phonePrefix && phoneNumber
       ? `${phonePrefix} ${phoneNumber}`
@@ -672,7 +706,7 @@ Page(createPage({
   // 关闭成功弹窗
   handleSuccessModalClose() {
     const { successModalType } = this.data;
-    
+
     this.setData({
       successModalVisible: false
     });

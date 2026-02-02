@@ -62,10 +62,24 @@ export const getRecurringAuthUrlAPI = (params) => {
 //      recurringType string 是 周期类型 周：WEEK 月：MONTH
 //      recurringDay string 是 周期日期
 //      authCode string 是 签约授权码
+//      requestId string 是 请求幂等ID（内部自动生成）
 // 出参：无
 export const confirmRecurringAgreementAPI = (params) => {
-  // const { phoneNumber, operator, amount, recurringType, recurringDay, authCode } = params;
-  return post('/topup/recurring/confirmAgreement', params)
+  const requestId = uuid(); // 内部自动生成请求幂等ID
+
+  return post('/topup/recurring/confirmAgreement', {
+    ...params,
+    requestId
+  }, {
+    showToast: false
+  })
+}
+
+// 检查周期充值
+// 入参：phoneNumber string 是 充值号码
+// 出参：boolean 是 是否已存在周期充值
+export const checkRecurringAPI = (params) => {
+  return post('/topup/recurring/checkRecurring', params)
 }
 
 // 暂停周期充值

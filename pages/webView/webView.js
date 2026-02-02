@@ -4,6 +4,12 @@ Page({
     targetUrl: '',
   },
   onLoad() {
+    // 设置导航栏返回箭头为白色
+    my.setNavigationBar({
+      backgroundColor: '#000000',
+      frontColor: '#ffffff'
+    });
+    
     this.setData({
       targetUrl: '',
     });

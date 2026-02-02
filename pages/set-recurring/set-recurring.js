@@ -67,6 +67,12 @@ Page(createPage({
   },
 
   onLoad(query) {
+    // 设置导航栏返回箭头为白色
+    my.setNavigationBar({
+      backgroundColor: '#000000',
+      frontColor: '#ffffff'
+    });
+    
     console.info('Set recurring page onLoad with query:', JSON.stringify(query));
     
     // 接收页面参数

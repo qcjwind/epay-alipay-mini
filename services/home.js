@@ -1,6 +1,7 @@
 import {
   post
 } from "../http/index";
+import { getLanguage } from "../utils/util";
 
 export const loginAPI = (authCode) => {
   return post(
@@ -8,6 +9,9 @@ export const loginAPI = (authCode) => {
       authCode,
     }, {
       skipInterceptor: true,
+      headers: {
+        language: getLanguage(),
+      },
     }
   );
 };
