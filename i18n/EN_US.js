@@ -7,6 +7,7 @@ export default {
     selectContact: 'Select contact',
     myNumber: 'My number',
     chooseOperaroe: 'Choose operator',
+    chooseOpPlaceholder: 'Please choose a operator',
     oneTime: 'One time Top-up',
     recurring: 'Recurring Top-up',
     continue: 'CONTINUE',

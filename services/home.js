@@ -1,7 +1,9 @@
 import {
   post
 } from "../http/index";
-import { getLanguage } from "../utils/util";
+import {
+  getLanguage
+} from "../utils/util";
 
 export const loginAPI = (authCode) => {
   return post(
@@ -39,6 +41,14 @@ export const getNationListAPI = () => {
 // 查询运营商列表
 export const getOperatorListAPI = (phoneNumber) => {
   return post("/topup/operator/operatorList", {
+    phoneNumber,
+  }, {
+    // skipInterceptor: true,
+  });
+};
+
+export const getOperatorAPI = (phoneNumber) => {
+  return post("/topup/operator/queryOperator", {
     phoneNumber,
   }, {
     // skipInterceptor: true,

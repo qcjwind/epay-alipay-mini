@@ -19,6 +19,7 @@
                   value="{{phone}}"
                   class="inp-box"
                   onInput="inpNumber"
+                  onBlur="getOperatorHandle"
                   placeholder="(000) 000-0000"
                 />
               </view>
@@ -60,10 +61,11 @@
       </view>
     </view>
 
-    <block a:if="{{ currentOperator }}">
+    <block>
       <view class="choose-operator">{{lang.home.chooseOperaroe}}</view>
       <view onTap="chooseOperator" class="choose-operator-box">
-        <text>{{currentOperator}}</text>
+        <text a:if="{{ currentOperator }}">{{currentOperator}}</text>
+        <text class="choose-placeholder" a:else>{{lang.home.chooseOpPlaceholder}}</text>
         <image class="arrow" src="../../assets/icons/chevron-down.png" />
       </view>
     </block>
@@ -76,7 +78,8 @@
       selectedIndex="{{currentOperatorIndex}}"
       onClose="handleOperatorPickerClose"
       onConfirm="handleOperatorPickerConfirm"
-    ></popup-picker>
+    >
+    </popup-picker>
 
     <view class="home-banner">
       <swiper>

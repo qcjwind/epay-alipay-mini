@@ -3,6 +3,7 @@ import {
 } from "@miniu/data";
 import {
   getNationListAPI,
+  getOperatorAPI,
   getOperatorListAPI,
   getUserInfoAPI
 } from "../../services/index";
@@ -36,6 +37,7 @@ Page(
     onLoad(query) {
       this.initData();
       this.getNationList();
+      this.getgetOperatorList()
     },
 
     async getNationList() {
@@ -52,6 +54,28 @@ Page(
         });
       } catch (error) {
         my.hideLoading();
+      }
+    },
+
+    async getOperatorHandle() {
+      try {
+        my.showLoading()
+        const res = await getOperatorAPI(`${this.data.currentNation.phonePrefix}${this.data.phone}`);
+        my.hideLoading()
+        const index = this.data.operatorOptions.findIndex(item => item === res.data.operator)
+        if (index < 0) {
+          this.setData({
+            currentOperator: '',
+            currentOperatorIndex: 0
+          })
+          return
+        }
+        this.setData({
+          currentOperator: this.data.operatorOptions[index],
+          currentOperatorIndex: index
+        })
+      } catch (error) {
+        my.hideLoading()
       }
     },
 
@@ -76,8 +100,8 @@ Page(
         this.setData({
           operatorList: data,
           operatorOptions: operatorOptions,
-          currentOperator: data ? data[0].operator : '',
-          currentOperatorIndex: 0
+          // currentOperator: data ? data[0].operator : '',
+          // currentOperatorIndex: 0
         });
       } catch (error) {
         my.hideLoading();
@@ -134,7 +158,7 @@ Page(
     // 例如："+39 123 456 789" -> "+39 123456789"
     cleanPhoneNumber(phoneNumber) {
       if (!phoneNumber) return '';
-      
+
       // 如果包含 + 前缀，保留前缀和第一个空格，去掉后面的空格
       if (phoneNumber.trim().startsWith('+')) {
         const trimmed = phoneNumber.trim();
@@ -219,7 +243,7 @@ Page(
         this.setData({
           showAddBtn: true,
         })
-        this.getgetOperatorList(value);
+        // this.getgetOperatorList(value);
       }
     },
 
@@ -327,13 +351,13 @@ Page(
       const phonePrefix = this.data.currentNation.phonePrefix || '';
 
       // 获取 phoneNumber（优先使用联系人的 mobile）
-      let phoneNumber = this.data.user && this.data.user.mobile 
-        ? this.data.user.mobile 
-        : (this.data.phone || '');
-      
+      let phoneNumber = this.data.user && this.data.user.mobile ?
+        this.data.user.mobile :
+        (this.data.phone || '');
+
       // 清理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
       phoneNumber = this.cleanPhoneNumber(phoneNumber);
-      
+
       // 如果 phoneNumber 包含前缀（以 + 开头），去掉前缀
       if (phoneNumber && phoneNumber.includes('+')) {
         // 如果包含空格分隔（如 "+39 123456789"），去掉前缀部分
