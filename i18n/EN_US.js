@@ -126,8 +126,8 @@ export default {
       retry: 'Retry',
     },
     numberInvalidError: {
-      title: 'Number Invalid',
-      content: 'Please check your number validity.',
+      title: 'Validity Confirmation',
+      content: 'Please confirm the operator matches your phone number, otherwise your top-up may fail.',
       btn: 'OK',
     },
     recurringAlreadyActivatedError: {

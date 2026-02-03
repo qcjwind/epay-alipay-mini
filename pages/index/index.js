@@ -237,8 +237,10 @@ Page(
           value
         },
       } = e || {};
+      // 只保留数字
+      const numericValue = value.replace(/\D/g, '');
       this.setData({
-        phone: value,
+        phone: numericValue,
       })
       if (this.checkPhoneNum(false)) {
         this.setData({

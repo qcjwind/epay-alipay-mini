@@ -17,6 +17,7 @@
                   maxlength="10"
                   type="number"
                   value="{{phone}}"
+                  controlled
                   class="inp-box"
                   onInput="inpNumber"
                   onBlur="getOperatorHandle"
