@@ -6,6 +6,7 @@ import {
   getOperatorListAPI,
   getUserInfoAPI
 } from "../../services/index";
+import { checkRecurringAPI } from "../../services/topup";
 
 Page(
   createPage({
@@ -313,7 +314,7 @@ Page(
       });
     },
 
-    submit() {
+    async submit() {
       if (!this.checkPhoneNum()) {
         return;
       }
@@ -351,6 +352,39 @@ Page(
               phoneNumber = phoneNumber.substring(prefixWithoutPlus.length);
             }
           }
+        }
+      }
+
+      // 如果是周期充值，提前校验手机号的激活状态
+      if (this.data.payMethod === 'recurring') {
+        try {
+          my.showLoading();
+          
+          // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
+          const phoneNumberWithPrefix = phonePrefix && phoneNumber
+            ? `${phonePrefix} ${phoneNumber}`
+            : phoneNumber || '';
+          
+          const isRecurring = await checkRecurringAPI({
+            phoneNumber: phoneNumberWithPrefix,
+          });
+          
+          // 根据状态码判断是否已激活
+          if (isRecurring.data) {
+            my.hideLoading();
+            my.alert({
+              title: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.title,
+              content: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.content,
+              buttonText: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.btn,
+            });
+            return;
+          }
+          
+          my.hideLoading();
+        } catch (error) {
+          my.hideLoading();
+          // 如果校验失败，继续跳转（可能是网络错误等）
+          console.error('Check recurring status error:', error);
         }
       }
 
