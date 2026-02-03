@@ -7,7 +7,9 @@ import {
   getOperatorListAPI,
   getUserInfoAPI
 } from "../../services/index";
-import { checkRecurringAPI } from "../../services/topup";
+import {
+  checkRecurringAPI
+} from "../../services/topup";
 
 Page(
   createPage({
@@ -58,10 +60,10 @@ Page(
       }
     },
 
-    async getOperatorHandle() {
+    async getOperatorHandle(mobile) {
       try {
         my.showLoading()
-        const res = await getOperatorAPI(`${this.data.currentNation.phonePrefix}${this.data.phone}`);
+        const res = await getOperatorAPI(`${this.data.currentNation.phonePrefix}${ mobile || this.data.phone}`);
         my.hideLoading()
         const index = this.data.operatorOptions.findIndex(item => item === res.data.operator)
         if (index < 0) {
@@ -184,6 +186,7 @@ Page(
         success: (res) => {
           // 处理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
           const mobile = this.cleanPhoneNumber(res.mobile || '');
+          
           this.setData({
             user: {
               ...res,
@@ -191,7 +194,8 @@ Page(
             },
             firstName: res.name && res.name.substring(0, 1),
           });
-          this.getgetOperatorList(mobile)
+          // this.getgetOperatorList(mobile)
+          this.getOperatorHandle(mobile)
         },
       });
     },
@@ -219,8 +223,10 @@ Page(
             updateData.currentNation = this.data.nationList[nationIndex]
             updateData.currentNationIndex = nationIndex
           }
-          this.getgetOperatorList(arr[1])
-          this.setData(updateData)
+          // this.getgetOperatorList(arr[1])
+          this.setData(updateData, () => {
+            this.getOperatorHandle()
+          })
         }
       } catch (error) {
         my.hideLoading()
@@ -237,6 +243,7 @@ Page(
           value
         },
       } = e || {};
+      // 过滤非数字字符，只保留 0-9 的数字
       this.setData({
         phone: value,
       })
@@ -245,6 +252,7 @@ Page(
           showAddBtn: true,
         })
         // this.getgetOperatorList(value);
+        this.getOperatorHandle()
       }
     },
 
@@ -383,16 +391,16 @@ Page(
       if (this.data.payMethod === 'recurring') {
         try {
           my.showLoading();
-          
+
           // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
-          const phoneNumberWithPrefix = phonePrefix && phoneNumber
-            ? `${phonePrefix} ${phoneNumber}`
-            : phoneNumber || '';
-          
+          const phoneNumberWithPrefix = phonePrefix && phoneNumber ?
+            `${phonePrefix} ${phoneNumber}` :
+            phoneNumber || '';
+
           const isRecurring = await checkRecurringAPI({
             phoneNumber: phoneNumberWithPrefix,
           });
-          
+
           // 根据状态码判断是否已激活
           if (isRecurring.data) {
             my.hideLoading();
@@ -403,7 +411,7 @@ Page(
             });
             return;
           }
-          
+
           my.hideLoading();
         } catch (error) {
           my.hideLoading();

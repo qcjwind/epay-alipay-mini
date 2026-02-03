@@ -19,7 +19,6 @@
                   value="{{phone}}"
                   class="inp-box"
                   onInput="inpNumber"
-                  onBlur="getOperatorHandle"
                   placeholder="(000) 000-0000"
                 />
               </view>
