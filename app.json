@@ -10,7 +10,8 @@
   ],
   "window": {
     "defaultTitle": "",
-    "transparentTitle": "always"
+    "transparentTitle": "always",
+    "pullRefresh": false
   },
   "tabBar": {
     "textColor": "rgba(0,0,0,0)",
