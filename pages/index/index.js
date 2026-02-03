@@ -32,7 +32,8 @@ Page(
         currentNationIndex: 0,
         currentOperator: '',
         currentOperatorIndex: 0,
-        operatorPickerVisible: false
+        operatorPickerVisible: false,
+        debounceTimer: null // 防抖定时器
       };
     },
     onLoad(query) {
@@ -59,6 +60,7 @@ Page(
     },
 
     async getOperatorHandle() {
+      console.log('getOperatorHandle', this.data.currentNation.phonePrefix, this.data.phone);
       try {
         my.showLoading()
         const res = await getOperatorAPI(`${this.data.currentNation.phonePrefix}${this.data.phone}`);
@@ -184,14 +186,28 @@ Page(
         success: (res) => {
           // 处理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
           const mobile = this.cleanPhoneNumber(res.mobile || '');
+          // 从 mobile 中提取号码部分（去掉前缀）
+          let phoneNumber = mobile;
+          if (mobile && mobile.includes('+')) {
+            const parts = mobile.split(' ');
+            phoneNumber = parts.length > 1 ? parts[1] : parts[0].replace(/\+/g, '').replace(/\s+/g, '');
+          } else if (mobile) {
+            phoneNumber = mobile.replace(/\s+/g, '');
+          }
           this.setData({
             user: {
               ...res,
               mobile: mobile,
             },
             firstName: res.name && res.name.substring(0, 1),
+            phone: phoneNumber,
+          }, () => {
+            // setData 完成后触发获取运营商
+            this.getgetOperatorList(mobile);
+            if (phoneNumber && this.data.currentNation && this.data.currentNation.phonePrefix) {
+              this.getOperatorHandle();
+            }
           });
-          this.getgetOperatorList(mobile)
         },
       });
     },
@@ -219,8 +235,13 @@ Page(
             updateData.currentNation = this.data.nationList[nationIndex]
             updateData.currentNationIndex = nationIndex
           }
-          this.getgetOperatorList(arr[1])
-          this.setData(updateData)
+          this.setData(updateData, () => {
+            // setData 完成后触发获取运营商
+            this.getgetOperatorList(arr[1]);
+            if (arr[1] && updateData.currentNation && updateData.currentNation.phonePrefix) {
+              this.getOperatorHandle();
+            }
+          });
         }
       } catch (error) {
         my.hideLoading()
@@ -246,7 +267,17 @@ Page(
         this.setData({
           showAddBtn: true,
         })
-        // this.getgetOperatorList(value);
+        // 清除之前的定时器
+        if (this.data.debounceTimer) {
+          clearTimeout(this.data.debounceTimer);
+        }
+        // 设置新的防抖定时器，500ms 后触发
+        const timer = setTimeout(() => {
+          this.getOperatorHandle();
+        }, 500);
+        this.setData({
+          debounceTimer: timer
+        });
       }
     },
 
