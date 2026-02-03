@@ -59,7 +59,8 @@
       onLoadMore="onLoadMore"
     />
   </block>
-  <view a:else class="empty-state">
+  <view a:elif="{{ hasLoaded && (!recurringList || recurringList.length === 0) }}" class="empty-state">
+    <image class="empty-image" src="../../../../assets/images/list_empty.png" mode="aspectFit"></image>
     <text class="empty-text">{{lang.history.noRecurringData}}</text>
   </view>
 </view>

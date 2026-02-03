@@ -45,7 +45,11 @@
     onLoadMore="onLoadMore"
   />
 </block>
-<view a:else class="empty-state">
-  <text class="empty-text">{{lang.history.noTopUpsData}}</text>
+<view a:elif="{{ hasLoaded && (!historyList || historyList.length === 0) }}" class="empty-state">
+  <image class="empty-image" src="../../../../assets/images/list_empty.png" mode="aspectFit"></image>
+  <view class="empty-text">
+    <text class="empty-text-line">{{lang.history.noTopUpsData.line1}}</text>
+    <text class="empty-text-line">{{lang.history.noTopUpsData.line2}}</text>
+  </view>
 </view>
 <top-up-detail visible="{{visible}}" historyDetail="{{historyDetail}}" onClose="closeDetailPopup" />

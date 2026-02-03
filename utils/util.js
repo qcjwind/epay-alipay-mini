@@ -1,4 +1,5 @@
 // Non type tools
+import dayjs from 'dayjs';
 
 // Compare version
 export function compareVersion(v1, v2) {
@@ -88,4 +89,73 @@ export function numberToWeekDay(number) {
     return String(number).toUpperCase();
   }
   return WEEK_DAY_REVERSE_MAP[String(number)] || number;
+}
+
+/**
+ * 格式化时间戳为日期字符串（兼容各时区）
+ * @param {number|string} timestamp - 时间戳（秒级或毫秒级）
+ * @param {string} format - 格式化模板，默认为 'DD.MM.YY, HH.mm'
+ * @returns {string} 格式化后的日期字符串
+ */
+export function formatTimestamp(timestamp, format = 'DD.MM.YY, HH.mm') {
+  if (!timestamp) return '';
+  
+  // 将时间戳转换为数字
+  let ts = Number(timestamp);
+  
+  // 判断是秒级还是毫秒级时间戳（秒级时间戳通常是10位，毫秒级是13位）
+  // 如果小于 13 位，认为是秒级，需要转换为毫秒级
+  if (ts < 10000000000) {
+    ts = ts * 1000;
+  }
+  
+  // 使用 dayjs 格式化，dayjs 会自动使用本地时区
+  return dayjs(ts).format(format);
+}
+
+/**
+ * 格式化时间戳为简短日期字符串（用于列表显示）
+ * @param {number|string} timestamp - 时间戳（秒级或毫秒级）
+ * @returns {string} 格式化后的日期字符串，格式：'DD.MM.YY, HH.mm'
+ */
+export function formatDate(timestamp) {
+  return formatTimestamp(timestamp, 'DD.MM.YY, HH.mm');
+}
+
+/**
+ * 格式化时间戳为日期时间字符串（用于详情显示）
+ * @param {number|string} timestamp - 时间戳（秒级或毫秒级）
+ * @returns {string} 格式化后的日期时间字符串，格式：'DD.MM.YY, HH.mm'
+ */
+export function formatDateTime(timestamp) {
+  return formatTimestamp(timestamp, 'DD.MM.YY, HH.mm');
+}
+
+/**
+ * 获取用户的当前时区
+ * @returns {string} 时区标识符，例如：'Asia/Shanghai', 'America/New_York', 'Europe/London' 等，如果无法获取则返回 UTC 偏移格式如 'UTC+08:00'
+ */
+export function getUserTimezone() {
+  try {
+    // 使用 Intl API 获取时区（推荐方式，返回 IANA 时区标识符）
+    if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timeZone) {
+        return timeZone;
+      }
+    }
+    
+    // 降级方案：使用 dayjs 获取时区偏移
+    const offset = dayjs().utcOffset(); // dayjs 返回的是分钟偏移，正数表示 UTC+，负数表示 UTC-
+    const hours = Math.floor(Math.abs(offset) / 60);
+    const minutes = Math.abs(offset) % 60;
+    const sign = offset >= 0 ? '+' : '-';
+    const offsetString = `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    
+    return `UTC${offsetString}`;
+  } catch (error) {
+    console.error('获取时区失败:', error);
+    // 默认返回 UTC
+    return 'UTC';
+  }
 }

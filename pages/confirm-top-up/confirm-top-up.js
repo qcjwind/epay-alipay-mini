@@ -62,6 +62,11 @@ Page(createPage({
     errorModalErrorType: 'oneTime' // 错误类型：'oneTime' | 'recurring'
   },
 
+  onShow() {
+    // 余额不足，tradepay返回时，按钮状态需要重置
+    this.resetConfirmButton();
+  },
+
   onLoad(query) {
     // 设置导航栏返回箭头为白色
     my.setNavigationBar({

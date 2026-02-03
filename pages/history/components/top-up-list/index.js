@@ -2,7 +2,7 @@ import {
   getHistoryListAPI,
   getHistoryDetailAPI
 } from '../../../../services/index'
-import { numberToWeekDay } from '../../../../utils/util'
+import { numberToWeekDay, formatDate, formatDateTime } from '../../../../utils/util'
 import { createComponent } from "@miniu/data";
 
 Component(
@@ -15,7 +15,8 @@ Component(
       isMore: true,
       visible: false,
       historyList: [],
-      historyDetail: null
+      historyDetail: null,
+      hasLoaded: false // 标记数据是否已加载
     },
   didMount() {
     this.paging = {
@@ -98,7 +99,9 @@ Component(
             ...data,
             frequencyText: frequencyText,
             avatarInitials,
-            hasUserName: !!userName
+            hasUserName: !!userName,
+            // 格式化日期（兼容时区）
+            createDate: formatDateTime(data.createDate)
           }
         })
       }).catch(() => {
@@ -149,7 +152,9 @@ Component(
           return {
             ...item,
             avatarInitials,
-            hasUserName: !!userName
+            hasUserName: !!userName,
+            // 格式化日期（兼容时区）
+            createDate: formatDate(item.createDate)
           }
         })
         
@@ -159,10 +164,15 @@ Component(
         
         this.setData({
           historyList: newList,
-          isMore: this.paging.pageNum * this.paging.pageSize < total
+          isMore: this.paging.pageNum * this.paging.pageSize < total,
+          hasLoaded: true // 接口返回后标记为已加载
         })
       } catch (error) {
         my.hideLoading()
+        // 接口失败也标记为已加载，避免一直显示加载状态
+        this.setData({
+          hasLoaded: true
+        })
       }
     },
     },
