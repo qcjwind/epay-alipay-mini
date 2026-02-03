@@ -169,7 +169,7 @@ Component(createComponent({
         });
         
         // 根据状态码判断是否已激活
-        if (isRecurring) {
+        if (isRecurring.data) {
           my.hideLoading();
           my.alert({
             title: this.data.lang.confirmTopUp.recurringAlreadyActivatedError.title,

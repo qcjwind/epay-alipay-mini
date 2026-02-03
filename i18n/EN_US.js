@@ -62,8 +62,11 @@ export default {
     loadMoreTxt: 'load more~~~',
     loading: 'loading...',
     noMore: 'no more content',
-    noTopUpsData: 'No Top Ups Data',
-    noRecurringData: 'No Recurring Data'
+    noTopUpsData: {
+      line1: 'You currently have no top-up records.',
+      line2: 'Start your first top-up with Rebell!'
+    },
+    noRecurringData: 'You currently have no recurring top-up plans.'
   },
   message: {
     confirm: 'Confirm',

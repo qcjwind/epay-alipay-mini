@@ -20,6 +20,7 @@ Component(
         },
       ],
       recurringList: [],
+      hasLoaded: false // 标记数据是否已加载
     },
     didMount() {
       this.paging = {
@@ -101,9 +102,14 @@ Component(
             isMore: this.paging.pageNum * this.paging.pageSize < total,
             recurringList: newList,
             total,
+            hasLoaded: true // 接口返回后标记为已加载
           });
         } catch (error) {
           my.hideLoading();
+          // 接口失败也标记为已加载，避免一直显示加载状态
+          this.setData({
+            hasLoaded: true
+          });
         }
       },
       
