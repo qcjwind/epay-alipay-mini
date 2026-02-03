@@ -34,7 +34,8 @@ Page(
         currentNationIndex: 0,
         currentOperator: '',
         currentOperatorIndex: 0,
-        operatorPickerVisible: false
+        operatorPickerVisible: false,
+        debounceTimer: null // 防抖定时器
       };
     },
     onLoad(query) {
@@ -186,13 +187,27 @@ Page(
         success: (res) => {
           // 处理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
           const mobile = this.cleanPhoneNumber(res.mobile || '');
-          
+          // 从 mobile 中提取号码部分（去掉前缀）
+          let phoneNumber = mobile;
+          if (mobile && mobile.includes('+')) {
+            const parts = mobile.split(' ');
+            phoneNumber = parts.length > 1 ? parts[1] : parts[0].replace(/\+/g, '').replace(/\s+/g, '');
+          } else if (mobile) {
+            phoneNumber = mobile.replace(/\s+/g, '');
+          }
           this.setData({
             user: {
               ...res,
               mobile: mobile,
             },
             firstName: res.name && res.name.substring(0, 1),
+            phone: phoneNumber,
+          }, () => {
+            // setData 完成后触发获取运营商
+            this.getgetOperatorList(mobile);
+            if (phoneNumber && this.data.currentNation && this.data.currentNation.phonePrefix) {
+              this.getOperatorHandle();
+            }
           });
           // this.getgetOperatorList(mobile)
           this.getOperatorHandle(mobile)
