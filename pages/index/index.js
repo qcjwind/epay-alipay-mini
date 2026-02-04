@@ -62,7 +62,7 @@ Page(
     },
 
     async getOperatorHandle(e) {
-      const mobile = e.detail.value || '';
+      const mobile = e ? e.detail.value || '' : '';
       try {
         my.showLoading()
         // 确保 phonePrefix 是字符串
