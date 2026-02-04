@@ -61,7 +61,8 @@ Page(
       }
     },
 
-    async getOperatorHandle(mobile) {
+    async getOperatorHandle(e) {
+      const mobile = e.detail.value || '';
       try {
         my.showLoading()
         // 确保 phonePrefix 是字符串
@@ -375,7 +376,19 @@ Page(
         phoneNumber = phoneNumber.split(' ')[1]
       }
 
-      // 检查手机号长度：支持 9 位或 10 位
+      // 确保手机号只包含数字
+      if (!/^\d+$/.test(phoneNumber)) {
+        if (isTip) {
+          my.alert({
+            title: this.data.lang.home.alert.invalidTitle,
+            content: this.data.lang.home.alert.msg,
+            buttonText: this.data.lang.home.alert.btn,
+          });
+        }
+        return false;
+      }
+
+      // 检查手机号长度：只支持 9 位或 10 位数字
       const phoneLength = phoneNumber.length;
       if (phoneLength !== 9 && phoneLength !== 10) {
         if (isTip) {
