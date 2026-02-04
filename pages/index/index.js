@@ -27,6 +27,7 @@ Page(
         selectedOneOption: "",
         operator: [],
         phone: '',
+        cursorNum: 0,
         payMethod: "oneTime",
         operatorList: [],
         operatorOptions: [], // 运营商选项数组（用于 popup-picker）
@@ -62,7 +63,7 @@ Page(
     },
 
     async getOperatorHandle(e) {
-      const mobile = e ? e.detail.value || '' : '';
+      const mobile = e.detail.value || '';
       try {
         my.showLoading()
         // 确保 phonePrefix 是字符串
@@ -305,15 +306,16 @@ Page(
       const filteredValue = strValue.replace(/[^0-9]/g, '');
       this.setData({
         phone: filteredValue,
+        cursorNum: 3
       })
       if (this.checkPhoneNum(false)) {
         this.setData({
           showAddBtn: true,
         })
         // this.getgetOperatorList(value);
-        if (my.env.platform === 'iOS') {
-          this.getOperatorHandle()
-        }
+        // if (my.env.platform === 'iOS') {
+        //   this.getOperatorHandle()
+        // }
       }
     },
 
