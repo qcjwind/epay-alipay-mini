@@ -299,9 +299,11 @@ Page(
           value
         },
       } = e || {};
-      // 过滤非数字字符，只保留 0-9 的数字
+      // value 可能为 'e'（number 类型输入在部分端上的异常情况），需要特殊处理
+      const strValue = String(value || '');
+      const filteredValue = strValue.replace(/[^0-9]/g, '');
       this.setData({
-        phone: value,
+        phone: filteredValue,
       })
       if (this.checkPhoneNum(false)) {
         this.setData({

@@ -15,9 +15,9 @@
                 <text class="prefix">{{currentNation.phonePrefix}}</text>
                 <input
                   maxlength="10"
-                  type="number"
                   value="{{phone}}"
                   class="inp-box"
+                  controlled 
                   onInput="inpNumber"
                   onBlur="getOperatorHandle"
                   placeholder="(000) 000-0000"
