@@ -267,7 +267,9 @@ Page(
           showAddBtn: true,
         })
         // this.getgetOperatorList(value);
-        this.getOperatorHandle()
+        if (my.env.platform === 'iOS') {
+          this.getOperatorHandle()
+        }
       }
     },
 

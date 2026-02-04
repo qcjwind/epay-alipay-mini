@@ -15,11 +15,13 @@
     <scroll-view
       class="picker-list"
       scroll-y="{{true}}"
+      scroll-into-view="{{currentId}}"
       scroll-with-animation="{{true}}"
     >
       <view
         a:for="{{options}}"
         a:key="*this"
+        id="item-{{index}}"
         class="picker-item {{index === currentIndex ? 'item-center' : (Math.abs(index - currentIndex) === 1 ? 'item-near' : (Math.abs(index - currentIndex) === 2 ? 'item-far' : 'item-outside'))}} {{currentIndex === index ? 'selected' : ''}}"
         data-index="{{index}}"
         onTap="handleSelect"
