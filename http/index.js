@@ -9,7 +9,7 @@ import {
 import {
   RB_TOKEN
 } from "../utils/constant";
-import { getLanguage } from "../utils/util";
+import { getLanguage, getUserTimezone, getClientId } from "../utils/util";
 
 
 // Token 过期时间：30 分钟（毫秒）
@@ -180,11 +180,13 @@ http.addRequestInterceptor(async (config) => {
       return Promise.reject(new Error('获取 token 失败'));
     }
 
-    // 将 token 添加到请求头
+    // 将 token 和其他必要参数添加到请求头
     config.headers = {
       ...config.headers,
       language: getLanguage(),
       Authorization: token,
+      userTimezone: getUserTimezone(),
+      clientId: getClientId(),
     };
     return config;
   } catch (error) {

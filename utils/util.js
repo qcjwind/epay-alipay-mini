@@ -1,5 +1,6 @@
 // Non type tools
 import dayjs from 'dayjs';
+import { uuid } from './uuid';
 
 // Compare version
 export function compareVersion(v1, v2) {
@@ -158,4 +159,50 @@ export function getUserTimezone() {
     // 默认返回 UTC
     return 'UTC';
   }
+}
+
+// 缓存 clientId
+let cachedClientId = null;
+const CLIENT_ID_KEY = 'CLIENT_ID';
+
+/**
+ * 获取客户端ID（带缓存）
+ * 首次获取时生成 UUID 并缓存到本地存储，后续直接从缓存读取
+ * @returns {string} 客户端ID（UUID格式）
+ */
+export function getClientId() {
+  // 如果内存中已缓存，直接返回
+  if (cachedClientId) {
+    return cachedClientId;
+  }
+  
+  try {
+    // 尝试从本地存储读取
+    const storageResult = my.getStorageSync({
+      key: CLIENT_ID_KEY
+    });
+    
+    if (storageResult && storageResult.data) {
+      cachedClientId = storageResult.data;
+      return cachedClientId;
+    }
+  } catch (error) {
+    // 本地存储读取失败，继续生成新的
+    console.warn('读取 clientId 缓存失败:', error);
+  }
+  
+  // 如果本地存储中没有，生成新的 UUID 并缓存
+  cachedClientId = uuid();
+  
+  try {
+    // 保存到本地存储
+    my.setStorageSync({
+      key: CLIENT_ID_KEY,
+      data: cachedClientId
+    });
+  } catch (error) {
+    console.error('保存 clientId 失败:', error);
+  }
+  
+  return cachedClientId;
 }
