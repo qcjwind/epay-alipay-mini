@@ -186,7 +186,17 @@ Page(
       my.choosePhoneContact({
         success: (res) => {
           // 处理手机号：保留前缀和号码之间的空格，去掉号码中间的空格
-          const mobile = this.cleanPhoneNumber(res.mobile || '');
+          let mobile = this.cleanPhoneNumber(res.mobile || '');
+          
+          // 判断是否带了前缀（以 + 开头）
+          const hasPrefix = mobile && mobile.trim().startsWith('+');
+          const phonePrefix = this.data.currentNation.phonePrefix || '';
+          
+          // 如果没有带前缀，主动添加当前选择的国家前缀
+          if (!hasPrefix && phonePrefix && mobile) {
+            mobile = `${phonePrefix} ${mobile}`;
+          }
+          
           // 从 mobile 中提取号码部分（去掉前缀）
           let phoneNumber = mobile;
           if (mobile && mobile.includes('+')) {
@@ -195,10 +205,11 @@ Page(
           } else if (mobile) {
             phoneNumber = mobile.replace(/\s+/g, '');
           }
+          
           this.setData({
             user: {
               ...res,
-              mobile: mobile,
+              mobile: mobile, // mobile 存储完整号码（包含前缀）
             },
             firstName: res.name && res.name.substring(0, 1),
             phone: phoneNumber,
@@ -350,8 +361,15 @@ Page(
       if (!this.checkPhoneNum()) {
         return;
       }
+      // 组合电话号码（phonePrefix + phoneNumber，用空格隔开）
+      const phonePrefix = this.data.currentNation.phonePrefix || '';
+      const phoneNumber = this.data.phone || '';
+      const mobilePhoneNumber = phonePrefix && phoneNumber
+        ? `${phonePrefix} ${phoneNumber}`
+        : phoneNumber;
+
       my.addPhoneContact({
-        mobilePhoneNumber: this.data.phone,
+        mobilePhoneNumber: mobilePhoneNumber,
       });
     },
 
