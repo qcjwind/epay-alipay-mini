@@ -506,8 +506,13 @@ Page(createPage({
             return;
           }
 
-          // 接口成功后显示成功弹窗
-          this.showSuccessModal('recurring');
+          // 只有成功状态码（200）才显示成功弹窗，其他错误码显示异常弹窗
+          if (+confirmRes.code === 200) {
+            this.showSuccessModal('recurring');
+          } else {
+            // 如果有新的错误码，显示异常弹窗
+            this.showErrorModal('recurring');
+          }
         } catch (error) {
           console.error('Confirm recurring agreement error:', error);
           this.showErrorModal('recurring');
@@ -552,8 +557,13 @@ Page(createPage({
                 return;
               }
 
-              // 接口成功后显示成功弹窗
-              this.showSuccessModal('recurring');
+              // 只有成功状态码（200）才显示成功弹窗，其他错误码显示异常弹窗
+              if (+confirmRes.code === 200) {
+                this.showSuccessModal('recurring');
+              } else {
+                // 如果有新的错误码，显示异常弹窗
+                this.showErrorModal('recurring');
+              }
             } catch (error) {
               console.error('Confirm recurring agreement error:', error);
               this.showErrorModal('recurring');
@@ -664,6 +674,13 @@ Page(createPage({
       if (+payRes.code === 10301) {
         my.hideLoading();
         this.showErrorModal('numberInvalid');
+        return;
+      }
+
+      // 如果不是200状态码，显示异常弹窗
+      if (+payRes.code !== 200) {
+        my.hideLoading();
+        this.showErrorModal('oneTime');
         return;
       }
 

@@ -260,13 +260,11 @@ http.addResponseInterceptor(async (response, config) => {
     clearToken();
   }
   if (+code !== 200) {
-    // 对于 10301、10003 等业务错误码，不 reject，返回数据让调用方判断
-    if (+code === 10301 || +code === 10003) {
-      return response.data;
-    }
     // 检查 showToast 配置，默认为 true
-    const showToast = config.showToast !== false;
-    if (showToast) {
+    // 只有当 showToast 明确设置为 false 时才不显示 toast
+    // 如果 showToast 是 undefined，默认为 true；如果是 false，则不显示；其他值都显示
+    const shouldShowToast = config.showToast === false ? false : true;
+    if (shouldShowToast) {
       my.showToast({
         content: message
       })
