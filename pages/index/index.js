@@ -61,14 +61,25 @@ Page(
       }
     },
 
-    async getOperatorHandle(e) {
-      const mobile = e.detail.value || '';
+    async getOperatorHandle(mobile) {
+      // 支持两种调用方式：
+      // 1. 从事件对象获取：getOperatorHandle(e) -> e.detail.value
+      // 2. 直接传入手机号：getOperatorHandle(mobile) -> mobile
+      let phoneNumberValue = '';
+      if (mobile && typeof mobile === 'object' && mobile.detail && mobile.detail.value !== undefined) {
+        // 从事件对象获取
+        phoneNumberValue = mobile.detail.value || '';
+      } else if (mobile !== undefined && mobile !== null) {
+        // 直接传入的手机号
+        phoneNumberValue = String(mobile);
+      }
+      
       try {
         my.showLoading()
         // 确保 phonePrefix 是字符串
         const phonePrefix = (this.data.currentNation && this.data.currentNation.phonePrefix) ? String(this.data.currentNation.phonePrefix) : '';
         // 确保 phoneNumber 是字符串
-        let phoneNumber = mobile ? String(mobile) : (this.data.phone ? String(this.data.phone) : '');
+        let phoneNumber = phoneNumberValue || (this.data.phone ? String(this.data.phone) : '');
         
         // 检查 phoneNumber 是否已经包含前缀（以 + 开头）
         const hasPrefix = phoneNumber && phoneNumber.trim().startsWith('+');
@@ -247,12 +258,11 @@ Page(
           }, () => {
             // setData 完成后触发获取运营商
             this.getgetOperatorList(mobile);
-            if (phoneNumber && this.data.currentNation && this.data.currentNation.phonePrefix) {
-              this.getOperatorHandle();
+            // 传递完整的 mobile（包含前缀）给 getOperatorHandle
+            if (mobile && this.data.currentNation && this.data.currentNation.phonePrefix) {
+              this.getOperatorHandle(mobile);
             }
           });
-          // this.getgetOperatorList(mobile)
-          this.getOperatorHandle(mobile)
         },
       });
     },
@@ -282,7 +292,13 @@ Page(
           }
           // this.getgetOperatorList(arr[1])
           this.setData(updateData, () => {
-            this.getOperatorHandle()
+            // 传递手机号给 getOperatorHandle，如果没有前缀则使用当前国家前缀
+            const phoneNumberWithPrefix = updateData.currentNation && updateData.currentNation.phonePrefix && arr[1]
+              ? `${updateData.currentNation.phonePrefix} ${arr[1]}`
+              : arr[1];
+            if (phoneNumberWithPrefix) {
+              this.getOperatorHandle(phoneNumberWithPrefix);
+            }
           })
         }
       } catch (error) {
