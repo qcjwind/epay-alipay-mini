@@ -101,14 +101,16 @@ export const changeRecurringStatusAPI = (agreementId,status) => {
 //      amount string 是 充值金额
 //      recurringType string 是 周期类型 周：WEEK 月：MONTH
 //      recurringDay string 是 周期日期
+//      currency string 是 货币类型
 // 出参：无
 export const updateRecurringAPI = (params) => {
-  const { agreementId, amount, recurringType, recurringDay } = params;
+  const { agreementId, amount, recurringType, recurringDay, currency } = params;
   return post('/topup/recurring/edit', {
     agreementId,
     amount,
     recurringType,
-    recurringDay
+    recurringDay,
+    currency
   })
 }
 

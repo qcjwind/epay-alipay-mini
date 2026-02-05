@@ -589,7 +589,8 @@ Page(createPage({
       agreementId,
       amount,
       recurringType,
-      recurringDay
+      recurringDay,
+      faceValueDataList
     } = this.data;
 
 
@@ -599,12 +600,17 @@ Page(createPage({
       return;
     }
 
+    // 根据 amount 获取对应的 currency
+    const currentItem = faceValueDataList.find(item => String(item.amount) === String(amount));
+    const currency = currentItem ? currentItem.currency : '';
+
     // 调用编辑接口
     updateRecurringAPI({
       agreementId,
       amount,
       recurringType,
-      recurringDay
+      recurringDay,
+      currency
     }).then((res) => {
       // 接口成功后显示成功弹窗
       this.showSuccessModal('recurring');
