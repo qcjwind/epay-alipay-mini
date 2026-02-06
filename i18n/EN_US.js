@@ -1,5 +1,8 @@
 export default {
   lang: 'EN_US',
+  system: {
+    authCodeFail: 'Failed to obtain the authorization code'
+  },
   home: {
     title: 'Phone Recharge',
     phoneLabel: 'Enter mobile phone number',

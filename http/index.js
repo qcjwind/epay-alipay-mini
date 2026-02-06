@@ -124,6 +124,7 @@ const loginHandle = () => {
 
   // 创建新的登录 Promise
   loginPromise = new Promise((resolve, reject) => {
+    const lang = getGlobalData(g => g.lang)
     my.showLoading();
     my.getAuthCode({
       scopes: ["auth_user"],
@@ -132,7 +133,7 @@ const loginHandle = () => {
           if (!res.authCode) {
             // 登录失败，清除 Promise 缓存并记录失败时间
             loginPromise = null;
-            reject(new Error("获取授权码失败"));
+            reject(new Error(lang.system.authCodeFail));
             return;
           }
           const result = await loginAPI(res.authCode);
@@ -161,7 +162,7 @@ const loginHandle = () => {
       fail: (err) => {
         loginPromise = null;
         my.hideLoading()
-        reject(new Error("获取授权码失败"));
+        reject(new Error(lang.system.authCodeFail));
       }
     });
   });

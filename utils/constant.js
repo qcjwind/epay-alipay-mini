@@ -3,9 +3,9 @@
 // export const BASE_URL = "https://zongmu.fun"
 
 // DEV
-// export const BASE_URL = "https://xaplus-epay-topup-mp-dev.rebellapp.com"
+export const BASE_URL = "https://xaplus-epay-topup-mp-dev.rebellapp.com"
 
 // UAT
-export const BASE_URL = "https://xaplus-epay-topup-mp-uat.rebellapp.com"
+// export const BASE_URL = "https://xaplus-epay-topup-mp-uat.rebellapp.com"
 
 export const RB_TOKEN = "RB_TOKEN"
