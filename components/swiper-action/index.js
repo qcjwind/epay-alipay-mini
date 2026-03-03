@@ -5,6 +5,7 @@ Component({
   data: {
     translateX: 0, // 当前 translateX 值（px，负值表示向左移动）
     startX: 0, // 触摸开始位置
+    startTranslateX: 0, // 触摸开始时的 translateX，用于已展开时右滑关闭
     currentX: 0, // 当前触摸位置
     isMoving: false, // 是否正在滑动
     hasTransition: false, // 是否有过渡动画
@@ -34,6 +35,7 @@ Component({
       const touch = e.touches[0];
       this.setData({
         startX: touch.clientX,
+        startTranslateX: this.data.translateX, // 记录起始位移，已展开时右滑可关闭
         currentX: touch.clientX,
         isMoving: true,
         hasTransition: false // 滑动过程中禁用过渡动画
@@ -47,15 +49,10 @@ Component({
       const touch = e.touches[0];
       const deltaX = touch.clientX - this.data.startX;
       const actionWidth = this.actionWidth || 160;
-      
-      // 限制移动范围：只能向左移动（负值），最大移动距离为操作区宽度
-      let translateX = deltaX;
-      if (translateX > 0) {
-        translateX = 0; // 不允许向右移动
-      }
-      if (Math.abs(translateX) > actionWidth) {
-        translateX = -actionWidth; // 限制最大向左移动距离
-      }
+      // 基于触摸起始时的位移计算，已展开时右滑可关闭
+      let translateX = this.data.startTranslateX + deltaX;
+      if (translateX > 0) translateX = 0;
+      if (translateX < -actionWidth) translateX = -actionWidth;
 
       this.setData({
         currentX: touch.clientX,
@@ -63,19 +60,15 @@ Component({
       });
     },
 
-    // 触摸结束事件 - 触发滚动结束判定
+    // 触摸结束事件 - 根据当前位移与阈值决定展开或收起
     onTouchEnd(e) {
       if (this.data.disabled || !this.data.isMoving) return;
 
-      const deltaX = this.data.currentX - this.data.startX;
       const actionWidth = this.actionWidth || 160;
       const threshold = actionWidth / 2; // 滑动阈值：按钮宽度的一半
-
-      // 如果滑动距离超过阈值，则完全展开；否则收起
-      let targetTranslateX = 0;
-      if (Math.abs(deltaX) > threshold) {
-        targetTranslateX = -actionWidth;
-      }
+      const currentTranslateX = this.data.translateX;
+      // 超过一半则视为展开，否则收起（已展开时右滑会减小 translateX，小于阈值则收起）
+      const targetTranslateX = currentTranslateX > -threshold ? 0 : -actionWidth;
 
       this.setData({
         translateX: targetTranslateX,
